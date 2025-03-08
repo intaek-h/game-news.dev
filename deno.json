@@ -1,0 +1,22 @@
+{
+  "imports": {
+    "@hono/hono": "jsr:@hono/hono@^4.7.4",
+    "@libsql/client": "npm:@libsql/client@^0.14.0",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
+    "drizzle-kit": "npm:drizzle-kit@^0.30.5",
+    "drizzle-orm": "npm:drizzle-orm@^0.40.0",
+    "~/": "./"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-read main.ts",
+    "db:pull": "deno --env -A --node-modules-dir npm:drizzle-kit pull --config=drizzle.config.ts",
+    "db:generate": "deno run -A npm:drizzle-kit generate:sqlite --config=drizzle.config.ts",
+    "db:migrate": "deno run -A ./db/migrate.ts",
+    "db:push": "deno run -A npm:drizzle-kit push:sqlite --config=drizzle.config.ts",
+    "db:studio": "deno --env -A --node-modules-dir npm:drizzle-kit studio --config=drizzle.config.ts"
+  },
+  "compilerOptions": {
+    "jsx": "precompile",
+    "jsxImportSource": "hono/jsx"
+  }
+}
