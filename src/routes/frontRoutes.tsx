@@ -24,6 +24,9 @@ const Layout: FC<{ title?: string; children: unknown }> = (props) => {
       body {
         max-width: 800px;
         margin: 0 auto;
+        padding: 1rem;
+        font-family: "Inter", sans-serif;
+        font-size: 1rem;
         min-height: 100vh;
         line-height: 1.5;
       }
@@ -36,13 +39,6 @@ const Layout: FC<{ title?: string; children: unknown }> = (props) => {
       input,
       label {
         line-height: 1.1;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4 {
-        text-wrap: balance;
       }
 
       a {
@@ -72,7 +68,13 @@ const Layout: FC<{ title?: string; children: unknown }> = (props) => {
 };
 
 const Article: FC<{ content: string }> = async (props) => {
-  const text = await parse(props.content);
+  let firstParagraph = props.content.split("\n\n")[0] || "";
+  // Remove leading and trailing markdown emphasis symbols
+  firstParagraph = firstParagraph.replace(/^\*\*|\*\*$/g, "");
+  const text = await parse(
+    "## " + firstParagraph + "\n\n" +
+      props.content.split("\n\n").slice(1).join("\n\n"),
+  );
 
   return <div dangerouslySetInnerHTML={{ __html: text }} />;
 };
