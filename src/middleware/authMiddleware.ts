@@ -5,7 +5,7 @@ import type { Context, Next } from "@hono/hono";
 // API key authentication middleware
 export async function apiKeyAuth(c: Context, next: Next) {
   // Skip auth for health check endpoint
-  if (c.req.path === "/health") {
+  if (c.req.path === "/health" || !c.req.path.startsWith("/api")) {
     return next();
   }
 
