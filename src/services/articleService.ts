@@ -37,7 +37,7 @@ export class ArticleService {
 
     console.info(
       "\x1b[32m",
-      `[...] Raw Topic Scraping Finished${(data.total_count)}.`,
+      `[...] Raw Topic Scraping Finished (${data.total_count}).`,
       "\x1b[0m",
       `(Took ${(endTime - startTime) / 1000}s)`,
     );

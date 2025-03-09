@@ -4,7 +4,8 @@ import { db } from "~/db/client.ts";
 import { articles, genTimes } from "~/db/migrations/schema.ts";
 import { desc, eq } from "drizzle-orm";
 import { parse } from "marked";
-import articleRouter from "~/src/routes/articleRoutes.ts";
+
+const SELF_URL = Deno.env.get("SELF_URL");
 
 // Create a router for article endpoints
 const frontRouter = new Hono();
@@ -63,7 +64,7 @@ frontRouter.get("/", async (c: Context) => {
   console.log("res", c.req.url);
 
   const requestNewArticles = await fetch(
-    "http://localhost:8000/api/articles/generate",
+    `${SELF_URL}/api/articles/generate`,
     {
       method: "POST",
       headers: {
