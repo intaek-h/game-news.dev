@@ -1,5 +1,6 @@
 {
   "imports": {
+    "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.39.0",
     "@hono/hono": "jsr:@hono/hono@^4.7.4",
     "@libsql/client": "npm:@libsql/client@^0.14.0",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.3",

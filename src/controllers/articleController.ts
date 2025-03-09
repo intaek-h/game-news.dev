@@ -26,7 +26,7 @@ export class ArticleController {
 
   // Generate articles
   static async generateArticles(c: Context) {
-    const genTime = new Date().toISOString();
+    const GEN_TIME = new Date().toISOString();
 
     try {
       const redditTopics = await ArticleService.scrapeRedditTopics();
@@ -37,17 +37,23 @@ export class ArticleController {
 
       const topics = Object.values(redditTopics.topics).flat();
 
-      const inserted = await db.insert(rawTopics).values({
+      const insertedRawTopics = await db.insert(rawTopics).values({
         topics: JSON.stringify(topics),
-        genTime,
-        createdAt: genTime,
+        genTime: GEN_TIME,
+        createdAt: GEN_TIME,
       }).returning({ insertedId: rawTopics.id });
 
-      if (!inserted[0]?.insertedId) {
+      if (!insertedRawTopics[0]?.insertedId) {
         return c.json({ error: "Failed to insert articles" }, 500);
       }
 
-      return c.json(redditTopics);
+      const filteredTopics = await ArticleService.filterRawTopics(topics);
+
+      if (!filteredTopics) {
+        return c.json({ error: "Failed to filter raw topics" }, 500);
+      }
+
+      return c.json(filteredTopics);
     } catch (error) {
       console.error("Error generating articles:", error);
       return c.json({ error: "Failed to generate articles" }, 500);
