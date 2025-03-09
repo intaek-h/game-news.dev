@@ -1,6 +1,6 @@
 import { db } from "~/db/client.ts";
-import { articles } from "~/db/migrations/schema.ts";
-import { eq } from "drizzle-orm";
+import { articles, hotTopics } from "~/db/migrations/schema.ts";
+import { desc, eq, gte } from "drizzle-orm";
 import { RedditScrapingResult } from "~/src/models/redditScraper.ts";
 import { chatAnthropic } from "~/src/utils/anthropic.ts";
 import { chatPerplexity } from "~/src/utils/perplexity.ts";
@@ -45,9 +45,13 @@ export class ArticleService {
     return data;
   };
 
-  static filterRawTopics = async (rawTopics: string[]) => {
+  static filterRawTopics = async (
+    d: { rawTopics: string[]; recentTopics: string[] },
+  ) => {
+    const { rawTopics, recentTopics } = d;
     const startTime = performance.now();
-    const contentBlock = await chatAnthropic({
+
+    const informativeTopics = await chatAnthropic({
       systemP: [
         "You are an AI assistant trained to identify clusters of trending topics in the gaming world right now.",
         "Extract the noteworthy and informative topics from the given pile of text data.",
@@ -57,7 +61,41 @@ export class ArticleService {
       message: rawTopics.join("\n"),
     });
 
-    const reply = contentBlock.find((c) => c.type === "text")?.text;
+    const informativeTopicText = informativeTopics.find((c) =>
+      c.type === "text"
+    )?.text;
+
+    if (!informativeTopicText) {
+      return "";
+    }
+
+    if (!recentTopics.length) {
+      return informativeTopicText;
+    }
+
+    const deduplicatedTopics = await chatAnthropic({
+      systemP: [
+        "You are an AI assistant trained to filter duplicate topics before writing articles.",
+        'You will be given the "Recent Article Topics" and "New Topics" to write articles about.',
+        "Both will be wrapped in <Recent Topics>, <New Topics> block, and each topic will be separated by new line(\n).",
+        `For each topic of "New Topics", you must check if it's a duplicate of one of "Recent Article Topics".`,
+        'If duplicate, remove it from the "New Topics"',
+        'As result, you MUST ONLY RETURN THE "New Topics", WITHOUT DUPLICATES, AS IT IS.',
+      ].join(" "),
+      message: [
+        `<Recent Topics>\n${informativeTopicText}\n</Recent Topics>`,
+        `<New Topics>\n${recentTopics.join("\n")}</New Topics>`,
+      ].join("\n\n"),
+    });
+
+    const deduplicatedTopicText = deduplicatedTopics.find((c) =>
+      c.type === "text"
+    )?.text;
+
+    if (!deduplicatedTopicText) {
+      return "";
+    }
+
     const endTime = performance.now();
 
     console.info(
@@ -67,7 +105,7 @@ export class ArticleService {
       `(Took ${(endTime - startTime) / 1000}s)`,
     );
 
-    return reply ?? "";
+    return deduplicatedTopicText ?? "";
   };
 
   static writeArticles = async (topics: string[]) => {
@@ -76,12 +114,12 @@ export class ArticleService {
     const prompt = (topic: string) =>
       [
         `Write an article on "${topic}".`,
-        "The article should not be longer than 1 paragraph and the paragraph should contain short, easy-to-read, no-rhetoric sentences. ",
-        "On top of the article, write an punchy, reddit-style title. ",
-        "The title should not be longer than 10 words and should be written in a 6th-grade reading level. ",
-        "Think carefully on what to contain. If there's a room for a table or an ordered/unordered list, please add it at the end of the article for the readers. ",
+        "The article should not be longer than 1 paragraph and the paragraph should contain short, easy-to-read, no-rhetoric sentences.",
+        "On top of the article, write an punchy, reddit-style title.",
+        "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
+        "Think carefully on what to contain. If there's a room for a table or an ordered/unordered list, please add it at the end of the article for the readers.",
         "You MUST REPLY IN THE FOLLOWING FORMAT: ",
-        "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}. ",
+        "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}.",
         "IGNORE the the curly braces in the format. Replace the placeholders with your content.",
       ].join(" ");
 
@@ -101,4 +139,20 @@ export class ArticleService {
 
     return articles.filter((a) => !!a);
   };
+
+  static getHotTopicsLastFiveDays() {
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+    return db.select().from(hotTopics).where(
+      gte(hotTopics.createdAt, fiveDaysAgo.toISOString()),
+    );
+  }
+
+  static getRecentArticles() {
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+    return db.select().from(articles).where(
+      gte(articles.createdAt, fiveDaysAgo.toISOString()),
+    ).orderBy(desc(articles.createdAt));
+  }
 }

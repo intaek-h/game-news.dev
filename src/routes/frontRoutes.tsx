@@ -1,12 +1,8 @@
 import { Context, Hono } from "@hono/hono";
 import { type FC } from "@hono/hono/jsx";
 import { css, Style } from "@hono/hono/css";
-import { db } from "~/db/client.ts";
-import { articles, genTimes } from "~/db/migrations/schema.ts";
-import { desc, eq } from "drizzle-orm";
 import { parse } from "marked";
-
-const SELF_URL = Deno.env.get("SELF_URL");
+import { ArticleService } from "~/src/services/articleService.ts";
 
 const frontRouter = new Hono();
 
@@ -81,56 +77,25 @@ const Article: FC<{ content: string }> = async (props) => {
 
 // Define routes
 frontRouter.get("/", async (c: Context) => {
-  const [lastGen] = await db.select().from(genTimes).orderBy(
-    desc(genTimes.createdAt),
-  ).limit(1).execute();
+  const recentArticles = await ArticleService.getRecentArticles();
 
-  // check if two hours has passed since last generation
-  if (lastGen?.time) {
-    const lastGenTime = new Date(lastGen.time);
-    const now = new Date();
-    const diff = now.getTime() - lastGenTime.getTime();
-    if (diff < 1000 * 60 * 60 * 2) {
-      const latestArticles = await db.select().from(articles).where(
-        eq(articles.gid, lastGen.id),
-      ).execute();
-
-      if (latestArticles.length) {
-        return c.html(
-          <Layout>
-            {latestArticles.map((article, i) => (
-              <div>
-                <Article content={article.article ?? ""} />
-                {i !== latestArticles.length - 1 ? <hr /> : null}
-              </div>
-            ))}
-          </Layout>,
-        );
-      }
-
-      return c.html(
-        <Layout>
-          <div>hello {lastGen.time}</div>
-        </Layout>,
-      );
-    }
+  if (!recentArticles.length) {
+    return c.html(
+      <Layout>
+        <div>hello</div>
+        <span>no articles to show</span>
+      </Layout>,
+    );
   }
-
-  const requestNewArticles = await fetch(
-    `${SELF_URL}/api/articles/generate`,
-    {
-      method: "POST",
-      headers: {
-        "X-API-KEY": Deno.env.get("INTAEK_API_KEY") ?? "",
-      },
-    },
-  );
-  await requestNewArticles.json();
 
   return c.html(
     <Layout>
-      <div>hello</div>
-      <span>no articles to show</span>
+      {recentArticles.filter((a) => !!a.article).map((article, i) => (
+        <div>
+          <Article content={article.article ?? ""} />
+          {i !== recentArticles.length - 1 ? <hr /> : null}
+        </div>
+      ))}
     </Layout>,
   );
 });

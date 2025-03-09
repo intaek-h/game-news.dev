@@ -10,19 +10,13 @@ import {
 
 export class ArticleController {
   // Get article by ID
-  static async getById(c: Context) {
+  static async testFunc(c: Context) {
     try {
-      const id = Number(c.req.param("id"));
-      if (isNaN(id)) {
-        return c.json({ error: "Invalid ID" }, 400);
-      }
+      // only select hot topics from the last 5 days
+      const hotTopicsLastFiveDays = await ArticleService
+        .getHotTopicsLastFiveDays();
 
-      const article = await ArticleService.getArticleById(id);
-      if (!article) {
-        return c.json({ error: "Article not found" }, 404);
-      }
-
-      return c.json(article);
+      return c.json(hotTopicsLastFiveDays);
     } catch (error) {
       console.error("Error fetching article:", error);
       return c.json({ error: "Failed to fetch article" }, 500);
@@ -61,7 +55,14 @@ export class ArticleController {
         return c.json({ error: "Failed to insert articles" }, 500);
       }
 
-      const filteredTopicsStr = await ArticleService.filterRawTopics(topics);
+      // only select hot topics from the last 5 days
+      const hotTopicsLastFiveDays = await ArticleService
+        .getHotTopicsLastFiveDays();
+
+      const filteredTopicsStr = await ArticleService.filterRawTopics({
+        rawTopics: topics,
+        recentTopics: hotTopicsLastFiveDays.map((ht) => ht.topics ?? ""),
+      });
 
       if (!filteredTopicsStr) {
         return c.json({ error: "Failed to filter raw topics" }, 500);
