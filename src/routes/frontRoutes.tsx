@@ -49,9 +49,6 @@ const Layout: FC<{ title?: string; children: unknown }> = (props) => {
         <Style />
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/bundle.css" />
-        <link rel="icon" type="image/png" href="/assets/icon.png" />
-        <meta property="og:image" content="/assets/og-image.png" />
         <title>{props.title ?? "Game News"}</title>
       </head>
       <body>

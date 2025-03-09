@@ -80,11 +80,11 @@ export class ArticleService {
         "Both will be wrapped in <Recent Topics>, <New Topics> block, and each topic will be separated by new line(\n).",
         `For each topic of "New Topics", you must check if it's a duplicate of one of "Recent Article Topics".`,
         'If duplicate, remove it from the "New Topics"',
-        'As result, you MUST ONLY RETURN THE "New Topics", WITHOUT DUPLICATES, AS IT IS.',
+        'As result, you MUST ONLY RETURN THE "New Topics", WITHOUT DUPLICATES, WITHOUT BLOCK TAGS, JUST THE TOPICS, AS IT IS.',
       ].join(" "),
       message: [
-        `<Recent Topics>\n${informativeTopicText}\n</Recent Topics>`,
-        `<New Topics>\n${recentTopics.join("\n")}</New Topics>`,
+        `<Recent Topics>\n${recentTopics.join("\n")}\n</Recent Topics>`,
+        `<New Topics>\n${informativeTopicText}</New Topics>`,
       ].join("\n\n"),
     });
 
@@ -100,7 +100,9 @@ export class ArticleService {
 
     console.info(
       "\x1b[32m",
-      "[...] AI Topic Filtering Finished.",
+      `[...] AI Topic Filtering Finished (${
+        deduplicatedTopicText.split("\n").length
+      }).`,
       "\x1b[0m",
       `(Took ${(endTime - startTime) / 1000}s)`,
     );
@@ -140,12 +142,19 @@ export class ArticleService {
     return articles.filter((a) => !!a);
   };
 
-  static getHotTopicsLastFiveDays() {
+  static async getHotTopicsLastFiveDays() {
     const fiveDaysAgo = new Date();
     fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-    return db.select().from(hotTopics).where(
+    const topics = await db.select().from(hotTopics).where(
       gte(hotTopics.createdAt, fiveDaysAgo.toISOString()),
     );
+
+    const strs: string[] = [];
+    topics.forEach((t) => {
+      const json = JSON.parse(t.topics ?? "[]");
+      strs.push(...json as string);
+    });
+    return strs;
   }
 
   static getRecentArticles() {

@@ -9,7 +9,6 @@ import {
 } from "~/db/migrations/schema.ts";
 
 export class ArticleController {
-  // Get article by ID
   static async testFunc(c: Context) {
     try {
       // only select hot topics from the last 5 days
@@ -61,7 +60,7 @@ export class ArticleController {
 
       const filteredTopicsStr = await ArticleService.filterRawTopics({
         rawTopics: topics,
-        recentTopics: hotTopicsLastFiveDays.map((ht) => ht.topics ?? ""),
+        recentTopics: hotTopicsLastFiveDays,
       });
 
       if (!filteredTopicsStr) {
