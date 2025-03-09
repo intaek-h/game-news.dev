@@ -42,6 +42,12 @@ jobs:
       #   run: "deno task start"
 
       - name: Upload to Deno Deploy
+        env:
+          TURSO_API_KEY: ${{ secrets.TURSO_API_KEY }}
+          TURSO_PRODUCTION_DB_URL: ${{ secrets.TURSO_PRODUCTION_DB_URL }}
+          INTAEK_API_KEY: ${{ secrets.INTAEK_API_KEY }}
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
         uses: denoland/deployctl@v1
         with:
           project: "extinguish-backend"
