@@ -19,7 +19,7 @@ export class ArticleService {
 
     const urlParams = new URLSearchParams();
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "10");
+    urlParams.append("limit", "4");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
     const response = await fetch(
@@ -124,7 +124,7 @@ export class ArticleService {
         // "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}.",
         // "IGNORE the the curly braces in the format. Replace the placeholders with your content.",
         `Write a bullet point summary on the recent news, "${topic}".`,
-        "The summary should be 5 to 10 points, and each point must contain one short, easy-to-read, no-rhetoric sentence.",
+        "The summary should be 3 to 8 points, and each point must contain one SHORT, easy-to-read, no-rhetoric sentence.",
         "On top of the summary, write a punchy, reddit-style title.",
         "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
         "Think carefully on what to contain.",
@@ -146,7 +146,7 @@ export class ArticleService {
 
     console.info(
       "\x1b[32m",
-      "[...] AI Article Writing Finished.",
+      `[...] AI Article Writing Finished. (${articles.length})`,
       "\x1b[0m",
       `(Took ${(endTime - startTime) / 1000}s)`,
     );
@@ -187,16 +187,16 @@ Make sure your output is CORRECTLY formatted.
 
     const endTime = performance.now();
 
-    console.info(
-      "\x1b[32m",
-      "[...] AI Article Inspection Finished.",
-      "\x1b[0m",
-      `(Took ${(endTime - startTime) / 1000}s)`,
-    );
-
     const result = finalArticles.map((a) =>
       a.find((c) => c.type === "text")?.text ?? ""
     ).filter((v) => "<fail>" !== v.trim());
+
+    console.info(
+      "\x1b[32m",
+      `[...] AI Article Inspection Finished. (${result.length})`,
+      "\x1b[0m",
+      `(Took ${(endTime - startTime) / 1000}s)`,
+    );
 
     return result;
   }
@@ -231,7 +231,7 @@ Your output MUST REPLY IN THE SAME FORMAT OF THE ORIGINAL ARTICLE.`;
 
     console.info(
       "\x1b[32m",
-      "[...] AI Article Translation Finished.",
+      `[...] AI Article Translation Finished. (${translatedArticles.length})`,
       "\x1b[0m",
       `(Took ${(endTime - startTime) / 1000}s)`,
     );
