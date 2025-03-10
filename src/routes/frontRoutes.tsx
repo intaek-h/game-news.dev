@@ -40,6 +40,10 @@ const Layout: FC<{ title?: string; children: unknown }> = (props) => {
       a {
         text-underline-offset: 0.15rem;
       }
+
+      table, th, td {
+        border: 1px solid black;
+      }
     }
   `;
 
@@ -87,9 +91,36 @@ frontRouter.get("/", async (c: Context) => {
 
   return c.html(
     <Layout>
+      <a href="/kor">한국어로 보기</a>
       {recentArticles.filter((a) => !!a.article).map((article, i) => (
         <div>
           <Article content={article.article ?? ""} />
+          {i !== recentArticles.length - 1 ? <hr /> : null}
+        </div>
+      ))}
+    </Layout>,
+  );
+});
+
+// Define routes
+frontRouter.get("/kor", async (c: Context) => {
+  const recentArticles = await ArticleService.getRecentArticles();
+
+  if (!recentArticles.length) {
+    return c.html(
+      <Layout>
+        <div>hello</div>
+        <span>no articles to show</span>
+      </Layout>,
+    );
+  }
+
+  return c.html(
+    <Layout>
+      <a href="/">Read English</a>
+      {recentArticles.filter((a) => !!a.articleKor).map((article, i) => (
+        <div>
+          <Article content={article.articleKor ?? ""} />
           {i !== recentArticles.length - 1 ? <hr /> : null}
         </div>
       ))}

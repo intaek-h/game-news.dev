@@ -27,8 +27,10 @@ const extractThinkBlocks = (
   return { think, reply };
 };
 
-export const chatPerplexity = async (d: { message: string }) => {
-  const { message } = d;
+export const chatPerplexity = async (
+  d: { message: string; systemP?: string },
+) => {
+  const { message, systemP } = d;
 
   const options = {
     method: "POST",
@@ -47,12 +49,23 @@ export const chatPerplexity = async (d: { message: string }) => {
       "presence_penalty": 0,
       "frequency_penalty": 1,
       "model": "sonar-reasoning-pro",
-      "messages": [
-        {
-          "role": "user",
-          "content": message,
-        },
-      ],
+      "messages": systemP
+        ? [
+          {
+            "role": "system",
+            "content": systemP,
+          },
+          {
+            "role": "user",
+            "content": message,
+          },
+        ]
+        : [
+          {
+            "role": "user",
+            "content": message,
+          },
+        ],
       "max_tokens": 4096,
     }),
   };

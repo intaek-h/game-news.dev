@@ -24,6 +24,7 @@ export const articles = sqliteTable("articles", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),
   thumnail: text(),
+  articleKor: text("article_kor"),
 });
 
 export const genTimes = sqliteTable("gen_times", {

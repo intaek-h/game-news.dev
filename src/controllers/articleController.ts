@@ -11,11 +11,31 @@ import {
 export class ArticleController {
   static async testFunc(c: Context) {
     try {
-      // only select hot topics from the last 5 days
-      const hotTopicsLastFiveDays = await ArticleService
-        .getHotTopicsLastFiveDays();
+      // const contentBlock = await chatPerplexity({
+      //   message: [
+      //     "You are an AI assistant trained to write a bullet point summary on a given news topic.",
+      //     "The topic will be wrapped in a <topic> block:<topic>{NEWS TOPIC}</topic>.",
+      //     // "Research the topic and write a 5 to 10 point summary.",
+      //     "Each point must contain ONE short, easy-to-read, no-rhetoric sentence.",
+      //     "If there's a room for a simple Table or a List, add it at the end of the bullet points for the readers.",
+      //     // "Your citation must not be more than 10 sources.",
+      //     "Here are the restrictions you MUST FOLLOW when replying: ",
+      //     "1. A bullet point must start with a dash.",
+      //     "2. The bullet points must be one depth max.",
+      //     "3. Do not include any emoji in the output.",
+      //     "4. Do not use markdown in the Title and Bullet Points.",
+      //     "You MUST REPLY IN THE FOLLOWING FORMAT:{TITLE}\n\n{BULLET POINTS}\n\n{TABLE or LIST (this is optional)}.",
+      //     "",
+      //     "",
+      //     "<topic>Death Stranding 2: ON THE BEACH pre-order trailer released</topic>",
+      //   ].join(" "),
+      // });
 
-      return c.json(hotTopicsLastFiveDays);
+      const contentBlock = await ArticleService.writeArticles([
+        "Death Stranding 2: ON THE BEACH pre-order trailer released",
+      ]);
+
+      return c.json(contentBlock);
     } catch (error) {
       console.error("Error fetching article:", error);
       return c.json({ error: "Failed to fetch article" }, 500);
@@ -85,12 +105,25 @@ export class ArticleController {
         return c.json({ error: "Failed to write articles" }, 500);
       }
 
+      const inspectedArticles = await ArticleService.finalArticleInspection(
+        aiArticles.map((a) => a.reply),
+      );
+
+      if (!inspectedArticles || inspectedArticles.length === 0) {
+        return c.json({ error: "Failed to inspect articles" }, 500);
+      }
+
+      const translatedArticles = await ArticleService.translateArticles(
+        inspectedArticles,
+      );
+
       const finalArticles = await db.insert(articles).values(
-        aiArticles.map((a) => ({
-          article: a.reply,
+        inspectedArticles.filter((v) => typeof v === "string").map((a, i) => ({
+          article: a,
           gid: genTime.id,
           createdAt: GEN_TIME,
-          citations: JSON.stringify(a.citations),
+          articleKor: translatedArticles[i],
+          // citations: JSON.stringify(a.citations),
         })),
       ).returning({ article: articles.article, id: articles.id });
 

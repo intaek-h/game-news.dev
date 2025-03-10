@@ -19,7 +19,7 @@ export class ArticleService {
 
     const urlParams = new URLSearchParams();
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "3");
+    urlParams.append("limit", "10");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
     const response = await fetch(
@@ -124,7 +124,7 @@ export class ArticleService {
         // "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}.",
         // "IGNORE the the curly braces in the format. Replace the placeholders with your content.",
         `Write a bullet point summary on the recent news, "${topic}".`,
-        "The summary should be 5 to 10 points and it should contain short, easy-to-read, no-rhetoric sentences.",
+        "The summary should be 5 to 10 points, and each point must contain one short, easy-to-read, no-rhetoric sentence.",
         "On top of the summary, write a punchy, reddit-style title.",
         "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
         "Think carefully on what to contain.",
@@ -134,7 +134,7 @@ export class ArticleService {
         "1. IGNORE the the curly braces in the format.",
         "2. A bullet point must start with a dash.",
         "3. The bullet points must be one depth.",
-        "4. Do not include any emoji in the output."
+        "4. Do not include any emoji in the output.",
       ].join(" ");
 
     const articlePromise = topics.map((t) =>
@@ -153,6 +153,93 @@ export class ArticleService {
 
     return articles.filter((a) => !!a);
   };
+
+  static async finalArticleInspection(articles: string[]) {
+    const startTime = performance.now();
+    const systemPrompt =
+      `You are an AI assistant to take charge of the final inspection of draft news articles before being published.
+You will be given one draft article wrapped in <article></article> block.
+The draft article has a title at the top, body in the middle, and an option table or a list at the bottom.
+You have 3 jobs.
+1. Remove all text styles. e.g. bold or italics with asterisks.
+2. Remove all citation references. e.g. [1][2].
+3. Remove any error-like texts in the article. e.g. unknown unicodes.
+4. Make sure the output is structured in following format: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE or LIST (this is optional)}
+5. The {BULLET POINTS} must only contain texts starting with a dash, separated by new lines.
+6. Polish the article content for the readers.
+7. IMPORTANT! If you are unable to perform inspection or formatting due to poor draft quality, JUST RETURN: <fail>
+
+Keep in mind that you are the last inspector before the article is published.
+After finishing your jobs, read once again to check if there's more to polish.
+
+Last check!
+Make sure your output is CORRECTLY formatted.
+{TITLE}\n\n{BULLET POINTS}\n\n{TABLE or LIST (this is optional)}`;
+
+    const articlePromise = articles.map((t) =>
+      chatAnthropic({
+        systemP: systemPrompt,
+        message: `<article>${t}</article>`,
+      })
+    );
+
+    const finalArticles = await Promise.all(articlePromise);
+
+    const endTime = performance.now();
+
+    console.info(
+      "\x1b[32m",
+      "[...] AI Article Inspection Finished.",
+      "\x1b[0m",
+      `(Took ${(endTime - startTime) / 1000}s)`,
+    );
+
+    const result = finalArticles.map((a) =>
+      a.find((c) => c.type === "text")?.text ?? ""
+    ).filter((v) => "<fail>" !== v.trim());
+
+    return result;
+  }
+
+  static async translateArticles(articles: string[]) {
+    const startTime = performance.now();
+    const systemPrompt =
+      `You are an expert Korean translator with deep cultural knowledge of both English and Korean. Your task is to translate an English article into Korean that read as if they were originally written in Korean by a native speaker.
+
+Translation Guidelines:
+1. Do not translate sentences directly word-for-word. Focus on conveying the meaning naturally in Korean.
+2. Use Korean sentence structures, idioms, and expressions that sound natural to native speakers.
+3. Preserve the original tone and style (formal, casual, academic, etc.) while making it feel authentic in Korean.
+4. For the each bullet points, use "음슴체" for readability.
+5. When translating entities, use established Korean terminology rather than literal translations. You can leave it as English if you are not familiar with the entity.
+6. Before submitting your translation, review it and ask yourself: "Would this text appear to be originally written in Korean to a native speaker?"
+
+You will be given an English article on gaming news.
+The article will have the following structure: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}. Ignore the curly braces.
+Your output MUST REPLY IN THE SAME FORMAT OF THE ORIGINAL ARTICLE.`;
+
+    const articlePromise = articles.map((t) =>
+      chatAnthropic({
+        systemP: systemPrompt,
+        message: t,
+      })
+    );
+
+    const translatedArticles = await Promise.all(articlePromise);
+
+    const endTime = performance.now();
+
+    console.info(
+      "\x1b[32m",
+      "[...] AI Article Translation Finished.",
+      "\x1b[0m",
+      `(Took ${(endTime - startTime) / 1000}s)`,
+    );
+
+    return translatedArticles.map((a) =>
+      a.find((c) => c.type === "text")?.text ?? ""
+    );
+  }
 
   static async getHotTopicsLastFiveDays() {
     const fiveDaysAgo = new Date();
