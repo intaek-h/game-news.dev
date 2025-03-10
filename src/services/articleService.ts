@@ -115,14 +115,23 @@ export class ArticleService {
 
     const prompt = (topic: string) =>
       [
-        `Write an article on "${topic}".`,
-        "The article should not be longer than 1 paragraph and the paragraph should contain short, easy-to-read, no-rhetoric sentences.",
-        "On top of the article, write an punchy, reddit-style title.",
+        // `Write an article on "${topic}".`,
+        // "The article should not be longer than 1 paragraph and the paragraph should contain short, easy-to-read, no-rhetoric sentences.",
+        // "On top of the article, write an punchy, reddit-style title.",
+        // "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
+        // "Think carefully on what to contain. If there's a room for a table or an ordered/unordered list, please add it at the end of the article for the readers.",
+        // "You MUST REPLY IN THE FOLLOWING FORMAT: ",
+        // "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}.",
+        // "IGNORE the the curly braces in the format. Replace the placeholders with your content.",
+        `Write a bullet point summary on the recent news, "${topic}".`,
+        "The summary should be 5 to 10 points and it should contain short, easy-to-read, no-rhetoric sentences.",
+        "On top of the summary, write a punchy, reddit-style title.",
         "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
-        "Think carefully on what to contain. If there's a room for a table or an ordered/unordered list, please add it at the end of the article for the readers.",
-        "You MUST REPLY IN THE FOLLOWING FORMAT: ",
-        "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}.",
-        "IGNORE the the curly braces in the format. Replace the placeholders with your content.",
+        "Think carefully on what to contain.",
+        "If there's a room for a table or an ordered/unordered list, please add it at the end of the summary for the readers.",
+        "You MUST REPLY IN THE FOLLOWING FORMAT: {HEADLINE}\n\n{SUMMARY}\n\n{TABLE/LIST (this is optional)}.",
+        "IGNORE the the curly braces in the format.",
+        "Replace the placeholders with your content.",
       ].join(" ");
 
     const articlePromise = topics.map((t) =>
