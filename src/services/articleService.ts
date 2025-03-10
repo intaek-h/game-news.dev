@@ -129,9 +129,12 @@ export class ArticleService {
         "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
         "Think carefully on what to contain.",
         "If there's a room for a table or an ordered/unordered list, please add it at the end of the summary for the readers.",
-        "You MUST REPLY IN THE FOLLOWING FORMAT: {HEADLINE}\n\n{SUMMARY}\n\n{TABLE/LIST (this is optional)}.",
-        "IGNORE the the curly braces in the format.",
-        "Replace the placeholders with your content.",
+        "You MUST REPLY IN THE FOLLOWING FORMAT: {HEADLINE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}.",
+        "Here are the restrictions you MUST FOLLOW when replying: ",
+        "1. IGNORE the the curly braces in the format.",
+        "2. A bullet point must start with a dash.",
+        "3. The bullet points must be one depth.",
+        "4. Do not include any emoji in the output."
       ].join(" ");
 
     const articlePromise = topics.map((t) =>
