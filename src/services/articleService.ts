@@ -19,7 +19,7 @@ export class ArticleService {
 
     const urlParams = new URLSearchParams();
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "4");
+    urlParams.append("limit", "10");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
     const response = await fetch(
@@ -114,28 +114,19 @@ export class ArticleService {
     const startTime = performance.now();
 
     const prompt = (topic: string) =>
-      [
-        // `Write an article on "${topic}".`,
-        // "The article should not be longer than 1 paragraph and the paragraph should contain short, easy-to-read, no-rhetoric sentences.",
-        // "On top of the article, write an punchy, reddit-style title.",
-        // "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
-        // "Think carefully on what to contain. If there's a room for a table or an ordered/unordered list, please add it at the end of the article for the readers.",
-        // "You MUST REPLY IN THE FOLLOWING FORMAT: ",
-        // "{HEADLINE}\n\n{PARAGRAPH}\n\n{TABLE/LIST (this is optional)}.",
-        // "IGNORE the the curly braces in the format. Replace the placeholders with your content.",
-        `Write a bullet point summary on the recent news, "${topic}".`,
-        "The summary should be 3 to 8 points, and each point must contain one SHORT, easy-to-read, no-rhetoric sentence.",
-        "On top of the summary, write a punchy, reddit-style title.",
-        "The title should not be longer than 10 words and should be written in a 6th-grade reading level.",
-        "Think carefully on what to contain.",
-        "If there's a room for a table or an ordered/unordered list, please add it at the end of the summary for the readers.",
-        "You MUST REPLY IN THE FOLLOWING FORMAT: {HEADLINE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}.",
-        "Here are the restrictions you MUST FOLLOW when replying: ",
-        "1. IGNORE the the curly braces in the format.",
-        "2. A bullet point must start with a dash.",
-        "3. The bullet points must be one depth.",
-        "4. Do not include any emoji in the output.",
-      ].join(" ");
+      `Write a bullet point summary on the recent news, "${topic}".
+The summary should be 3 to 8 points, and each point must contain one SHORT, easy-to-read, no-rhetoric sentence.
+On top of the summary, write a punchy, reddit-style title.
+The title should not be longer than 10 words and should be written in a 6th-grade reading level.
+Think carefully on what to contain.
+If there's a room for a table or an ordered/unordered list, please add it at the end of the summary for the readers.
+You MUST REPLY IN THE FOLLOWING FORMAT:{HEADLINE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}.
+
+Here are the restrictions you MUST FOLLOW when replying: 
+1. IGNORE the the curly braces in the format.
+2. A bullet point must start with a dash.
+3. The bullet points must be one depth.
+4. Do not include any emoji in the output.`;
 
     const articlePromise = topics.map((t) =>
       chatPerplexity({ message: prompt(t) })
@@ -218,7 +209,7 @@ Translation Guidelines:
 Formatting Guidelines:
 1. Your output MUST REPLY IN THE SAME FORMAT OF THE ORIGINAL ARTICLE.
 2. The article will have the same structure as the original article: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}. Ignore the curly braces.
-3. The {TITLE} and {BULLET POINTS} must not include any markdown attributes other than dash to indicate each bullet point.`;
+3. DO NOT INCLUDE MARKDOWN ATTRIBUTES IN THE TITLE. e.g. don't put # to indicate it's the header.`;
 
     const articlePromise = articles.map((t) =>
       chatAnthropic({
