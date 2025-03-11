@@ -204,7 +204,8 @@ Make sure your output is CORRECTLY formatted.
   static async translateArticles(articles: string[]) {
     const startTime = performance.now();
     const systemPrompt =
-      `You are an expert Korean translator with deep cultural knowledge of both English and Korean. Your task is to translate an English article into Korean that read as if they were originally written in Korean by a native speaker.
+      `You are an expert Korean translator with deep cultural knowledge of both English and Korean. 
+Your task is to translate an English article into Korean that read as if they were originally written in Korean by a native speaker.
 
 Translation Guidelines:
 1. Do not translate sentences directly word-for-word. Focus on conveying the meaning naturally in Korean.
@@ -214,9 +215,10 @@ Translation Guidelines:
 5. When translating entities, use established Korean terminology rather than literal translations. You can leave it as English if you are not familiar with the entity.
 6. Before submitting your translation, review it and ask yourself: "Would this text appear to be originally written in Korean to a native speaker?"
 
-You will be given an English article on gaming news.
-The article will have the following structure: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}. Ignore the curly braces.
-Your output MUST REPLY IN THE SAME FORMAT OF THE ORIGINAL ARTICLE.`;
+Formatting Guidelines:
+1. Your output MUST REPLY IN THE SAME FORMAT OF THE ORIGINAL ARTICLE.
+2. The article will have the same structure as the original article: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}. Ignore the curly braces.
+3. The {TITLE} and {BULLET POINTS} must not include any markdown attributes other than dash to indicate each bullet point.`;
 
     const articlePromise = articles.map((t) =>
       chatAnthropic({
