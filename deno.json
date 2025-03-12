@@ -11,7 +11,7 @@
   },
   "tasks": {
     "start": "deno run --allow-net --allow-env --allow-read main.ts",
-    "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv --watch-hmr main.ts",
+    "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv --unstable-cron --watch-hmr main.ts",
     "db:pull": "deno --env -A --node-modules-dir npm:drizzle-kit pull --config=drizzle.config.ts",
     "db:generate": "deno --env -A --node-modules-dir npm:drizzle-kit generate:sqlite --config=drizzle.config.ts",
     "db:migrate": "deno --env -A --node-modules-dir ./db/migrate.ts",

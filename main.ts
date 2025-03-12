@@ -4,7 +4,13 @@ import { config } from "~/src/config/app.ts";
 import { apiKeyAuth } from "~/src/middleware/authMiddleware.ts";
 import articleRoutes from "~/src/routes/articleRoutes.ts";
 import frontRouter from "~/src/routes/frontRoutes.tsx";
-import { kv } from "~/kv.ts";
+
+const SELF_URL = Deno.env.get("SELF_URL") ?? "";
+
+if (!SELF_URL) {
+  console.error("SELF_URL is not set");
+  Deno.exit(1);
+}
 
 // Create main application
 const app = new Hono();
@@ -20,17 +26,19 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 app.route("/", frontRouter);
 app.route("/api/articles", articleRoutes);
 
-app.post("/api/test", async (c) => {
-  const store = await kv.enqueue(["hot-topic", {
-    topic: "Lego bringing game development in-house",
-    gid: 100,
-  }], { delay: 1000 });
+app.post("/api/test", (c) => {
+  // const images = await ImageSearchService.SearchGoogleImages("Elden Ring");
+  // const images = await ImageSearchService.SearchOpenverseImages("Elden Ring");
 
-  return c.json({ message: "Hello, World!", store: store.versionstamp });
+  // return c.json(images);
+
+  return c.json({ message: "Test" });
 });
 
-Deno.cron("sample-cron", "* * * * *", () => {
-  console.log("Running cron job", new Date());
+Deno.cron("sample-cron", "* * * * *", async () => {
+  const response = await fetch(SELF_URL + "/api/test", { method: "POST" });
+  const json = await response.json();
+  console.log(json);
 });
 
 // Start the server
