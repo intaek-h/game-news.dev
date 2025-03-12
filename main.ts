@@ -29,7 +29,7 @@ app.post("/api/test", async (c) => {
   return c.json({ message: "Hello, World!", store: store.versionstamp });
 });
 
-Deno.cron("sample-cron", { minute: 1 }, () => {
+Deno.cron("sample-cron", "* * * * *", () => {
   console.log("Running cron job", new Date());
 });
 
