@@ -1,5 +1,6 @@
 import { Hono } from "@hono/hono";
 import { logger } from "@hono/hono/logger";
+import { cp } from "node:fs";
 import { config } from "~/src/config/app.ts";
 import { apiKeyAuth } from "~/src/middleware/authMiddleware.ts";
 import articleRoutes from "~/src/routes/articleRoutes.ts";
@@ -35,11 +36,11 @@ app.post("/api/test", (c) => {
   return c.json({ message: "Test" });
 });
 
-Deno.cron("sample-cron", "* * * * *", async () => {
-  const response = await fetch(SELF_URL + "/api/test", { method: "POST" });
-  const json = await response.json();
-  console.log(json);
-});
+// Deno.cron("sample-cron", "* * * * *", async () => {
+//   const response = await fetch(SELF_URL + "/api/test", { method: "POST" });
+//   const json = await response.json();
+//   console.log(json);
+// });
 
 // Start the server
 console.log(`Server running on port ${config.server.port}`);
