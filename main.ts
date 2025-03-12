@@ -29,6 +29,10 @@ app.post("/api/test", async (c) => {
   return c.json({ message: "Hello, World!", store: store.versionstamp });
 });
 
+Deno.cron("sample-cron", { minute: 1 }, () => {
+  console.log("Running cron job", new Date());
+});
+
 // Start the server
 console.log(`Server running on port ${config.server.port}`);
 
