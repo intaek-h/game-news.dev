@@ -4,6 +4,7 @@ import { config } from "~/src/config/app.ts";
 import { apiKeyAuth } from "~/src/middleware/authMiddleware.ts";
 import articleRoutes from "~/src/routes/articleRoutes.ts";
 import frontRouter from "~/src/routes/frontRoutes.tsx";
+import "~/cron.ts";
 
 // Create main application
 const app = new Hono();
