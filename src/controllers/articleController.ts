@@ -1,16 +1,17 @@
-import { Context } from "@hono/hono";
 import { ArticleService } from "~/src/services/articleService.ts";
 import { db } from "~/db/client.ts";
 import { genTimes, hotTopics, rawTopics } from "~/db/migrations/schema.ts";
 import { kv } from "~/kv.ts";
 
 export class ArticleController {
-  static async generateArticles(c: Context) {
+  static async generateArticles(): Promise<
+    { message: string; statusCode: number; data?: unknown }
+  > {
     try {
       const redditTopics = await ArticleService.scrapeRedditTopics();
 
       if (!redditTopics || redditTopics.total_count === 0) {
-        return c.json({ error: "No articles found" }, 404);
+        return { message: "No articles found", statusCode: 404 };
       }
 
       const topics = Object.values(redditTopics.topics).flat();
@@ -23,7 +24,7 @@ export class ArticleController {
       }).returning({ id: genTimes.id });
 
       if (!genTime?.id) {
-        return c.json({ error: "Failed to insert generation time" }, 500);
+        return { message: "Failed to insert generation time", statusCode: 500 };
       }
 
       const [insertedRawTopics] = await db.insert(rawTopics).values({
@@ -33,7 +34,7 @@ export class ArticleController {
       }).returning({ id: rawTopics.id });
 
       if (!insertedRawTopics?.id) {
-        return c.json({ error: "Failed to insert articles" }, 500);
+        return { message: "Failed to insert articles", statusCode: 500 };
       }
 
       // only select hot topics from the last 5 days
@@ -46,7 +47,7 @@ export class ArticleController {
       });
 
       if (!filteredTopicsStr) {
-        return c.json({ error: "Failed to filter raw topics" }, 500);
+        return { message: "Failed to filter raw topics", statusCode: 500 };
       }
 
       const filteredTopics = filteredTopicsStr.split("\n");
@@ -58,7 +59,7 @@ export class ArticleController {
       }).returning({ id: hotTopics.id });
 
       if (!insertedHotTopics?.id) {
-        return c.json({ error: "Failed to insert hot topics" }, 500);
+        return { message: "Failed to insert hot topics", statusCode: 500 };
       }
 
       let hotTopicsCount = 0;
@@ -69,10 +70,11 @@ export class ArticleController {
         });
       }
 
-      return c.json({
+      return {
         message: "Articles Generation Job Queued",
-        insertedHotTopics,
-      });
+        statusCode: 200,
+        data: insertedHotTopics,
+      };
 
       // const aiArticles = await ArticleService.writeArticles(filteredTopics);
 
@@ -108,7 +110,7 @@ export class ArticleController {
       // return c.json(finalArticles);
     } catch (error) {
       console.error("Error generating articles:", error);
-      return c.json({ error: "Failed to generate articles" }, 500);
+      return { message: "Failed to generate articles", statusCode: 500 };
     }
   }
 }

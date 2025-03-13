@@ -5,6 +5,9 @@ import { ArticleController } from "~/src/controllers/articleController.ts";
 const articleRouter = new Hono();
 
 // Define routes
-articleRouter.post("/generate", ArticleController.generateArticles);
+articleRouter.post(
+  "/generate",
+  async (c) => c.json(await ArticleController.generateArticles()),
+);
 
 export default articleRouter;
