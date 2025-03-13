@@ -8,7 +8,7 @@ if (!SELF_URL) {
 }
 
 // 매일 UTC 10:00에 실행 (뉴욕 아침 6:00)
-Deno.cron("sample-cron", "0 10 * * *", async () => {
+Deno.cron("Article Generator", "0 10 * * *", async () => {
   const response = await ArticleController.generateArticles();
 
   console.info(
