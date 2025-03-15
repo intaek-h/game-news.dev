@@ -4,6 +4,8 @@ import { desc, eq, gte } from "drizzle-orm";
 import { RedditScrapingResult } from "~/src/models/redditScraper.ts";
 import { chatAnthropic } from "~/src/utils/anthropic.ts";
 import { chatPerplexity } from "~/src/utils/perplexity.ts";
+import { unstableJsonParser } from "~/src/utils/json.ts";
+import { ArticleFormat } from "~/src/types/articleFormat.ts";
 
 const INTAEK_API_KEY = Deno.env.get("INTAEK_API_KEY");
 
@@ -113,23 +115,71 @@ export class ArticleService {
   static writeArticles = async (topics: string[]) => {
     const startTime = performance.now();
 
-    const prompt = (topic: string) =>
-      `Write a bullet point summary on the recent news, "${topic}".
-The summary should be 3 to 8 points, and each point must contain one SHORT, easy-to-read, no-rhetoric sentence.
-On top of the summary, write a punchy, reddit-style title.
-The title should not be longer than 10 words and should be written in a 6th-grade reading level.
-Think carefully on what to contain.
-If there's a room for a table or an ordered/unordered list, please add it at the end of the summary for the readers.
-You MUST REPLY IN THE FOLLOWING FORMAT:{HEADLINE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}.
-
-Here are the restrictions you MUST FOLLOW when replying: 
-1. IGNORE the the curly braces in the format.
-2. A bullet point must start with a dash.
-3. The bullet points must be one depth.
-4. Do not include any emoji in the output.`;
-
     const articlePromise = topics.map((t) =>
-      chatPerplexity({ message: prompt(t) })
+      chatPerplexity({
+        systemP:
+          `You are an AI assistant trained to summarize the news on a topic.
+You will be given a topic in the "gaming world".
+Do a research on the topic and write the title and the key points of the news.
+If there's a room for a table data, add it optionally.
+
+Your answer MUST BE RETURNED IN JSON: {"title":"","key_points":[],"table":{header:[],rows:[]}}.
+
+Title Guidelines:
+- The title should be written in a 6th-grade reading level.
+- The title should not be longer than 10 words.
+- Remove unnecessary words and keep it simple.
+
+Good/Bad Title Example #1
+Bad: "The New Game Console from Sony is Expected to be Released in 2023"
+Good: "Sony's New Console Coming in 2023"
+
+Good/Bad Title Example #2
+Bad: "Assassin's Creed Shadows Length Revealed: Shorter Than Valhalla"
+Good: "Assassin's Creed Shadows Is Shorter Than Valhalla"
+
+Good/Bad Title Example #3
+Bad: "Real Ballerina Moves Power New Video Game Fight System"
+Good: "Ballerina Moves Power The Game Fight System"
+
+Good/Bad Title Example #4
+Bad: "Lego Builds Own Game Studio After Hitting Record Sales"
+Good: "Lego Builds Game Studio After Record Sales"
+
+Key Points Guidelines:
+- The key points should be 3 to 8 points.
+- Each point must contain one short sentence.
+- Each point must be easy to read.
+- Do not include any emoji or special characters.
+- Only include plain text. No markdown.
+
+Key Points Example #1
+["Sony announced a new console coming in 2023.","It is AAA title exclusive to the console."]
+
+Key Points Example #2
+["Recent leaks suggest the game has short play time.","Main story takes 30-40 hours to complete.","Its expansion Claws of Awaji adds extra 10 hours."]
+
+Key Points Example #3
+["Kinesiology experts designed fight sequences using real dancers' biomechanics.","It is a unique approach to game design.","The motions were captured using multi-sensor systems to create lifelike martial arts animations."]
+
+Table Guidelines:
+- The table is optional. 
+- The table can be empty if it's not relavant to the article, or if there's no data to show.
+- The table should be in the following format: {header:[],rows:[]}.
+- Only include plain text. No markdown.
+
+Table Example #1
+{header:["Name","Age","Address"],rows:[["John Doe","25","123 Main St."],["Jane Doe","30","456 Elm St."]]}
+
+Table Example #2
+{header:["Title","Main Story","Full Completion"],rows:[["AC Origins","30 hrs","85 hrs"],["AC Odyssey","45 hrs","144 hrs"],["AC Valhalla","61 hrs","148 hrs"]]}
+
+Table Example #4 (Empty Table)
+{header:[],rows:[]}
+
+IMPORTANT! DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.`,
+        message: t,
+      })
     );
     const articles = await Promise.all(articlePromise);
 
@@ -149,28 +199,75 @@ Here are the restrictions you MUST FOLLOW when replying:
     const startTime = performance.now();
     const systemPrompt =
       `You are an AI assistant to take charge of the final inspection of draft news articles before being published.
-You will be given one draft article wrapped in <article></article> block.
-The draft article has a title at the top, body in the middle, and an option table or a list at the bottom.
-You have 3 jobs.
-1. Remove all text styles. e.g. bold or italics with asterisks.
-2. Remove all citation references. e.g. [1][2].
-3. Remove any error-like texts in the article. e.g. unknown unicodes.
-4. Make sure the output is structured in following format: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE or LIST (this is optional)}
-5. The {BULLET POINTS} must only contain texts starting with a dash, separated by new lines.
-6. Polish the article content for the readers.
-7. IMPORTANT! If you are unable to perform inspection or formatting due to poor draft quality, JUST RETURN: <fail>
+You will be given one draft article in the JSON format.
 
-Keep in mind that you are the last inspector before the article is published.
-After finishing your jobs, read once again to check if there's more to polish.
+The ARTICLE FORMAT: {"title":"","key_points":[],"table":{header:[],rows:[]}}
 
-Last check!
-Make sure your output is CORRECTLY formatted.
-{TITLE}\n\n{BULLET POINTS}\n\n{TABLE or LIST (this is optional)}`;
+Read the instructions below and return the polished article in the SAME FORMAT.
+
+Here are the list of your jobs:
+1. Text Style Inspection
+2. Article Structure Check
+3. Typo-Check
+
+Text Style Inspection Guidelines
+- The article must be in a plain text, without any styles.
+- Strip all markdown attributes. (** or ()[] and etc)
+- Strip all html tags. (<time>, <li>, and etc)
+- Strip all citation marks ([1], [2])
+
+Text Style Inspection Example #1
+AS IS: <time datetime='late_25'>Late '25</time>
+TO BE: Late '25
+
+Text Style Inspection Example #2
+AS IS: <ul><li>Partner-made design</li><li>Windows + Game Pass</li></ul>
+TO BE: Partner-made design\nWindows + Game Pass
+
+Text Style Inspection Example #3
+AS IS: Performance gaps shrink significantly when playing at 4k resolution[1][6].
+TO BE: Performance gaps shrink significantly when playing at 4k resolution.
+
+Article Structure Check Guidelines
+- Check if the given article is in the right format: {"title":"","key_points":[],"table":{header:[],rows:[]}}.
+- Check if the table header and rows match. If it breaks, replace it with an empty table.
+- Check if the article contains multi-line(\n) strings. Replace the "\n" with "\\n", so it doesn't break JSON parsing.
+
+Article Structure Check Example #1 (Empty Table)
+AS IS: {"title":"...","key_points":[],"table":{}}.
+TO BE: {"title":"...","key_points":[],"table":{header:[],rows:[]}}.
+
+Article Structure Check Example #2 (Breaking Table)
+AS IS: {"title":"","key_points":[],"table":{header:["Name","Age","Address"],rows:[["John Doe","25"],["Jane Doe","30"]]}}.
+TO BE: {"title":"","key_points":[],"table":{header:[],rows:[]}}.
+
+Article Structure Check Example #3 (Multi-Line(\n) String)
+AS IS: {"header":["Device","Release Window","Key Features"],"rows":[["Handheld","Late '25","Partner-made design\nWindows + Game Pass"]]}
+TO BE: {"header":["Device","Release Window","Key Features"],"rows":[["Handheld","Late '25","Partner-made design\\nWindows + Game Pass"]]}
+
+Typo-Check Guidelines
+- Fix the typos in the article.
+- Check if spaces and line breaks are properly set.
+- Check if entity names are properly written.
+
+Typo-Check Example #1
+AS IS: The Ryzen9  995x³d beats all processors except its sibling R798x³d in most games
+TO BE: The Ryzen9  995X3D beats all processors except its sibling R798X3D in most games
+
+Typo-Check Example #2
+AS IS: Performance gaps shrink significantly when playing at4k resolution
+TO BE: Performance gaps shrink significantly when playing at 4k resolution
+
+IMPORTANT! 
+YOU MUST ONLY RETURN THE JSON FORMATTED ARTICLE.
+DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.
+
+If you are unable to perform inspection or formatting due to the poor draft quality, JUST RETURN: <fail>`;
 
     const articlePromise = articles.map((t) =>
       chatAnthropic({
         systemP: systemPrompt,
-        message: `<article>${t}</article>`,
+        message: t,
       })
     );
 
@@ -178,9 +275,15 @@ Make sure your output is CORRECTLY formatted.
 
     const endTime = performance.now();
 
-    const result = finalArticles.map((a) =>
-      a.find((c) => c.type === "text")?.text ?? ""
-    ).filter((v) => "<fail>" !== v.trim());
+    const result = finalArticles
+      .map((a) => a.find((c) => c.type === "text")?.text ?? "")
+      .filter((v) => "<fail>" !== v.trim())
+      .map((v) => {
+        const result = unstableJsonParser<ArticleFormat>({ maybeJson: v });
+        if (!result) return;
+        return JSON.stringify(result);
+      })
+      .filter((v) => typeof v === "string");
 
     console.info(
       "\x1b[32m",
@@ -196,20 +299,72 @@ Make sure your output is CORRECTLY formatted.
     const startTime = performance.now();
     const systemPrompt =
       `You are an expert Korean translator with deep cultural knowledge of both English and Korean. 
-Your task is to translate an English article into Korean that read as if they were originally written in Korean by a native speaker.
+You will be given one article on Gaming that is in the JSON format.
+
+The ARTICLE FORMAT: {"title":"","key_points":[],"table":{header:[],rows:[]}}
+
+Read the instructions below and return the Korean translated article in the SAME FORMAT.
 
 Translation Guidelines:
-1. Do not translate sentences directly word-for-word. Focus on conveying the meaning naturally in Korean.
-2. Use Korean sentence structures, idioms, and expressions that sound natural to native speakers.
-3. Preserve the original tone and style (formal, casual, academic, etc.) while making it feel authentic in Korean.
-4. For the each bullet points, use "음슴체" for readability.
-5. When translating entities, use established Korean terminology rather than literal translations. You can leave it as English if you are not familiar with the entity.
-6. Before submitting your translation, review it and ask yourself: "Would this text appear to be originally written in Korean to a native speaker?"
+- Do not translate sentences directly word-for-word. Focus on conveying the meaning naturally in Korean.
+- Preserve the original tone and style, which is to keep the sentences SIMPLE.
+- For the each key points, use "음슴체" for readability.
+- When translating entities, such as companies, game titles, characters, use established Korean terminology rather than literal translations. It is recommended to put the original English name in parenthesis if you are unsure.
+- Do not exchange the currency to KRW. Just use the original currency.
+- If you see "\\n" in the text, PRESERVE IT AS IS because it is for JSON parsing.
 
-Formatting Guidelines:
-1. Your output MUST REPLY IN THE SAME FORMAT OF THE ORIGINAL ARTICLE.
-2. The article will have the same structure as the original article: {TITLE}\n\n{BULLET POINTS}\n\n{TABLE/LIST (this is optional)}. Ignore the curly braces.
-3. DO NOT INCLUDE MARKDOWN ATTRIBUTES IN THE TITLE. e.g. don't put # to indicate it's the header.`;
+Title Translation Example #1
+Original: Disco Elysium Devs Reunite for New Game
+Bad Translation: 디스코 엘리시움 개발자들 새 게임 위해 재결합
+Good Translation: 디스코 엘리시움 개발자들, 새로운 게임을 위해 재결합 하다
+
+Title Translation Example #2
+Original: Heroes of the Storm Drops Major March Update with Big Changes
+Bad Translation: 히어로즈 오브 더 스톰, 대규모 변화를 담은 3월 업데이트 공개
+Good Translation: 히어로즈 오브 더 스톰, 3월 대규모 업데이트 발표
+
+Title Translation Example #3
+Original: Spectre Divide Shuts Down After Six Months; Studio Closes
+Bad Translation: 스펙터 디바이드, 출시 6개월 만에 서비스 종료; 스튜디오 폐쇄
+Good Translation: 스펙터 디바이드, 출시 6개월 만에 서비스 종료 - 스튜디오 폐쇄
+
+"음슴체" Example #1
+Original: The March 12 patch introduced talent reworks for Lucio alongside balance tweaks.
+Translated: 3월 12일 패치에서 루시우의 특성 개편과 밸런스 조정이 이루어짐.
+
+"음슴체" Example #2
+Original: Multiple Brawl/Arena modes had AI pathing issues resolved.
+Translated: 여러 난투/아레나 모드의 AI 경로 설정 문제가 해결됨.
+
+"음슴체" Example #3
+Original: Beats most CPUs except older Ryzen 7 98X3D by ~1%
+Translated: 이전 라이젠 7 98X3D보다 약 1% 낮은 성능 외에는 대부분의 CPU를 압도
+
+"음슴체" Example #4
+Original: 22% lead over Intel Core Ultra 9 285K
+Translated: 인텔 코어 울트라 9 285K보다 22% 앞선 성능 기록
+
+Entity Translation Example #1
+Original: Vampire Survivors Launches Ad-Free Wiki With Dev Support
+Translated: 뱀파이어 서바이버스(Vampire Survivors), 개발자 지원을 받는 광고 없는 위키 출시
+
+Entity Translation Example #2
+Original: Steam Spring Sale Kicks Off With Big Discounts
+Translated: 스팀 봄 세일 시작, 대규모 할인 진행
+
+Entity Translation Example #3
+Original: Introduces Huntress, a spear-wielding class teased in gameplay footage.
+Translated: 게임플레이 영상에서 힌트를 줬던 창을 다루는 '사냥꾼(Huntress)' 클래스 소개.
+
+Currency Example #1
+Original: Preorders begin March 25 with Standard ($70) and Premium ($100) editions.
+Translated: 예약 판매는 3월 25일부터 시작되며 스탠다드($70)와 프리미엄($100) 에디션으로 출시됨.
+
+IMPORTANT! 
+YOU MUST ONLY RETURN THE JSON FORMATTED ARTICLE.
+DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.
+
+If you are unable to perform inspection or formatting due to the poor draft quality, JUST RETURN: <fail>`;
 
     const articlePromise = articles.map((t) =>
       chatAnthropic({
@@ -229,9 +384,15 @@ Formatting Guidelines:
       `(Took ${(endTime - startTime) / 1000}s)`,
     );
 
-    return translatedArticles.map((a) =>
-      a.find((c) => c.type === "text")?.text ?? ""
-    );
+    return translatedArticles
+      .map((a) => a.find((c) => c.type === "text")?.text ?? "")
+      .filter((v) => "<fail>" !== v.trim())
+      .map((v) => {
+        const result = unstableJsonParser<ArticleFormat>({ maybeJson: v });
+        if (!result) return;
+        return JSON.stringify(result);
+      })
+      .filter((v) => typeof v === "string");
   }
 
   static async getHotTopicsLastFiveDays() {

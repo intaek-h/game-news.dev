@@ -65,6 +65,19 @@ const Layout: FC<{ title?: string; children: unknown }> = (props) => {
 };
 
 const Article: FC<{ content: string }> = async (props) => {
+  let isJson = false;
+
+  try {
+    JSON.parse(props.content);
+    isJson = true;
+  } catch (error) {
+    isJson = false;
+  }
+
+  if (isJson) {
+    return <pre style={{ whiteSpace: "break-spaces" }}>{props.content}</pre>;
+  }
+
   let firstParagraph = props.content.split("\n\n")[0] || "";
   // Remove leading and trailing markdown emphasis symbols
   firstParagraph = firstParagraph.replace(/^\*\*|\*\*$/g, "");
