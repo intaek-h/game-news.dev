@@ -75,7 +75,33 @@ const Article: FC<{ content: string }> = async (props) => {
   }
 
   if (isJson) {
-    return <pre style={{ whiteSpace: "break-spaces" }}>{props.content}</pre>;
+    const obj = JSON.parse(props.content);
+    return (
+      <div>
+        <h2>{obj.title}</h2>
+        <ul>
+          {obj.key_points.map((item: string) => <li>{item}</li>)}
+        </ul>
+        {obj.table?.header.length
+          ? (
+            <table>
+              <thead>
+                <tr>
+                  {obj.table.header.map((item: string) => <th>{item}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {obj.table.rows.map((row: string[]) => (
+                  <tr>
+                    {row.map((item: string) => <td>{item}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+          : null}
+      </div>
+    );
   }
 
   let firstParagraph = props.content.split("\n\n")[0] || "";
