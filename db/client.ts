@@ -1,6 +1,6 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import "@std/dotenv/load";
+import "$std/dotenv/load.ts";
 
 // Get environment variables
 const TURSO_API_KEY = Deno.env.get("TURSO_API_KEY");
