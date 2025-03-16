@@ -6,6 +6,7 @@ import { config } from "~/src/config/app.ts";
 import { apiKeyAuth } from "~/src/middleware/authMiddleware.ts";
 import articleRoutes from "~/src/routes/articleRoutes.ts";
 import frontRouter from "~/src/routes/frontRoutes.tsx";
+import { ImageSearchService } from "~/src/services/imageSearchService.ts";
 
 // Create main application
 const app = new Hono();
@@ -21,24 +22,29 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 app.route("/", frontRouter);
 app.route("/api/articles", articleRoutes);
 
-app.post("/api/test", (c) => {
-  // const GEN_TIME = new Date().toISOString();
+app.post("/api/test", async (c) => {
+  const body = await c.req.json();
 
-  // const [genTime] = await db.insert(genTimes).values({
-  //   time: GEN_TIME,
-  //   createdAt: GEN_TIME,
-  // }).returning({ id: genTimes.id });
+  if (!body || !body.query) return c.json({ message: "Invalid request" }, 400);
 
-  // if (!genTime?.id) {
-  //   return c.json({ message: "Failed to insert generation time" }, 500);
-  // }
+  const openVerse = await ImageSearchService.SearchOpenverseImages(body.query);
+  openVerse.results;
+  const google = await ImageSearchService.SearchGoogleImages(body.query);
 
-  // const result = await ArticleController.WriteArticles({
-  //   topic: "Nippon Ichi Reveals Five New Games",
-  //   gid: genTime.id,
-  // });
-
-  return c.json({});
+  return c.json({
+    google: google.items.map((v) => ({
+      imgUrl: v.link,
+      creditUrl: v.displayLink,
+      attribution: v.snippet,
+      license: "cc_0",
+    })),
+    openVerse: openVerse.results.map((v) => ({
+      imgUrl: v.url,
+      creditUrl: v.creator_url,
+      attribution: v.attribution,
+      license: v.license,
+    })),
+  });
 });
 
 // Start the server

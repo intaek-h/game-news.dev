@@ -1,5 +1,6 @@
 import { OpenVerseToken } from "~/src/types/openVerse.ts";
 import type { OpenVerseImages } from "~/src/types/openVerse.ts";
+import { GoogleImageSearchResponse } from "~/src/types/google.ts";
 
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_SEARCH_API_KEY") ?? "";
 const GOOGLE_SEARCH_ENGINE_ID = Deno.env.get("GOOGLE_SEARCH_ENGINE_ID") ?? "";
@@ -31,7 +32,7 @@ export class ImageSearchService {
     urlParams.append("imgSize", "xlarge");
     urlParams.append(
       "rights",
-      "cc_publicdomain,cc_attribute,cc_sharealike,cc_noncommercial,cc_nonderived",
+      "cc_publicdomain,cc_attribute,cc_sharealike,cc_nonderived",
     );
     const response = await fetch(
       `${GOOGLE_SEARCH_ENDPOINT}?${urlParams}`,
@@ -39,7 +40,7 @@ export class ImageSearchService {
         method: "GET",
       },
     );
-    const json = await response.json();
+    const json = await response.json() as GoogleImageSearchResponse;
     return json;
   }
 
