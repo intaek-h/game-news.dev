@@ -1,4 +1,4 @@
-import { HotTopicMsg } from "~/src/types/kv.ts";
+import { HotTopicMsg } from "~/types/kv.ts";
 
 export class MessageGuard {
   static IsHotTopic(msg: unknown): msg is HotTopicMsg {

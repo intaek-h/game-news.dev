@@ -1,8 +1,5 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import {
-  ArticleEntities,
-  ArticleFormat,
-} from "../../src/types/articleFormat.ts";
+import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
 
 export const articles = sqliteTable("articles", {
   id: integer().primaryKey({ autoIncrement: true }),

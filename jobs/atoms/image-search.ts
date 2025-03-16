@@ -1,6 +1,6 @@
-import { OpenVerseToken } from "~/src/types/openVerse.ts";
-import type { OpenVerseImages } from "~/src/types/openVerse.ts";
-import { GoogleImageSearchResponse } from "~/src/types/google.ts";
+import { OpenVerseToken } from "~/types/openVerse.ts";
+import type { OpenVerseImages } from "~/types/openVerse.ts";
+import { GoogleImageSearchResponse } from "~/types/google.ts";
 
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_SEARCH_API_KEY") ?? "";
 const GOOGLE_SEARCH_ENGINE_ID = Deno.env.get("GOOGLE_SEARCH_ENGINE_ID") ?? "";
@@ -22,7 +22,7 @@ if (!OPENVERSE_API_KEY || !OPENVERSE_CLIENT_ID || !OPENVERSE_ENDPOINT) {
   );
 }
 
-export class ImageSearchService {
+export class ImageSearchAtom {
   static async SearchGoogleImages(query: string) {
     const urlParams = new URLSearchParams();
     urlParams.append("q", query);
@@ -45,7 +45,7 @@ export class ImageSearchService {
   }
 
   static async SearchOpenverseImages(query: string) {
-    const token = await ImageSearchService.GetOpenVerseToken();
+    const token = await this.GetOpenVerseToken();
 
     const params = new URLSearchParams();
     params.append("q", query);

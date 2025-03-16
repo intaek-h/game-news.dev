@@ -38,7 +38,7 @@ export interface OpenVerseImage {
   thumbnail: string;
   detail_url: string;
   related_url: string;
-  unstable__sensitivity: any[];
+  unstable__sensitivity: unknown[];
 }
 
 export interface OpenVerseTag {

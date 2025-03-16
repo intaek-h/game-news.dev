@@ -1,4 +1,3 @@
-import { ArticleService } from "~/src/services/articleService.ts";
 import { db } from "~/db/client.ts";
 import {
   articles,
@@ -9,14 +8,17 @@ import {
   translations,
 } from "~/db/migrations/schema.ts";
 import { kv } from "~/kv.ts";
-import { ArticleFormat } from "~/src/types/articleFormat.ts";
+import { ArticleFormat } from "~/types/articleFormat.ts";
+import { ScrapeAtom } from "~/jobs/atoms/scrape.ts";
+import { ArticleAtom } from "~/jobs/atoms/article.ts";
+import { ArticleAiAtom } from "~/jobs/atoms/article-ai.ts";
 
-export class ArticleController {
+export class ArticleCompound {
   static async EnqueueHotTopics(): Promise<
     { message: string; statusCode: number; data?: unknown }
   > {
     try {
-      const redditTopics = await ArticleService.scrapeRedditTopics();
+      const redditTopics = await ScrapeAtom.ScrapeRedditTopics();
 
       if (!redditTopics || redditTopics.total_count === 0) {
         return { message: "No articles found", statusCode: 404 };
@@ -46,10 +48,10 @@ export class ArticleController {
       }
 
       // only select hot topics from the last 5 days
-      const hotTopicsLastFiveDays = await ArticleService
-        .getHotTopicsLastFiveDays();
+      const hotTopicsLastFiveDays = await ArticleAtom
+        .GetHotTopicsLastFiveDays();
 
-      const filteredTopicsStr = await ArticleService.filterRawTopics({
+      const filteredTopicsStr = await ArticleAiAtom.FilterHotTopics({
         rawTopics: topics,
         recentTopics: hotTopicsLastFiveDays,
       });
@@ -92,13 +94,13 @@ export class ArticleController {
   static async WriteArticles(p: { topic: string; gid: number }) {
     const { topic, gid } = p;
 
-    const [aiArticle] = await ArticleService.writeArticles([topic]);
+    const [aiArticle] = await ArticleAiAtom.WriteArticles([topic]);
 
     if (!aiArticle) {
       return console.error("Failed to write articles");
     }
 
-    const [inspectedArticle] = await ArticleService.finalArticleInspection(
+    const [inspectedArticle] = await ArticleAiAtom.InspectArticle(
       [aiArticle.reply],
     );
 
@@ -106,11 +108,11 @@ export class ArticleController {
       return console.error("Failed to inspect articles");
     }
 
-    const entities = await ArticleService.ExtractEntitiesFromArticle(
+    const entities = await ArticleAiAtom.ExtractEntities(
       inspectedArticle,
     );
 
-    const [translatedArticle] = await ArticleService.translateArticles(
+    const [translatedArticle] = await ArticleAiAtom.TranslateArticles(
       [inspectedArticle],
     );
 

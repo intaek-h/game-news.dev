@@ -1,56 +1,13 @@
-import { db } from "~/db/client.ts";
-import { articles, hotTopics, translations } from "~/db/migrations/schema.ts";
-import { and, desc, eq, gte } from "drizzle-orm";
-import { RedditScrapingResult } from "~/src/models/redditScraper.ts";
 import {
   chatAnthropicHaiku,
   chatAnthropicSonnet,
-} from "~/src/utils/anthropic.ts";
-import { chatPerplexity } from "~/src/utils/perplexity.ts";
-import { unstableJsonParser } from "~/src/utils/json.ts";
-import { ArticleEntities, ArticleFormat } from "~/src/types/articleFormat.ts";
+} from "~/jobs/utils/anthropic.ts";
+import { chatPerplexity } from "~/jobs/utils/perplexity.ts";
+import { unstableJsonParser } from "~/jobs/utils/json.ts";
+import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
 
-const INTAEK_API_KEY = Deno.env.get("INTAEK_API_KEY");
-
-export class ArticleService {
-  // Get a single article by ID
-  static async getArticleById(id: number) {
-    const results = await db.select().from(articles).where(eq(articles.id, id));
-    return results[0];
-  }
-
-  static scrapeRedditTopics = async () => {
-    const startTime = performance.now();
-
-    const urlParams = new URLSearchParams();
-    urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "30");
-    urlParams.append("min_score", "3");
-    urlParams.append("time_window", "86400");
-    const response = await fetch(
-      `https://subreddit-scraper-production.up.railway.app/api/topics?${urlParams}`,
-      {
-        method: "GET",
-        headers: {
-          "X-API-KEY": INTAEK_API_KEY ?? "",
-        },
-      },
-    );
-
-    const data = await response.json() as RedditScrapingResult;
-    const endTime = performance.now();
-
-    console.info(
-      "\x1b[32m",
-      `[...] Raw Topic Scraping Finished (${data.total_count}).`,
-      "\x1b[0m",
-      `(Took ${(endTime - startTime) / 1000}s)`,
-    );
-
-    return data;
-  };
-
-  static filterRawTopics = async (
+export class ArticleAiAtom {
+  static FilterHotTopics = async (
     d: { rawTopics: string[]; recentTopics: string[] },
   ) => {
     const { rawTopics, recentTopics } = d;
@@ -115,7 +72,7 @@ export class ArticleService {
     return deduplicatedTopicText ?? "";
   };
 
-  static writeArticles = async (topics: string[]) => {
+  static WriteArticles = async (topics: string[]) => {
     const startTime = performance.now();
 
     const articlePromise = topics.map((t) =>
@@ -198,7 +155,7 @@ IMPORTANT! DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.`,
     return articles.filter((a) => !!a);
   };
 
-  static async finalArticleInspection(articles: string[]) {
+  static async InspectArticle(articles: string[]) {
     const startTime = performance.now();
     const systemPrompt =
       `You are an AI assistant to take charge of the final inspection of draft news articles before being published.
@@ -298,76 +255,76 @@ If you are unable to perform inspection or formatting due to the poor draft qual
     return result;
   }
 
-  static async translateArticles(articles: string[]) {
+  static async TranslateArticles(articles: string[]) {
     const startTime = performance.now();
     const systemPrompt =
       `You are an expert Korean translator with deep cultural knowledge of both English and Korean. 
-You will be given one article on Gaming that is in the JSON format.
-
-The ARTICLE FORMAT: {"title":"","key_points":[],"table":{header:[],rows:[]}}
-
-Read the instructions below and return the Korean translated article in the SAME FORMAT.
-
-Translation Guidelines:
-- Do not translate sentences directly word-for-word. Focus on conveying the meaning naturally in Korean.
-- Preserve the original tone and style, which is to keep the sentences SIMPLE.
-- For the each key points, use "음슴체" for readability.
-- When translating entities, such as companies, game titles, characters, use established Korean terminology rather than literal translations. It is recommended to put the original English name in parenthesis if you are unsure.
-- Do not exchange the currency to KRW. Just use the original currency.
-- If you see "\\n" in the text, PRESERVE IT AS IS because it is for JSON parsing.
-
-Title Translation Example #1
-Original: Disco Elysium Devs Reunite for New Game
-Bad Translation: 디스코 엘리시움 개발자들 새 게임 위해 재결합
-Good Translation: 디스코 엘리시움 개발자들, 새로운 게임을 위해 재결합 하다
-
-Title Translation Example #2
-Original: Heroes of the Storm Drops Major March Update with Big Changes
-Bad Translation: 히어로즈 오브 더 스톰, 대규모 변화를 담은 3월 업데이트 공개
-Good Translation: 히어로즈 오브 더 스톰, 3월 대규모 업데이트 발표
-
-Title Translation Example #3
-Original: Spectre Divide Shuts Down After Six Months; Studio Closes
-Bad Translation: 스펙터 디바이드, 출시 6개월 만에 서비스 종료; 스튜디오 폐쇄
-Good Translation: 스펙터 디바이드, 출시 6개월 만에 서비스 종료 - 스튜디오 폐쇄
-
-"음슴체" Example #1
-Original: The March 12 patch introduced talent reworks for Lucio alongside balance tweaks.
-Translated: 3월 12일 패치에서 루시우의 특성 개편과 밸런스 조정이 이루어짐.
-
-"음슴체" Example #2
-Original: Multiple Brawl/Arena modes had AI pathing issues resolved.
-Translated: 여러 난투/아레나 모드의 AI 경로 설정 문제가 해결됨.
-
-"음슴체" Example #3
-Original: Beats most CPUs except older Ryzen 7 98X3D by ~1%
-Translated: 이전 라이젠 7 98X3D보다 약 1% 낮은 성능 외에는 대부분의 CPU를 압도
-
-"음슴체" Example #4
-Original: 22% lead over Intel Core Ultra 9 285K
-Translated: 인텔 코어 울트라 9 285K보다 22% 앞선 성능 기록
-
-Entity Translation Example #1
-Original: Vampire Survivors Launches Ad-Free Wiki With Dev Support
-Translated: 뱀파이어 서바이버스(Vampire Survivors), 개발자 지원을 받는 광고 없는 위키 출시
-
-Entity Translation Example #2
-Original: Steam Spring Sale Kicks Off With Big Discounts
-Translated: 스팀 봄 세일 시작, 대규모 할인 진행
-
-Entity Translation Example #3
-Original: Introduces Huntress, a spear-wielding class teased in gameplay footage.
-Translated: 게임플레이 영상에서 힌트를 줬던 창을 다루는 '사냥꾼(Huntress)' 클래스 소개.
-
-Currency Example #1
-Original: Preorders begin March 25 with Standard ($70) and Premium ($100) editions.
-Translated: 예약 판매는 3월 25일부터 시작되며 스탠다드($70)와 프리미엄($100) 에디션으로 출시됨.
-
-IMPORTANT! 
-YOU MUST ONLY RETURN THE JSON FORMATTED ARTICLE.
-DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.
-
-If you are unable to perform inspection or formatting due to the poor draft quality, JUST RETURN: <fail>`;
+  You will be given one article on Gaming that is in the JSON format.
+  
+  The ARTICLE FORMAT: {"title":"","key_points":[],"table":{header:[],rows:[]}}
+  
+  Read the instructions below and return the Korean translated article in the SAME FORMAT.
+  
+  Translation Guidelines:
+  - Do not translate sentences directly word-for-word. Focus on conveying the meaning naturally in Korean.
+  - Preserve the original tone and style, which is to keep the sentences SIMPLE.
+  - For the each key points, use "음슴체" for readability.
+  - When translating entities, such as companies, game titles, characters, use established Korean terminology rather than literal translations. It is recommended to put the original English name in parenthesis if you are unsure.
+  - Do not exchange the currency to KRW. Just use the original currency.
+  - If you see "\\n" in the text, PRESERVE IT AS IS because it is for JSON parsing.
+  
+  Title Translation Example #1
+  Original: Disco Elysium Devs Reunite for New Game
+  Bad Translation: 디스코 엘리시움 개발자들 새 게임 위해 재결합
+  Good Translation: 디스코 엘리시움 개발자들, 새로운 게임을 위해 재결합 하다
+  
+  Title Translation Example #2
+  Original: Heroes of the Storm Drops Major March Update with Big Changes
+  Bad Translation: 히어로즈 오브 더 스톰, 대규모 변화를 담은 3월 업데이트 공개
+  Good Translation: 히어로즈 오브 더 스톰, 3월 대규모 업데이트 발표
+  
+  Title Translation Example #3
+  Original: Spectre Divide Shuts Down After Six Months; Studio Closes
+  Bad Translation: 스펙터 디바이드, 출시 6개월 만에 서비스 종료; 스튜디오 폐쇄
+  Good Translation: 스펙터 디바이드, 출시 6개월 만에 서비스 종료 - 스튜디오 폐쇄
+  
+  "음슴체" Example #1
+  Original: The March 12 patch introduced talent reworks for Lucio alongside balance tweaks.
+  Translated: 3월 12일 패치에서 루시우의 특성 개편과 밸런스 조정이 이루어짐.
+  
+  "음슴체" Example #2
+  Original: Multiple Brawl/Arena modes had AI pathing issues resolved.
+  Translated: 여러 난투/아레나 모드의 AI 경로 설정 문제가 해결됨.
+  
+  "음슴체" Example #3
+  Original: Beats most CPUs except older Ryzen 7 98X3D by ~1%
+  Translated: 이전 라이젠 7 98X3D보다 약 1% 낮은 성능 외에는 대부분의 CPU를 압도
+  
+  "음슴체" Example #4
+  Original: 22% lead over Intel Core Ultra 9 285K
+  Translated: 인텔 코어 울트라 9 285K보다 22% 앞선 성능 기록
+  
+  Entity Translation Example #1
+  Original: Vampire Survivors Launches Ad-Free Wiki With Dev Support
+  Translated: 뱀파이어 서바이버스(Vampire Survivors), 개발자 지원을 받는 광고 없는 위키 출시
+  
+  Entity Translation Example #2
+  Original: Steam Spring Sale Kicks Off With Big Discounts
+  Translated: 스팀 봄 세일 시작, 대규모 할인 진행
+  
+  Entity Translation Example #3
+  Original: Introduces Huntress, a spear-wielding class teased in gameplay footage.
+  Translated: 게임플레이 영상에서 힌트를 줬던 창을 다루는 '사냥꾼(Huntress)' 클래스 소개.
+  
+  Currency Example #1
+  Original: Preorders begin March 25 with Standard ($70) and Premium ($100) editions.
+  Translated: 예약 판매는 3월 25일부터 시작되며 스탠다드($70)와 프리미엄($100) 에디션으로 출시됨.
+  
+  IMPORTANT! 
+  YOU MUST ONLY RETURN THE JSON FORMATTED ARTICLE.
+  DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.
+  
+  If you are unable to perform inspection or formatting due to the poor draft quality, JUST RETURN: <fail>`;
 
     const articlePromise = articles.map((t) =>
       chatAnthropicSonnet({
@@ -398,7 +355,7 @@ If you are unable to perform inspection or formatting due to the poor draft qual
       .filter((v) => typeof v === "string");
   }
 
-  static async ExtractEntitiesFromArticle(article: string) {
+  static async ExtractEntities(article: string) {
     const startTime = performance.now();
     const result = await chatAnthropicHaiku({
       systemP:
@@ -455,49 +412,5 @@ IMPORTANT! DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.`,
     }
 
     return entities;
-  }
-
-  static async getHotTopicsLastFiveDays() {
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-    const topics = await db.select().from(hotTopics).where(
-      gte(hotTopics.createdAt, fiveDaysAgo.toISOString()),
-    );
-
-    const strs: string[] = [];
-    topics.forEach((t) => {
-      const json = JSON.parse(t.topics ?? "[]");
-      strs.push(...json as string);
-    });
-    return strs;
-  }
-
-  static async getRecentArticles(languageCode: string = "en") {
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-
-    const articlesWithTranslations = await db
-      .select({
-        id: articles.id,
-        createdAt: articles.createdAt,
-        citations: articles.citations,
-        entities: articles.entities,
-        thumbnail: articles.thumbnail,
-        article: translations.article,
-      })
-      .from(articles)
-      .innerJoin(
-        translations,
-        eq(translations.articleId, articles.id),
-      )
-      .where(
-        and(
-          gte(articles.createdAt, fiveDaysAgo.toISOString()),
-          eq(translations.languageCode, languageCode),
-        ),
-      )
-      .orderBy(desc(articles.createdAt));
-
-    return articlesWithTranslations;
   }
 }
