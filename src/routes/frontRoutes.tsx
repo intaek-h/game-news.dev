@@ -77,7 +77,7 @@ const Article: FC<{ content: string }> = async (props) => {
   if (isJson) {
     const obj = JSON.parse(props.content);
     return (
-      <div>
+      <article>
         <h2>{obj.title}</h2>
         <ul>
           {obj.key_points.map((item: string) => <li>{item}</li>)}
@@ -100,7 +100,7 @@ const Article: FC<{ content: string }> = async (props) => {
             </table>
           )
           : null}
-      </div>
+      </article>
     );
   }
 
@@ -112,7 +112,7 @@ const Article: FC<{ content: string }> = async (props) => {
       props.content.split("\n\n").slice(1).join("\n\n"),
   );
 
-  return <div dangerouslySetInnerHTML={{ __html: text }} />;
+  return <article dangerouslySetInnerHTML={{ __html: text }} />;
 };
 
 // Define routes
