@@ -1,11 +1,14 @@
+import "~/cron.ts";
+
 import { Hono } from "@hono/hono";
 import { logger } from "@hono/hono/logger";
 import { config } from "~/src/config/app.ts";
 import { apiKeyAuth } from "~/src/middleware/authMiddleware.ts";
 import articleRoutes from "~/src/routes/articleRoutes.ts";
 import frontRouter from "~/src/routes/frontRoutes.tsx";
-import "~/cron.ts";
-import { ArticleService } from "~/src/services/articleService.ts";
+import { ArticleController } from "~/src/controllers/articleController.ts";
+import { db } from "~/db/client.ts";
+import { genTimes } from "~/db/migrations/schema.ts";
 
 // Create main application
 const app = new Hono();
@@ -22,27 +25,23 @@ app.route("/", frontRouter);
 app.route("/api/articles", articleRoutes);
 
 app.post("/api/test", async (c) => {
-  const [aiArticle] = await ArticleService.writeArticles([
-    "Silent Hill Transmission set for March 2025 with Silent Hill f details",
-  ]);
+  const GEN_TIME = new Date().toISOString();
 
-  if (!aiArticle) {
-    return console.error("Failed to write articles");
+  const [genTime] = await db.insert(genTimes).values({
+    time: GEN_TIME,
+    createdAt: GEN_TIME,
+  }).returning({ id: genTimes.id });
+
+  if (!genTime?.id) {
+    return c.json({ message: "Failed to insert generation time" }, 500);
   }
 
-  const [inspectedArticle] = await ArticleService.finalArticleInspection(
-    [aiArticle.reply],
-  );
+  const result = await ArticleController.WriteArticles({
+    topic: "Nippon Ichi Reveals Five New Games",
+    gid: genTime.id,
+  });
 
-  if (!inspectedArticle) {
-    return console.error("Failed to inspect articles");
-  }
-
-  const [translatedArticle] = await ArticleService.translateArticles(
-    [inspectedArticle],
-  );
-
-  return c.json({ aiArticle, inspectedArticle, translatedArticle });
+  return c.json({ result: result ?? [] });
 });
 
 // Start the server

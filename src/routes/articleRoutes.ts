@@ -7,7 +7,7 @@ const articleRouter = new Hono();
 // Define routes
 articleRouter.post(
   "/generate",
-  async (c) => c.json(await ArticleController.generateArticles()),
+  async (c) => c.json(await ArticleController.EnqueueHotTopics()),
 );
 
 export default articleRouter;

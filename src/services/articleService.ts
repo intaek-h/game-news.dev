@@ -1,6 +1,6 @@
 import { db } from "~/db/client.ts";
-import { articles, hotTopics } from "~/db/migrations/schema.ts";
-import { desc, eq, gte } from "drizzle-orm";
+import { articles, hotTopics, translations } from "~/db/migrations/schema.ts";
+import { and, desc, eq, gte } from "drizzle-orm";
 import { RedditScrapingResult } from "~/src/models/redditScraper.ts";
 import { chatAnthropic } from "~/src/utils/anthropic.ts";
 import { chatPerplexity } from "~/src/utils/perplexity.ts";
@@ -21,7 +21,7 @@ export class ArticleService {
 
     const urlParams = new URLSearchParams();
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "30");
+    urlParams.append("limit", "4");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
     const response = await fetch(
@@ -410,11 +410,32 @@ If you are unable to perform inspection or formatting due to the poor draft qual
     return strs;
   }
 
-  static getRecentArticles() {
+  static async getRecentArticles(languageCode: string = "en") {
     const fiveDaysAgo = new Date();
     fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-    return db.select().from(articles).where(
-      gte(articles.createdAt, fiveDaysAgo.toISOString()),
-    ).orderBy(desc(articles.createdAt));
+
+    const articlesWithTranslations = await db
+      .select({
+        id: articles.id,
+        createdAt: articles.createdAt,
+        citations: articles.citations,
+        entities: articles.entities,
+        thumbnail: articles.thumbnail,
+        article: translations.article,
+      })
+      .from(articles)
+      .innerJoin(
+        translations,
+        eq(translations.articleId, articles.id),
+      )
+      .where(
+        and(
+          gte(articles.createdAt, fiveDaysAgo.toISOString()),
+          eq(translations.languageCode, languageCode),
+        ),
+      )
+      .orderBy(desc(articles.createdAt));
+
+    return articlesWithTranslations;
   }
 }

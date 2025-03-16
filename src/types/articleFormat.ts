@@ -6,3 +6,9 @@ export interface ArticleFormat {
     rows: string[][];
   };
 }
+
+export interface ArticleEntities {
+  companies: string[];
+  people: string[];
+  products: string[];
+}

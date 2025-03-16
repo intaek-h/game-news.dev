@@ -1,10 +1,18 @@
 import { ArticleService } from "~/src/services/articleService.ts";
 import { db } from "~/db/client.ts";
-import { genTimes, hotTopics, rawTopics } from "~/db/migrations/schema.ts";
+import {
+  articles,
+  genTimes,
+  hotTopics,
+  languages,
+  rawTopics,
+  translations,
+} from "~/db/migrations/schema.ts";
 import { kv } from "~/kv.ts";
+import { ArticleFormat } from "~/src/types/articleFormat.ts";
 
 export class ArticleController {
-  static async generateArticles(): Promise<
+  static async EnqueueHotTopics(): Promise<
     { message: string; statusCode: number; data?: unknown }
   > {
     try {
@@ -75,42 +83,62 @@ export class ArticleController {
         statusCode: 200,
         data: insertedHotTopics,
       };
-
-      // const aiArticles = await ArticleService.writeArticles(filteredTopics);
-
-      // if (!aiArticles || aiArticles.length === 0) {
-      //   return c.json({ error: "Failed to write articles" }, 500);
-      // }
-
-      // const inspectedArticles = await ArticleService.finalArticleInspection(
-      //   aiArticles.map((a) => a.reply),
-      // );
-
-      // if (!inspectedArticles || inspectedArticles.length === 0) {
-      //   return c.json({ error: "Failed to inspect articles" }, 500);
-      // }
-
-      // const translatedArticles = await ArticleService.translateArticles(
-      //   inspectedArticles,
-      // );
-
-      // const finalArticles = await db.insert(articles).values(
-      //   inspectedArticles.filter((v) => typeof v === "string").map((a, i) => ({
-      //     article: a,
-      //     gid: genTime.id,
-      //     createdAt: GEN_TIME,
-      //     articleKor: translatedArticles[i],
-      //   })),
-      // ).returning({ article: articles.article, id: articles.id });
-
-      // if (!finalArticles || finalArticles.length === 0) {
-      //   return c.json({ error: "Failed to insert articles" }, 500);
-      // }
-
-      // return c.json(finalArticles);
     } catch (error) {
       console.error("Error generating articles:", error);
       return { message: "Failed to generate articles", statusCode: 500 };
     }
+  }
+
+  static async WriteArticles(p: { topic: string; gid: number }) {
+    const { topic, gid } = p;
+
+    const [aiArticle] = await ArticleService.writeArticles([topic]);
+
+    if (!aiArticle) {
+      return console.error("Failed to write articles");
+    }
+
+    const [inspectedArticle] = await ArticleService.finalArticleInspection(
+      [aiArticle.reply],
+    );
+
+    if (!inspectedArticle) {
+      return console.error("Failed to inspect articles");
+    }
+
+    const [translatedArticle] = await ArticleService.translateArticles(
+      [inspectedArticle],
+    );
+
+    const [caconicalArticle] = await db.insert(articles).values({
+      gid: gid,
+      citations: aiArticle.citations,
+      createdAt: new Date().toISOString(),
+    }).returning({ id: articles.id });
+
+    const languageCodes = await db.select().from(languages).all();
+
+    const result = await db
+      .insert(translations)
+      .values([
+        {
+          articleId: caconicalArticle.id,
+          article: JSON.parse(translatedArticle) as unknown as ArticleFormat,
+          createdAt: new Date().toISOString(),
+          languageCode: languageCodes.find((l) => l.name === "korean")?.code!,
+        },
+        {
+          articleId: caconicalArticle.id,
+          article: JSON.parse(inspectedArticle) as unknown as ArticleFormat,
+          createdAt: new Date().toISOString(),
+          languageCode: languageCodes.find((l) => l.name === "english")?.code!,
+        },
+      ]).returning({
+        articleId: translations.articleId,
+        translationId: translations.id,
+        languageCode: translations.languageCode,
+      });
+
+    return result;
   }
 }
