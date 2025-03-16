@@ -18,12 +18,12 @@ export function ArticleViewer(props: { content: ArticleFormat }) {
       {props.content.table?.header.length
         ? (
           <table className="table-fixed border-separate border border-gray-400 [&_td]:border [&_td]:border-gray-300">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-gray-50">
               <tr>
                 {props.content.table.header.map((item, i) => (
                   <th
                     key={i}
-                    className="border border-gray-300 p-2 text-left font-semibold text-gray-900 dark:border-gray-600 dark:text-gray-200"
+                    className="border border-gray-300 p-2 text-left font-semibold text-gray-900"
                   >
                     {item}
                   </th>
@@ -37,7 +37,7 @@ export function ArticleViewer(props: { content: ArticleFormat }) {
                   {row.map((item, i) => (
                     <td
                       key={i}
-                      className="border border-gray-300 p-1 pl-2 text-gray-600 dark:border-gray-700 dark:text-gray-400"
+                      className="border border-gray-300 p-1 pl-2 text-gray-600"
                     >
                       {item}
                     </td>
@@ -45,7 +45,7 @@ export function ArticleViewer(props: { content: ArticleFormat }) {
                 </tr>
               ))}
             </tbody>
-            <caption class="caption-bottom pt-1 italic text-xs text-gray-500 dark:text-gray-400">
+            <caption class="caption-bottom pt-1 italic text-xs text-gray-500">
               정확한 정보임을 보장하지 않습니다.
             </caption>
           </table>
