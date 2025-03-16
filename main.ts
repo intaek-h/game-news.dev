@@ -6,9 +6,6 @@ import { config } from "~/src/config/app.ts";
 import { apiKeyAuth } from "~/src/middleware/authMiddleware.ts";
 import articleRoutes from "~/src/routes/articleRoutes.ts";
 import frontRouter from "~/src/routes/frontRoutes.tsx";
-import { ArticleController } from "~/src/controllers/articleController.ts";
-import { db } from "~/db/client.ts";
-import { genTimes } from "~/db/migrations/schema.ts";
 
 // Create main application
 const app = new Hono();
@@ -24,24 +21,24 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 app.route("/", frontRouter);
 app.route("/api/articles", articleRoutes);
 
-app.post("/api/test", async (c) => {
-  const GEN_TIME = new Date().toISOString();
+app.post("/api/test", (c) => {
+  // const GEN_TIME = new Date().toISOString();
 
-  const [genTime] = await db.insert(genTimes).values({
-    time: GEN_TIME,
-    createdAt: GEN_TIME,
-  }).returning({ id: genTimes.id });
+  // const [genTime] = await db.insert(genTimes).values({
+  //   time: GEN_TIME,
+  //   createdAt: GEN_TIME,
+  // }).returning({ id: genTimes.id });
 
-  if (!genTime?.id) {
-    return c.json({ message: "Failed to insert generation time" }, 500);
-  }
+  // if (!genTime?.id) {
+  //   return c.json({ message: "Failed to insert generation time" }, 500);
+  // }
 
-  const result = await ArticleController.WriteArticles({
-    topic: "Nippon Ichi Reveals Five New Games",
-    gid: genTime.id,
-  });
+  // const result = await ArticleController.WriteArticles({
+  //   topic: "Nippon Ichi Reveals Five New Games",
+  //   gid: genTime.id,
+  // });
 
-  return c.json({ result: result ?? [] });
+  return c.json({});
 });
 
 // Start the server

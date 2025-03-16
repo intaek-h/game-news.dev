@@ -106,6 +106,10 @@ export class ArticleController {
       return console.error("Failed to inspect articles");
     }
 
+    const entities = await ArticleService.ExtractEntitiesFromArticle(
+      inspectedArticle,
+    );
+
     const [translatedArticle] = await ArticleService.translateArticles(
       [inspectedArticle],
     );
@@ -113,6 +117,7 @@ export class ArticleController {
     const [caconicalArticle] = await db.insert(articles).values({
       gid: gid,
       citations: aiArticle.citations,
+      entities: entities,
       createdAt: new Date().toISOString(),
     }).returning({ id: articles.id });
 

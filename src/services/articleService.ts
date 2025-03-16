@@ -2,10 +2,13 @@ import { db } from "~/db/client.ts";
 import { articles, hotTopics, translations } from "~/db/migrations/schema.ts";
 import { and, desc, eq, gte } from "drizzle-orm";
 import { RedditScrapingResult } from "~/src/models/redditScraper.ts";
-import { chatAnthropic } from "~/src/utils/anthropic.ts";
+import {
+  chatAnthropicHaiku,
+  chatAnthropicSonnet,
+} from "~/src/utils/anthropic.ts";
 import { chatPerplexity } from "~/src/utils/perplexity.ts";
 import { unstableJsonParser } from "~/src/utils/json.ts";
-import { ArticleFormat } from "~/src/types/articleFormat.ts";
+import { ArticleEntities, ArticleFormat } from "~/src/types/articleFormat.ts";
 
 const INTAEK_API_KEY = Deno.env.get("INTAEK_API_KEY");
 
@@ -21,7 +24,7 @@ export class ArticleService {
 
     const urlParams = new URLSearchParams();
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "4");
+    urlParams.append("limit", "30");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
     const response = await fetch(
@@ -53,7 +56,7 @@ export class ArticleService {
     const { rawTopics, recentTopics } = d;
     const startTime = performance.now();
 
-    const informativeTopics = await chatAnthropic({
+    const informativeTopics = await chatAnthropicSonnet({
       systemP: [
         "You are an AI assistant trained to identify clusters of trending topics in the gaming world right now.",
         "Extract the noteworthy and informative topics from the given pile of text data.",
@@ -75,7 +78,7 @@ export class ArticleService {
       return informativeTopicText;
     }
 
-    const deduplicatedTopics = await chatAnthropic({
+    const deduplicatedTopics = await chatAnthropicSonnet({
       systemP: [
         "You are an AI assistant trained to filter duplicate topics before writing articles.",
         'You will be given the "Recent Article Topics" and "New Topics" to write articles about.',
@@ -265,7 +268,7 @@ DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.
 If you are unable to perform inspection or formatting due to the poor draft quality, JUST RETURN: <fail>`;
 
     const articlePromise = articles.map((t) =>
-      chatAnthropic({
+      chatAnthropicSonnet({
         systemP: systemPrompt,
         message: t,
       })
@@ -367,7 +370,7 @@ DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.
 If you are unable to perform inspection or formatting due to the poor draft quality, JUST RETURN: <fail>`;
 
     const articlePromise = articles.map((t) =>
-      chatAnthropic({
+      chatAnthropicSonnet({
         systemP: systemPrompt,
         message: t,
       })
@@ -393,6 +396,65 @@ If you are unable to perform inspection or formatting due to the poor draft qual
         return JSON.stringify(result);
       })
       .filter((v) => typeof v === "string");
+  }
+
+  static async ExtractEntitiesFromArticle(article: string) {
+    const startTime = performance.now();
+    const result = await chatAnthropicHaiku({
+      systemP:
+        `You are an AI assistant trained to find the entities from a given article.
+The types of entities you have to find are, 'company', 'person name' and 'product name'.
+It is normal if you don't find any entity from the article.
+
+Your answer MUST BE RETURNED IN A JSON: {"companies":[],"people":[],"products":[]}
+
+Example #1:
+Article: "Heroes of the Storm Drops Major March Update with Big Changes"
+Answer: {"companies":[],"people":[],"products":["Heroes of the Storm"]}
+
+Example #2:
+Article: "PS Portal Now Streams Classic PS1 & PSP Games for Premium Members"
+Answer: {"companies":[],"people":[],"products":["PS Portal", "PS1", "PSP"]}
+
+Example #3:
+Article: "Vampire Survivors Launches Ad-Free Wiki With Dev Support"
+Answer: {"companies":[],"people":[],"products":["Vampire Survivors"]}
+
+Example #4:
+Article: "Steam Spring Sale Kicks Off With Big Discounts"
+Answer: {"companies":["Steam"],"people":[],"products":[]}
+
+IMPORTANT! DO NOT ADD ANY TEXT OTHER THAN THE JSON IN YOUR REPLY.`,
+      message: article,
+    });
+
+    const endTime = performance.now();
+
+    const reply = result.find((c) => c.type === "text")?.text;
+
+    const entities = unstableJsonParser<ArticleEntities>({
+      maybeJson: reply ?? "",
+    });
+
+    console.info(
+      "\x1b[32m",
+      `[...] AI Entity Extraction Finished.`,
+      "\x1b[0m",
+      `(Took ${(endTime - startTime) / 1000}s)`,
+    );
+
+    if (
+      !entities ||
+      (
+        entities.companies.length === 0 &&
+        entities.people.length === 0 &&
+        entities.products.length === 0
+      )
+    ) {
+      return;
+    }
+
+    return entities;
   }
 
   static async getHotTopicsLastFiveDays() {
