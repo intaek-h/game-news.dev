@@ -33,7 +33,10 @@ export default async function Home(_req: Request, ctx: RouteContext) {
         i,
       ) => (
         <div>
-          <ArticleViewer content={article.article!} />
+          <ArticleViewer
+            content={article.article!}
+            thumbnail={article.thumbnail ?? ""}
+          />
           {i !== recentArticles.length - 1 ? <hr className="my-6" /> : null}
         </div>
       ))}

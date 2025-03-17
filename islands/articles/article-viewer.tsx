@@ -1,9 +1,21 @@
 import { ArticleFormat } from "~/types/articleFormat.ts";
 
-export function ArticleViewer(props: { content: ArticleFormat }) {
+export function ArticleViewer(
+  props: { content: ArticleFormat; thumbnail: string },
+) {
   return (
     <article>
       <h2 className="text-2xl font-bold mb-4">{props.content.title}</h2>
+      {props.thumbnail
+        ? (
+          <img
+            src={props.thumbnail}
+            alt=""
+            className="w-full h-48 object-contain rounded-sm mb-4 shadow-sm"
+            loading="lazy"
+          />
+        )
+        : null}
       <ul className="mb-4">
         {props.content.key_points.map((item, i) => (
           <li

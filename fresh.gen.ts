@@ -5,11 +5,16 @@
 import * as $_lang_index from "./routes/[lang]/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $admin_index from "./routes/admin/index.tsx";
 import * as $api_middleware from "./routes/api/_middleware.ts";
-import * as $api_joke from "./routes/api/joke.ts";
+import * as $api_articles_thumbnail from "./routes/api/articles/thumbnail.ts";
+import * as $api_image_search_index from "./routes/api/image-search/index.ts";
+import * as $api_test from "./routes/api/test.ts";
 import * as $index from "./routes/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $articles_article_row from "./islands/articles/article-row.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
+import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -17,13 +22,18 @@ const manifest = {
     "./routes/[lang]/index.tsx": $_lang_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/admin/index.tsx": $admin_index,
     "./routes/api/_middleware.ts": $api_middleware,
-    "./routes/api/joke.ts": $api_joke,
+    "./routes/api/articles/thumbnail.ts": $api_articles_thumbnail,
+    "./routes/api/image-search/index.ts": $api_image_search_index,
+    "./routes/api/test.ts": $api_test,
     "./routes/index.tsx": $index,
   },
   islands: {
     "./islands/Counter.tsx": $Counter,
+    "./islands/articles/article-row.tsx": $articles_article_row,
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,
+    "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

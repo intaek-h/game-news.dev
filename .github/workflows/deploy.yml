@@ -53,5 +53,3 @@ jobs:
           project: "extinguish-backend"
           entrypoint: "main.ts"
           root: ""
-          
-          

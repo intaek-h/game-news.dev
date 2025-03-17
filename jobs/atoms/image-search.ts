@@ -30,6 +30,7 @@ export class ImageSearchAtom {
     urlParams.append("key", GOOGLE_API_KEY);
     urlParams.append("cx", GOOGLE_SEARCH_ENGINE_ID);
     urlParams.append("imgSize", "xlarge");
+    urlParams.append("num", "6");
     urlParams.append(
       "rights",
       "cc_publicdomain,cc_attribute,cc_sharealike,cc_nonderived",
