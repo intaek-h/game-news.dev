@@ -6,8 +6,6 @@ const GOOGLE_API_KEY = Deno.env.get("GOOGLE_SEARCH_API_KEY") ?? "";
 const GOOGLE_SEARCH_ENGINE_ID = Deno.env.get("GOOGLE_SEARCH_ENGINE_ID") ?? "";
 const GOOGLE_SEARCH_ENDPOINT = Deno.env.get("GOOGLE_SEARCH_ENDPOINT") ?? "";
 
-console.info(Deno.env.toObject());
-
 if (!GOOGLE_API_KEY || !GOOGLE_SEARCH_ENGINE_ID || !GOOGLE_SEARCH_ENDPOINT) {
   throw new Error(
     "Missing required environment variables for Google Search API",
