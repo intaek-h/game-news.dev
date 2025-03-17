@@ -11,7 +11,7 @@ export function ArticleViewer(
           <img
             src={props.thumbnail}
             alt=""
-            className="w-full h-48 object-contain rounded-sm mb-4 shadow-sm"
+            className="w-full h-48 object-cover rounded-sm mb-4 shadow-sm"
             loading="lazy"
           />
         )
