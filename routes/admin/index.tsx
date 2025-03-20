@@ -1,38 +1,22 @@
-import { ArticleEntities } from "~/types/articleFormat.ts";
-import { ArticleAtom } from "~/jobs/atoms/article.ts";
-import ArticleRow from "~/islands/articles/article-row.tsx";
-
-const extractEntities = (entities: ArticleEntities | null) => {
-  if (!entities) {
-    return [];
-  }
-  return Object.values(entities).map((entity) => entity).flat() as string[];
-};
-
-export default async function Home() {
-  const { data, error } = await ArticleAtom.GetRecentArticles("ko");
-
-  if (error) {
-    return (
-      <div>
-        <div>hello</div>
-        <span>no articles to show</span>
-      </div>
-    );
-  }
-
+export default function Home() {
   return (
     <div>
-      <div className="flex flex-col gap-4">
-        {data?.map((v) => (
-          !v.article || !v.entities ? null : (
-            <ArticleRow
-              title={v.article.title}
-              articleId={v.id}
-              entities={extractEntities(v.entities)}
-            />
-          )
-        ))}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">Admin Dashboard</h1>
+        <div className="flex gap-2">
+          <a
+            href="/admin/entity-images"
+            className="text-sm py-1 px-3 rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+          >
+            View Entity Images
+          </a>
+          <a
+            href="/admin/citation-images"
+            className="text-sm py-1 px-3 rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+          >
+            View Citation Images
+          </a>
+        </div>
       </div>
     </div>
   );
