@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import ThumbnailCandidate from "./thumbnail-candidate.tsx";
+import ThumbnailCandidate from "~/islands/articles/thumbnail-candidate.tsx";
 
 export default function ArticleRow(
   props: { title: string; articleId: number; entities: string[] },

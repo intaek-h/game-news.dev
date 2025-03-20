@@ -15,7 +15,6 @@ import * as $api_image_search_index from "./routes/api/image-search/index.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
 import * as $index from "./routes/index.tsx";
-import * as $Counter from "./islands/Counter.tsx";
 import * as $articles_article_row from "./islands/articles/article-row.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_citation_article_row from "./islands/articles/citation-article-row.tsx";
@@ -41,7 +40,6 @@ const manifest = {
     "./routes/index.tsx": $index,
   },
   islands: {
-    "./islands/Counter.tsx": $Counter,
     "./islands/articles/article-row.tsx": $articles_article_row,
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,
     "./islands/articles/citation-article-row.tsx":
