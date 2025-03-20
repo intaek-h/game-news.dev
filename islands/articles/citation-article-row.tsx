@@ -35,7 +35,7 @@ export default function CitationArticleRow(
       setProgress({ current: 0, total: totalCitations });
 
       // Create an array of promises for parallel fetching
-      const fetchPromises = props.citations.map(async (citation) => {
+      const fetchPromises = props.citations.filter(v => !v.includes("youtube")).map(async (citation) => {
         try {
           const response = await fetch(
             `/api/scrape/article-extractor?link=${
