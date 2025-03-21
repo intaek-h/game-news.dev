@@ -57,9 +57,6 @@ export function ArticleViewer(
                 </tr>
               ))}
             </tbody>
-            <caption class="caption-bottom pt-1 italic text-xs text-gray-500">
-              정확한 정보임을 보장하지 않습니다.
-            </caption>
           </table>
         )
         : null}

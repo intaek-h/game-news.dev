@@ -18,6 +18,7 @@ import * as $index from "./routes/index.tsx";
 import * as $articles_article_row from "./islands/articles/article-row.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_citation_article_row from "./islands/articles/citation-article-row.tsx";
+import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
 import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -44,6 +45,8 @@ const manifest = {
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,
     "./islands/articles/citation-article-row.tsx":
       $articles_citation_article_row,
+    "./islands/articles/enhanced-article-row.tsx":
+      $articles_enhanced_article_row,
     "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
   },
   baseUrl: import.meta.url,

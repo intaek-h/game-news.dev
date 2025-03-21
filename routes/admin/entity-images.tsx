@@ -1,6 +1,6 @@
 import { ArticleEntities } from "~/types/articleFormat.ts";
 import { ArticleAtom } from "~/jobs/atoms/article.ts";
-import ArticleRow from "~/islands/articles/article-row.tsx";
+import EnhancedArticleRow from "~/islands/articles/enhanced-article-row.tsx";
 
 const extractEntities = (entities: ArticleEntities | null) => {
   if (!entities) {
@@ -36,10 +36,13 @@ export default async function Home() {
       <div className="flex flex-col gap-4">
         {data?.map((v) => (
           !v.article || !v.entities ? null : (
-            <ArticleRow
-              title={v.article.title}
+            <EnhancedArticleRow
+              key={v.id}
               articleId={v.id}
               entities={extractEntities(v.entities)}
+              title={v.article.title}
+              citations={v.citations || []}
+              currentThumbnail={v.thumbnail || ""}
             />
           )
         ))}

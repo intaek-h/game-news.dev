@@ -2,7 +2,7 @@ import { useState } from "preact/hooks";
 import ThumbnailCandidate from "~/islands/articles/thumbnail-candidate.tsx";
 
 interface CitationImage {
-  url: string;
+  imageUrl: string;
   source: string;
 }
 
@@ -18,7 +18,6 @@ export default function CitationArticleRow(
   const [isLoading, setIsLoading] = useState(false);
   const [citationImages, setCitationImages] = useState<CitationImage[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState({ current: 0, total: 0 });
 
   const fetchCitationImages = async () => {
     // Only fetch if not already fetched
@@ -30,58 +29,29 @@ export default function CitationArticleRow(
       setIsLoading(true);
       setError(null);
 
-      // Set total for progress tracking
-      const totalCitations = props.citations.length;
-      setProgress({ current: 0, total: totalCitations });
-
-      // Create an array of promises for parallel fetching
-      const fetchPromises = props.citations.filter(v => !v.includes("youtube")).map(async (citation) => {
-        try {
-          const response = await fetch(
-            `/api/scrape/article-extractor?link=${
-              encodeURIComponent(citation)
-            }`,
-            {
-              headers: {
-                "X-API-KEY": "lovelyintaek",
-              },
-            },
-          );
-
-          // Update progress after each fetch completes
-          setProgress((prev) => ({
-            current: prev.current + 1,
-            total: prev.total,
-          }));
-
-          if (!response.ok) {
-            console.error(`Failed to extract from citation: ${citation}`);
-            return null;
-          }
-
-          const data = await response.json();
-
-          if (data.image) {
-            return {
-              url: data.image,
-              source: citation,
-            };
-          }
-          return null;
-        } catch (err) {
-          console.error(`Error processing citation ${citation}:`, err);
-          return null;
-        }
-      });
-
-      // Wait for all fetch operations to complete
-      const results = await Promise.all(fetchPromises);
-
-      // Filter out null results and update state
-      const validResults = results.filter((item): item is CitationImage =>
-        item !== null
+      // Use the new API endpoint capability to fetch all citation images at once
+      const response = await fetch(
+        `/api/scrape/article-extractor?articleId=${props.articleId}`,
+        {
+          headers: {
+            "X-API-KEY": "lovelyintaek",
+          },
+        },
       );
-      setCitationImages(validResults);
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch citation images: ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.citationImages && Array.isArray(data.citationImages)) {
+        setCitationImages(data.citationImages);
+      } else {
+        setCitationImages([]);
+      }
     } catch (err) {
       console.error("Error fetching citation images:", err);
       setError("Failed to load images from citations");
@@ -118,6 +88,7 @@ export default function CitationArticleRow(
           <img
             src={props.currentThumbnail}
             alt="Current thumbnail"
+            loading="lazy"
             className="h-24 w-auto object-cover rounded border border-gray-200"
           />
         </div>
@@ -127,20 +98,11 @@ export default function CitationArticleRow(
         <div className="mt-3">
           {isLoading && (
             <div className="py-4 text-center text-gray-500">
-              <p>
-                Loading images from citation links... ({progress
-                  .current}/{progress.total})
-              </p>
+              <p>Loading images from citation links...</p>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2 max-w-md mx-auto">
                 <div
-                  className="bg-blue-600 h-2.5 rounded-full"
-                  style={{
-                    width: `${
-                      progress.total
-                        ? (progress.current / progress.total) * 100
-                        : 0
-                    }%`,
-                  }}
+                  className="bg-blue-600 h-2.5 rounded-full animate-pulse"
+                  style={{ width: "100%" }}
                 >
                 </div>
               </div>
@@ -168,9 +130,9 @@ export default function CitationArticleRow(
                 {citationImages.map((image, index) => (
                   <ThumbnailCandidate
                     key={index}
-                    imageUrl={image.url}
+                    imageUrl={image.imageUrl}
                     articleId={props.articleId}
-                    entityName={`Citation ${index + 1}`}
+                    entityName={image.source}
                     index={index}
                   />
                 ))}
