@@ -42,7 +42,7 @@ export class ImageSearchAtom {
       },
     );
     const json = await response.json() as GoogleImageSearchResponse;
-    console.log("json", json);
+
     return json;
   }
 

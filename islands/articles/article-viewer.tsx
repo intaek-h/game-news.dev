@@ -13,7 +13,6 @@ export function ArticleViewer(
             src={props.thumbnail}
             alt=""
             className="w-full h-48 object-cover rounded-sm mb-4 shadow-sm"
-            loading="lazy"
           />
         )
         : null}
