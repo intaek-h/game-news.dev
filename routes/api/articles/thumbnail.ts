@@ -4,11 +4,12 @@ import { articles } from "~/db/migrations/schema.ts";
 import { eq } from "drizzle-orm";
 
 export const handler: Handlers = {
-  async POST(req) {
+  async PUT(req) {
     try {
       const form = await req.formData();
       const articleId = form.get("articleId");
       const url = form.get("url");
+      const source = form.get("source");
 
       // Validate inputs
       if (!articleId || !url) {
@@ -32,6 +33,7 @@ export const handler: Handlers = {
         .update(articles)
         .set({
           thumbnail: url.toString(),
+          thumbnailSource: source?.toString() || null,
           updatedAt: new Date().toISOString(),
         })
         .where(eq(articles.id, articleIdNum))

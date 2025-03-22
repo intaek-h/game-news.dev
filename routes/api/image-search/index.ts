@@ -1,6 +1,14 @@
 import { Handlers } from "$fresh/server.ts";
 import { ImageSearchAtom } from "~/jobs/atoms/image-search.ts";
 
+export interface ImageSearchResponse {
+  images: {
+    imageUrl: string;
+    source: string;
+  }[];
+  query: string;
+}
+
 export const handler: Handlers = {
   async GET(req) {
     try {
@@ -18,14 +26,16 @@ export const handler: Handlers = {
 
       // Use the ImageSearchAtom to search for images
       const searchResults = await ImageSearchAtom.SearchGoogleImages(query);
-      console.log("searchResults", searchResults);
 
       // Extract the image URLs from the search results
-      const urls = searchResults.items?.map((item) => item.link) || [];
+      const result = searchResults.items?.map((item) => ({
+        imageUrl: item.link,
+        source: item.displayLink,
+      })) || [];
 
       // Return the results
       return Response.json({
-        urls,
+        images: result,
         query,
       });
     } catch (error) {

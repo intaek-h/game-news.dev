@@ -7,6 +7,7 @@ export const articles = sqliteTable("articles", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),
   thumbnail: text(),
+  thumbnailSource: text("thumbnail_source"),
   citations: text({ mode: "json" }).$type<string[]>(),
   entities: text({ mode: "json" }).$type<ArticleEntities>(),
 });

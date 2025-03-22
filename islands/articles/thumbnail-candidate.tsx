@@ -2,6 +2,7 @@ import { useState } from "preact/hooks";
 
 interface ThumbnailCandidateProps {
   imageUrl: string;
+  imageSource: string;
   articleId: number;
   entityName: string;
   index: number;
@@ -21,9 +22,10 @@ export default function ThumbnailCandidate(props: ThumbnailCandidateProps) {
       const formData = new FormData();
       formData.append("articleId", props.articleId.toString());
       formData.append("url", props.imageUrl);
+      formData.append("source", props.imageSource);
 
       const response = await fetch("/api/articles/thumbnail", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "X-API-KEY": "lovelyintaek",
         },

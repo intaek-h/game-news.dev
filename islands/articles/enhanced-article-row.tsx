@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import ThumbnailCandidate from "~/islands/articles/thumbnail-candidate.tsx";
+import { ImageSearchResponse } from "~/routes/api/image-search/index.ts";
 
 interface CitationImage {
   imageUrl: string;
@@ -19,7 +20,7 @@ export default function EnhancedArticleRow(
   const [isLoading, setIsLoading] = useState(false);
   const [citationImages, setCitationImages] = useState<CitationImage[]>([]);
   const [entitySearchResults, setEntitySearchResults] = useState<
-    Map<string, string[]>
+    Map<string, { imageUrl: string; source: string }[]>
   >(new Map());
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
   const [isEntitySearchLoading, setIsEntitySearchLoading] = useState(false);
@@ -93,10 +94,10 @@ export default function EnhancedArticleRow(
         throw new Error("Failed to fetch image search results");
       }
 
-      const data = await response.json();
+      const data = await response.json() as ImageSearchResponse;
       // Update the Map with the new entity results
       setEntitySearchResults(
-        new Map(entitySearchResults.set(entity, data.urls || [])),
+        new Map(entitySearchResults.set(entity, data.images || [])),
       );
     } catch (error) {
       console.error("Error searching images:", error);
@@ -246,6 +247,7 @@ export default function EnhancedArticleRow(
                       <ThumbnailCandidate
                         key={`citation-${index}`}
                         imageUrl={image.imageUrl}
+                        imageSource={image.source}
                         articleId={props.articleId}
                         entityName={image.source}
                         index={index}
@@ -268,10 +270,11 @@ export default function EnhancedArticleRow(
 
               {currentEntityResults.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {currentEntityResults.map((url, index) => (
+                  {currentEntityResults.map((data, index) => (
                     <ThumbnailCandidate
                       key={`entity-${selectedEntity}-${index}`}
-                      imageUrl={url}
+                      imageUrl={data.imageUrl}
+                      imageSource={data.source}
                       articleId={props.articleId}
                       entityName={selectedEntity}
                       index={index}

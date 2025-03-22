@@ -50,7 +50,9 @@ export const handler: Handlers = {
       const validResults = results
         .filter((p) => p.status === "fulfilled")
         .filter((item): item is PromiseFulfilledResult<ArticleData> =>
-          !!item.value && !!item.value.image
+          !!item.value && // is fulfilled
+          !!item.value.image && // has proper url
+          !item.value.image.includes("getty") // exclude getty images
         )
         .map((item) => item.value);
 

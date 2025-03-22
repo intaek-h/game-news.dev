@@ -10,12 +10,6 @@ export default function Home() {
           >
             View Entity Images
           </a>
-          <a
-            href="/admin/citation-images"
-            className="text-sm py-1 px-3 rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
-          >
-            View Citation Images
-          </a>
         </div>
       </div>
     </div>
