@@ -3,6 +3,7 @@
 
   "imports": {
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.39.0",
+    "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.772.0",
     "@extractus/article-extractor": "npm:@extractus/article-extractor@^8.0.17",
     "@libsql/client": "npm:@libsql/client@^0.14.0",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
@@ -23,7 +24,6 @@
   },
 
   "tasks": {
-    "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv --unstable-cron --watch-hmr main.ts",
     "db:pull": "deno run -A --node-modules-dir npm:drizzle-kit pull --config=drizzle.config.ts",
     "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate:sqlite --config=drizzle.config.ts",
     "db:migrate": "deno run -A --node-modules-dir ./db/migrate.ts",

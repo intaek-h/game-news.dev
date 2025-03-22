@@ -46,6 +46,9 @@ jobs:
           OPENVERSE_CLIENT_ID: ${{ secrets.OPENVERSE_CLIENT_ID }}
           OPENVERSE_API_KEY: ${{ secrets.OPENVERSE_API_KEY }}
           OPENVERSE_ENDPOINT: ${{ secrets.OPENVERSE_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_TOKEN: ${{ secrets.R2_TOKEN }}
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
