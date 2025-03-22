@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import ThumbnailCandidate from "~/islands/articles/thumbnail-candidate.tsx";
 import { ImageSearchResponse } from "~/routes/api/image-search/index.ts";
+import { getImageFromCdn } from "~/jobs/utils/image-view.ts";
 
 interface CitationImage {
   imageUrl: string;
@@ -139,7 +140,7 @@ export default function EnhancedArticleRow(
         <div className="mt-2">
           <p className="text-sm text-gray-500 mb-1">Current thumbnail:</p>
           <img
-            src={props.currentThumbnail}
+            src={getImageFromCdn(props.currentThumbnail)}
             alt="Current thumbnail"
             loading="lazy"
             className="h-24 w-auto object-cover rounded border border-gray-200"

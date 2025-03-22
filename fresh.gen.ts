@@ -10,6 +10,7 @@ import * as $admin_index from "./routes/admin/index.tsx";
 import * as $api_middleware from "./routes/api/_middleware.ts";
 import * as $api_articles_manual_generate_index from "./routes/api/articles/manual-generate/index.ts";
 import * as $api_articles_thumbnail from "./routes/api/articles/thumbnail.ts";
+import * as $api_auth_path_ from "./routes/api/auth/[...path].ts";
 import * as $api_image_search_index from "./routes/api/image-search/index.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
@@ -17,6 +18,7 @@ import * as $index from "./routes/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
 import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
+import * as $auth_login from "./islands/auth/login.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -30,6 +32,7 @@ const manifest = {
     "./routes/api/articles/manual-generate/index.ts":
       $api_articles_manual_generate_index,
     "./routes/api/articles/thumbnail.ts": $api_articles_thumbnail,
+    "./routes/api/auth/[...path].ts": $api_auth_path_,
     "./routes/api/image-search/index.ts": $api_image_search_index,
     "./routes/api/scrape/article-extractor/index.ts":
       $api_scrape_article_extractor_index,
@@ -41,6 +44,7 @@ const manifest = {
     "./islands/articles/enhanced-article-row.tsx":
       $articles_enhanced_article_row,
     "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
+    "./islands/auth/login.tsx": $auth_login,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

@@ -7,6 +7,7 @@
     "@extractus/article-extractor": "npm:@extractus/article-extractor@^8.0.17",
     "@libsql/client": "npm:@libsql/client@^0.14.0",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
+    "better-auth": "npm:better-auth@^1.2.4",
     "drizzle-kit": "npm:drizzle-kit@^0.30.5",
     "drizzle-orm": "npm:drizzle-orm@^0.40.0",
     "json-like-parse": "npm:json-like-parse@^1.0.3",

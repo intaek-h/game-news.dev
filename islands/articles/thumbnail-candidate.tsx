@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { getImageFromCdn } from "~/jobs/utils/image-view.ts";
 
 interface ThumbnailCandidateProps {
   imageUrl: string;
@@ -57,7 +58,7 @@ export default function ThumbnailCandidate(props: ThumbnailCandidateProps) {
           }`}
         >
           <img
-            src={props.imageUrl}
+            src={getImageFromCdn(props.imageUrl)}
             alt={`${props.entityName} image ${props.index + 1}`}
             className="h-24 w-24 object-cover rounded"
           />
@@ -91,7 +92,7 @@ export default function ThumbnailCandidate(props: ThumbnailCandidateProps) {
 
             <div className="flex-1 overflow-auto p-4 flex flex-col items-center">
               <img
-                src={props.imageUrl}
+                src={getImageFromCdn(props.imageUrl)}
                 alt={`${props.entityName} full preview`}
                 className="max-h-[60vh] max-w-full object-contain mb-4"
               />
