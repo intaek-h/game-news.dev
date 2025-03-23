@@ -109,3 +109,16 @@ export const verification = sqliteTable("verification", {
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
+
+export default {
+  articles,
+  translations,
+  languages,
+  genTimes,
+  rawTopics,
+  hotTopics,
+  user,
+  session,
+  account,
+  verification,
+};

@@ -17,7 +17,6 @@ export default async function Home() {
 
   return (
     <div>
-      <a href="/ko">한국어로 보기</a>
       {recentArticles.filter((a) => typeof a.article === "object").map((
         article,
         i,

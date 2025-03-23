@@ -5,6 +5,7 @@
 import * as $_lang_index from "./routes/[lang]/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $_layout from "./routes/_layout.tsx";
 import * as $admin_entity_images from "./routes/admin/entity-images.tsx";
 import * as $admin_index from "./routes/admin/index.tsx";
 import * as $api_middleware from "./routes/api/_middleware.ts";
@@ -15,6 +16,9 @@ import * as $api_image_search_index from "./routes/api/image-search/index.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
 import * as $index from "./routes/index.tsx";
+import * as $login_index from "./routes/login/index.tsx";
+import * as $register_index from "./routes/register/index.tsx";
+import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
 import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
@@ -26,6 +30,7 @@ const manifest = {
     "./routes/[lang]/index.tsx": $_lang_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/_layout.tsx": $_layout,
     "./routes/admin/entity-images.tsx": $admin_entity_images,
     "./routes/admin/index.tsx": $admin_index,
     "./routes/api/_middleware.ts": $api_middleware,
@@ -38,6 +43,9 @@ const manifest = {
       $api_scrape_article_extractor_index,
     "./routes/api/test.ts": $api_test,
     "./routes/index.tsx": $index,
+    "./routes/login/index.tsx": $login_index,
+    "./routes/register/index.tsx": $register_index,
+    "./routes/sign-out/index.tsx": $sign_out_index,
   },
   islands: {
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,
