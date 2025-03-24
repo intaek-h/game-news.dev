@@ -30,7 +30,7 @@
     "db:migrate": "deno run -A --node-modules-dir ./db/migrate.ts",
     "db:push": "deno run -A --node-modules-dir npm:drizzle-kit push --config=drizzle.config.ts",
     "db:studio": "deno run -A --node-modules-dir npm:drizzle-kit studio --config=drizzle.config.ts",
-
+    "db:better-auth-generate": "deno run -A npm:@better-auth/cli@latest generate",
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
     "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
     "manifest": "deno task cli manifest $(pwd)",

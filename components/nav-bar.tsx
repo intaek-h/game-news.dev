@@ -1,7 +1,7 @@
-import { User } from "better-auth";
+import { auth } from "~/auth.ts";
 
 export interface Props {
-  user?: User;
+  user?: typeof auth.$Infer.Session.user;
 }
 
 export function NavBar(props: Props) {
@@ -15,11 +15,18 @@ export function NavBar(props: Props) {
         </li>
         {props.user
           ? (
-            <li>
-              <a href="/sign-out" className="text-white hover:underline">
-                sign out
-              </a>
-            </li>
+            <>
+              <li>
+                <a href="/sign-out" className="text-white hover:underline">
+                  sign out
+                </a>
+              </li>
+              <li>
+                <a href="/ko" className="text-white hover:underline">
+                  /kor
+                </a>
+              </li>
+            </>
           )
           : (
             <li>
@@ -28,6 +35,14 @@ export function NavBar(props: Props) {
               </a>
             </li>
           )}
+
+        {props.user?.type === "admin" && (
+          <li>
+            <a href="/admin" className="text-white hover:underline">
+              admin
+            </a>
+          </li>
+        )}
       </ul>
     </nav>
   );

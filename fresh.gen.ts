@@ -22,7 +22,6 @@ import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
 import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
-import * as $auth_login from "./islands/auth/login.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -52,7 +51,6 @@ const manifest = {
     "./islands/articles/enhanced-article-row.tsx":
       $articles_enhanced_article_row,
     "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
-    "./islands/auth/login.tsx": $auth_login,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

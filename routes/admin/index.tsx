@@ -1,5 +1,3 @@
-import { Login } from "~/islands/auth/login.tsx";
-
 export default function Home() {
   return (
     <div>
@@ -13,10 +11,6 @@ export default function Home() {
             View Entity Images
           </a>
         </div>
-      </div>
-
-      <div className="mt-4">
-        <Login />
       </div>
     </div>
   );

@@ -1,43 +1,76 @@
-import { Handlers } from "$fresh/server.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
+import { APIError } from "better-auth/api";
 
-export const handler: Handlers = {
-  async POST(req) {
-    const form = await req.formData();
-    const email = form.get("email")?.toString();
-    const password = form.get("password")?.toString();
+interface Props {
+  error: string;
+}
 
-    if (!email || !password) {
-      return Response.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
+export const handler: Handlers<Props> = {
+  async GET(req, ctx) {
+    try {
+      const session = await auth.api.getSession({
+        headers: req.headers,
+      });
+
+      if (session) {
+        return new Response(null, {
+          status: 302,
+          headers: new Headers({
+            location: "/",
+          }),
+        });
+      }
+
+      return ctx.render();
+    } catch (error) {
+      console.error("Error fetching session: ", error);
+      return ctx.render();
     }
+  },
 
-    const response = await auth.api.signInEmail({
-      body: {
-        email: email,
-        password: password,
-        callbackUrl: "/",
-      },
-      headers: req.headers,
-      asResponse: true,
-      returnHeaders: true,
-    });
+  async POST(req, ctx) {
+    try {
+      const form = await req.formData();
+      const email = form.get("email")?.toString();
+      const password = form.get("password")?.toString();
 
-    const cookies = response.headers.get("set-cookie");
+      if (!email || !password) {
+        return ctx.render({
+          error: "Missing required fields",
+        });
+      }
 
-    const headers = new Headers();
-    headers.set("location", "/");
-    headers.set("set-cookie", cookies || "");
-    return new Response(null, {
-      status: 302,
-      headers,
-    });
+      const { headers } = await auth.api.signInEmail({
+        body: {
+          email: email,
+          password: password,
+        },
+        headers: req.headers,
+        returnHeaders: true,
+      });
+
+      headers.set("location", "/");
+
+      return new Response(null, {
+        status: 302,
+        headers,
+      });
+    } catch (error) {
+      if (error instanceof APIError) {
+        return ctx.render({
+          error: error.message,
+        });
+      }
+
+      return ctx.render({
+        error: "Something went wrong",
+      });
+    }
   },
 };
 
-export default function Home() {
+export default function Home(props: PageProps<Props>) {
   return (
     <div className="">
       <form
@@ -81,6 +114,14 @@ export default function Home() {
         </div>
 
         <hr />
+
+        {props.data?.error
+          ? (
+            <p className="mt-2 text-sm text-red-700 italic">
+              {props.data.error}
+            </p>
+          )
+          : null}
 
         <button
           type="submit"

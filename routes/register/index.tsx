@@ -14,34 +14,29 @@ export const handler: Handlers<Props> = {
     const name = form.get("name")?.toString();
 
     if (!email || !password || !name) {
-      return Response.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
+      return ctx.render({
+        error: "Missing required fields",
+      });
     }
 
     try {
-      const response = await auth.api.signUpEmail({
+      const { headers } = await auth.api.signUpEmail({
         body: {
           email: email,
           password: password,
           name: name,
         },
         headers: req.headers,
-        asResponse: true,
         returnHeaders: true,
       });
 
-      const cookies = response.headers.get("set-cookie");
-      const headers = new Headers();
       headers.set("location", "/");
-      headers.set("set-cookie", cookies || "");
+
       return new Response(null, {
         status: 302,
         headers,
       });
     } catch (error) {
-      console.error("error is: ", error);
       if (error instanceof APIError) {
         return ctx.render({
           error: error.message,
@@ -134,14 +129,20 @@ export default function Home(props: PageProps<Props>) {
 
         <hr />
 
+        {props.data?.error
+          ? (
+            <p className="mt-2 text-sm text-red-700 italic">
+              {props.data.error}
+            </p>
+          )
+          : null}
+
         <button
           type="submit"
           className="mt-4 text-medium text-blue-900 underline"
         >
           Submit For Registration
         </button>
-
-        {props.data?.error ? <p>{props.data.error}</p> : null}
       </form>
     </div>
   );
