@@ -15,6 +15,7 @@ import * as $api_auth_path_ from "./routes/api/auth/[...path].ts";
 import * as $api_image_search_index from "./routes/api/image-search/index.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
+import * as $articles_id_ from "./routes/articles/[id].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $login_index from "./routes/login/index.tsx";
 import * as $register_index from "./routes/register/index.tsx";
@@ -41,6 +42,7 @@ const manifest = {
     "./routes/api/scrape/article-extractor/index.ts":
       $api_scrape_article_extractor_index,
     "./routes/api/test.ts": $api_test,
+    "./routes/articles/[id].tsx": $articles_id_,
     "./routes/index.tsx": $index,
     "./routes/login/index.tsx": $login_index,
     "./routes/register/index.tsx": $register_index,

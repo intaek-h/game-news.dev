@@ -53,6 +53,37 @@ export class ArticleAtom {
     }
   }
 
+  static async GetArticleById(id: number, languageCode: string = "en") {
+    try {
+      const articleWithTranslations = await db
+        .select({
+          id: articles.id,
+          createdAt: articles.createdAt,
+          citations: articles.citations,
+          entities: articles.entities,
+          thumbnail: articles.thumbnail,
+          article: translations.article,
+        })
+        .from(articles)
+        .innerJoin(
+          translations,
+          eq(translations.articleId, articles.id),
+        )
+        .where(
+          and(
+            eq(articles.id, id),
+            eq(translations.languageCode, languageCode),
+          ),
+        )
+        .limit(1);
+
+      return { data: articleWithTranslations[0], error: null };
+    } catch (error) {
+      console.error("Error fetching article by ID", error);
+      return { data: null, error };
+    }
+  }
+
   static async GetRecentArticles(languageCode: string = "en") {
     try {
       const fiveDaysAgo = new Date();

@@ -10,7 +10,7 @@ type Props = {
 
 export function TrendingContainer(props: Props) {
   return (
-    <section className="text-center px-4">
+    <section className="text-center px-4 pb-48 break-words">
       <h1 className="mb-8 font-light select-none">
         <i className="font-light">
           trending
