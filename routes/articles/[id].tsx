@@ -38,7 +38,7 @@ export const handler: Handlers<Props> = {
 
 export default function ArticlePage(props: PageProps<Props>) {
   return (
-    <article className="text-center px-4 break-words">
+    <article className="text-center px-4 break-keep">
       <h1 className="mb-8 font-normal text-xl">
         {props.data.article?.title}
       </h1>

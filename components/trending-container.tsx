@@ -10,7 +10,7 @@ type Props = {
 
 export function TrendingContainer(props: Props) {
   return (
-    <section className="text-center px-4 pb-48 break-words">
+    <section className="text-center px-4 pb-48 break-keep">
       <h1 className="mb-8 font-light select-none">
         <i className="font-light">
           trending
@@ -18,14 +18,14 @@ export function TrendingContainer(props: Props) {
       </h1>
 
       <div className="mb-10">
-        <h2 className="mb-6">
+        <h2 className="mb-2">
           <a href={`/articles/${props.articles[0].id}`}>
             {props.articles[0].title}
           </a>
         </h2>
 
         {props.articles[0].keyPoints && (
-          <ul className="text-gray-400">
+          <ul className="text-gray-400 text-sm leading-loose">
             {props.articles[0].keyPoints.map((point, index) => (
               <li key={index} className="ml-4">
                 {point}
