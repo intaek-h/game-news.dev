@@ -1,7 +1,7 @@
 import { RouteContext } from "$fresh/server.ts";
 import { LanguageAtom } from "~/jobs/atoms/language.ts";
 import { ArticleAtom } from "~/jobs/atoms/article.ts";
-import { ArticleViewer } from "../../islands/articles/article-viewer.tsx";
+import { TrendingContainer } from "~/components/trending-container.tsx";
 
 export default async function Home(_req: Request, ctx: RouteContext) {
   const { lang } = ctx.params;
@@ -14,7 +14,7 @@ export default async function Home(_req: Request, ctx: RouteContext) {
   }
 
   const { data: recentArticles, error: recentArticlesErr } = await ArticleAtom
-    .GetRecentArticles(lang);
+    .GetTrendingArticles(lang);
 
   if (recentArticlesErr || !recentArticles) {
     return (
@@ -27,19 +27,15 @@ export default async function Home(_req: Request, ctx: RouteContext) {
 
   return (
     <div>
-      <a href="/">Read English</a>
-      {recentArticles.filter((a) => typeof a.article === "object").map((
-        article,
-        i,
-      ) => (
-        <div>
-          <ArticleViewer
-            content={article.article!}
-            thumbnail={article.thumbnail ?? ""}
-          />
-          {i !== recentArticles.length - 1 ? <hr className="my-6" /> : null}
-        </div>
-      ))}
+      <TrendingContainer
+        articles={recentArticles
+          .filter((a) => typeof a.article === "object")
+          .map((article, i) => ({
+            id: article.id,
+            title: article.article?.title ?? "",
+            keyPoints: i === 0 ? article.article?.key_points : undefined,
+          }))}
+      />
     </div>
   );
 }

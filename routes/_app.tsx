@@ -7,8 +7,12 @@ export default function App({ Component }: PageProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Game News</title>
         <link rel="stylesheet" href="/styles.css" />
+        <style>
+          @import
+          url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        </style>
       </head>
-      <body className="mx-auto max-w-4xl p-4">
+      <body className="mx-auto max-w-4xl">
         <Component />
       </body>
     </html>

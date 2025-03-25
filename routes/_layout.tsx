@@ -8,7 +8,7 @@ export default async function Layout(req: Request, ctx: FreshContext) {
   });
 
   return (
-    <div class="layout">
+    <div class="pt-10">
       <NavBar user={session?.user} />
       <ctx.Component />
     </div>

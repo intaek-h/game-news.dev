@@ -18,6 +18,41 @@ export class ArticleAtom {
     return strs;
   }
 
+  // trending = all articles created last 24 hours
+  static async GetTrendingArticles(languageCode: string = "en") {
+    try {
+      const twentyFourHoursAgo = new Date();
+      twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1);
+
+      const articlesWithTranslations = await db
+        .select({
+          id: articles.id,
+          createdAt: articles.createdAt,
+          citations: articles.citations,
+          entities: articles.entities,
+          thumbnail: articles.thumbnail,
+          article: translations.article,
+        })
+        .from(articles)
+        .innerJoin(
+          translations,
+          eq(translations.articleId, articles.id),
+        )
+        .where(
+          and(
+            gte(articles.createdAt, twentyFourHoursAgo.toISOString()),
+            eq(translations.languageCode, languageCode),
+          ),
+        )
+        .orderBy(desc(articles.createdAt));
+
+      return { data: articlesWithTranslations, error: null };
+    } catch (error) {
+      console.error("Error fetching trending articles", error);
+      return { data: null, error };
+    }
+  }
+
   static async GetRecentArticles(languageCode: string = "en") {
     try {
       const fiveDaysAgo = new Date();

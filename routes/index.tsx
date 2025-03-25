@@ -1,8 +1,8 @@
-import { ArticleViewer } from "~/islands/articles/article-viewer.tsx";
 import { ArticleAtom } from "~/jobs/atoms/article.ts";
+import { TrendingContainer } from "~/components/trending-container.tsx";
 
 export default async function Home() {
-  const { data: recentArticles, error } = await ArticleAtom.GetRecentArticles(
+  const { data: recentArticles, error } = await ArticleAtom.GetTrendingArticles(
     "en",
   );
 
@@ -17,18 +17,15 @@ export default async function Home() {
 
   return (
     <div>
-      {recentArticles.filter((a) => typeof a.article === "object").map((
-        article,
-        i,
-      ) => (
-        <div>
-          <ArticleViewer
-            content={article.article!}
-            thumbnail={article.thumbnail ?? ""}
-          />
-          {i !== recentArticles.length - 1 ? <hr className="my-6" /> : null}
-        </div>
-      ))}
+      <TrendingContainer
+        articles={recentArticles
+          .filter((a) => typeof a.article === "object")
+          .map((article, i) => ({
+            id: article.id,
+            title: article.article?.title ?? "",
+            keyPoints: i === 0 ? article.article?.key_points : undefined,
+          }))}
+      />
     </div>
   );
 }

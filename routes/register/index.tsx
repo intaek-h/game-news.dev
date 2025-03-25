@@ -57,7 +57,7 @@ export default function Home(props: PageProps<Props>) {
         method="post"
         action="/register"
         encType="multipart/form-data"
-        className="my-4 px-4 w-[300px]"
+        className="my-4 px-4 mx-auto w-[300px]"
       >
         <div class="mb-4">
           <label
