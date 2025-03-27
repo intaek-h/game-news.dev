@@ -1,5 +1,4 @@
 import { auth } from "~/auth.ts";
-import LanguageSwitcher from "~/islands/language-switcher.tsx";
 
 export interface Props {
   user?: typeof auth.$Infer.Session.user;
@@ -8,8 +7,6 @@ export interface Props {
 }
 
 export function NavBar(props: Props) {
-  const isLoggedIn = !!props.user;
-
   return (
     <nav className="mb-20">
       <ul className="flex justify-center mx-auto space-x-4 underline-offset-4 aria-[current='page']:[&_a]:decoration-gray-300 aria-[current='page']:[&_a]:underline">
@@ -57,13 +54,15 @@ export function NavBar(props: Props) {
           </li>
         )}
 
-        <li className="ml-4">
+        {
+          /* <li className="ml-4">
           <LanguageSwitcher
             currentLanguage={props.currentLanguage}
             availableLanguages={props.availableLanguages}
             isLoggedIn={isLoggedIn}
           />
-        </li>
+        </li> */
+        }
       </ul>
     </nav>
   );
