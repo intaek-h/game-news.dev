@@ -7,44 +7,24 @@ interface Props {
 }
 
 export const handler: Handlers<Props> = {
-  async GET(req, ctx) {
-    try {
-      const session = await auth.api.getSession({
-        headers: req.headers,
-      });
-
-      if (session) {
-        return new Response(null, {
-          status: 302,
-          headers: new Headers({
-            location: "/",
-          }),
-        });
-      }
-
-      return ctx.render();
-    } catch (error) {
-      console.error("Error fetching session: ", error);
-      return ctx.render();
-    }
-  },
-
   async POST(req, ctx) {
+    const form = await req.formData();
+    const email = form.get("email")?.toString();
+    const password = form.get("password")?.toString();
+    const name = form.get("name")?.toString();
+
+    if (!email || !password || !name) {
+      return ctx.render({
+        error: "Missing required fields",
+      });
+    }
+
     try {
-      const form = await req.formData();
-      const email = form.get("email")?.toString();
-      const password = form.get("password")?.toString();
-
-      if (!email || !password) {
-        return ctx.render({
-          error: "Missing required fields",
-        });
-      }
-
-      const { headers } = await auth.api.signInEmail({
+      const { headers } = await auth.api.signUpEmail({
         body: {
           email: email,
           password: password,
+          name: name,
         },
         headers: req.headers,
         returnHeaders: true,
@@ -75,7 +55,7 @@ export default function Home(props: PageProps<Props>) {
     <div className="">
       <form
         method="post"
-        action="/login"
+        action={`/${props.params.lang}/register`}
         encType="multipart/form-data"
         className="my-4 px-4 mx-auto w-[300px]"
       >
@@ -113,6 +93,40 @@ export default function Home(props: PageProps<Props>) {
           />
         </div>
 
+        <div class="mb-4">
+          <label
+            htmlFor="confirm-password"
+            className="block text-gray-700 text-sm font-medium mb-1"
+          >
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            name="confirm-password"
+            id="confirm-password"
+            required
+            className="border border-black p-0.5"
+            placeholder="confirm your password"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label
+            htmlFor="name"
+            className="block text-gray-700 text-sm font-medium mb-1"
+          >
+            Display Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            required
+            className="border border-black p-0.5"
+            placeholder="Slick Rick"
+          />
+        </div>
+
         <hr />
 
         {props.data?.error
@@ -127,15 +141,8 @@ export default function Home(props: PageProps<Props>) {
           type="submit"
           className="mt-4 text-medium text-blue-900 underline"
         >
-          Login
+          Submit For Registration
         </button>
-
-        <a
-          href="/register"
-          className="mt-4 ml-4 text-medium text-gray-400 underline"
-        >
-          I'm here to register
-        </a>
       </form>
     </div>
   );

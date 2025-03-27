@@ -1,3 +1,4 @@
+// filepath: /Users/ahiou/Documents/repositories/extinguish-backend/routes/[lang]/articles/[id].tsx
 import { Handlers, PageProps } from "$fresh/server.ts";
 
 import { ArticleAtom } from "~/jobs/atoms/article.ts";
@@ -14,9 +15,10 @@ type Props = {
 export const handler: Handlers<Props> = {
   async GET(_req, ctx) {
     try {
+      const languageCode = ctx.params.lang;
       const { data, error } = await ArticleAtom.GetArticleById(
         parseInt(ctx.params.id),
-        "en",
+        languageCode,
       );
 
       if (error || !data) {
@@ -30,7 +32,7 @@ export const handler: Handlers<Props> = {
         thumbnail: data.thumbnail,
       });
     } catch (error) {
-      console.error("Error fetching session: ", error);
+      console.error("Error fetching article: ", error);
       return ctx.render();
     }
   },

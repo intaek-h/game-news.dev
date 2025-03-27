@@ -19,6 +19,11 @@ export const auth = betterAuth({
         default: null,
         input: false,
       },
+      preferredLanguage: {
+        type: "string",
+        default: "en",
+        input: false,
+      },
     },
   },
 });

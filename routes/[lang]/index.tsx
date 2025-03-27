@@ -16,11 +16,11 @@ export default async function Home(_req: Request, ctx: RouteContext) {
   const { data: recentArticles, error: recentArticlesErr } = await ArticleAtom
     .GetTrendingArticles(lang);
 
-  if (recentArticlesErr || !recentArticles) {
+  if (recentArticlesErr || !recentArticles?.length) {
     return (
       <div>
         <div>hello</div>
-        <span>no articles to show {lang}</span>
+        <span>no articles to show for {lang}</span>
       </div>
     );
   }
@@ -28,6 +28,7 @@ export default async function Home(_req: Request, ctx: RouteContext) {
   return (
     <div>
       <TrendingContainer
+        languageCode={lang}
         articles={recentArticles
           .filter((a) => typeof a.article === "object")
           .map((article, i) => ({

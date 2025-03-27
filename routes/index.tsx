@@ -1,31 +1,43 @@
-import { ArticleAtom } from "~/jobs/atoms/article.ts";
-import { TrendingContainer } from "~/components/trending-container.tsx";
+import { Handlers } from "$fresh/server.ts";
+import { determineBestLanguage, setLanguageCookie } from "~/utils/language.ts";
+import { auth } from "~/auth.ts";
 
-export default async function Home() {
-  const { data: recentArticles, error } = await ArticleAtom.GetTrendingArticles(
-    "en",
-  );
+// This route simply redirects to the appropriate language route
+export const handler: Handlers = {
+  async GET(req) {
+    // Get the user session if available
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
 
-  if (error || !recentArticles?.length) {
-    return (
-      <div>
-        <div>hello</div>
-        <span>no articles to show</span>
-      </div>
-    );
-  }
+    // Determine the best language based on user preferences
+    const preferredLanguage = await determineBestLanguage({
+      user: session?.user
+        ? {
+          id: session.user.id,
+          preferredLanguage: session.user.preferredLanguage,
+        }
+        : undefined,
+      cookieHeader: req.headers.get("cookie") || undefined,
+      acceptLanguageHeader: req.headers.get("accept-language") || undefined,
+    });
 
+    // Redirect to the preferred language
+    return new Response(null, {
+      status: 302,
+      headers: {
+        "Location": `/${preferredLanguage}`,
+        "Set-Cookie": setLanguageCookie(preferredLanguage),
+      },
+    });
+  },
+};
+
+// This is just a fallback that should never be rendered
+export default function Home() {
   return (
     <div>
-      <TrendingContainer
-        articles={recentArticles
-          .filter((a) => typeof a.article === "object")
-          .map((article, i) => ({
-            id: article.id,
-            title: article.article?.title ?? "",
-            keyPoints: i === 0 ? article.article?.key_points : undefined,
-          }))}
-      />
+      <p>Redirecting to your preferred language...</p>
     </div>
   );
 }
