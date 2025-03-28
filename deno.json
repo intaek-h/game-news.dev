@@ -37,7 +37,7 @@
     "start": "deno run -A --watch=static/,routes/ --unstable-kv --unstable-cron dev.ts",
     "serve": "deno run --allow-env --allow-net --allow-import --allow-read main.ts",
     "build": "deno run -A dev.ts build",
-    "build-and-serve": "deno task build && deno task serve",
+    "build-and-serve": "deno task build && touch ./build_complete && deno task serve",
     "preview": "deno run -A --unstable-kv --unstable-cron main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update ."
   },
