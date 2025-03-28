@@ -1,4 +1,4 @@
-FROM denoland/deno:2.2.6
+FROM denoland/deno:alpine-2.2.6
 
 WORKDIR /app
 
@@ -14,4 +14,4 @@ ARG PORT=8000
 EXPOSE $PORT
 
 # build the app and serve the main.ts file.
-CMD ["deno", "task", "build"]
+CMD ["deno", "task", "build-and-serve"]
