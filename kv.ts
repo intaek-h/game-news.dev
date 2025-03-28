@@ -1,8 +1,15 @@
-import { MessageGuard } from "~/jobs/utils/kv.ts";
-import { ArticleCompound } from "~/jobs/compounds/article.ts";
+export const kv = {};
 
-export const kv = await Deno.openKv();
+/**
+ * Deno KV is activated in the main branch, which is deployed to Deno Deploy.
+ * Deno Deploy handles Deno KV and Deno Cron natively.
+ *
+ * Because Deno Deploy's cold start time is too slow, I decided to use it solely for the cron job that leverages Deno KV too.
+ *
+ * The web server, the `main-docker` branch, is deployed to Railway as a Docker container.
+ */
 
+/*
 kv.listenQueue(async (msg: unknown) => {
   if (MessageGuard.IsHotTopic(msg)) {
     const { topic, gid } = msg[1];
@@ -50,3 +57,4 @@ kv.listenQueue(async (msg: unknown) => {
     }
   }
 });
+*/
