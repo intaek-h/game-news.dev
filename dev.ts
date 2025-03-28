@@ -7,4 +7,7 @@ import "$std/dotenv/load.ts";
 
 await dev(import.meta.url, "./main.ts", config);
 
+// Wait for any background tasks to complete
+await new Promise((resolve) => setTimeout(resolve, 5000));
+
 Deno.exit();
