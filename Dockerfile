@@ -14,4 +14,4 @@ ARG PORT=8000
 EXPOSE $PORT
 
 # build the app and serve the main.ts file.
-CMD ["deno", "task", "build-and-serve"]
+CMD ["deno", "task", "serve"]
