@@ -35,7 +35,7 @@
     "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
     "manifest": "deno task cli manifest $(pwd)",
     "start": "deno run -A --watch=static/,routes/ --unstable-kv --unstable-cron dev.ts",
-    "serve": "deno run --allow-env --allow-net --allow-import --allow-read main.ts",
+    "serve": "deno run --allow-env --allow-net --allow-import --allow-read --allow-sys main.ts",
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A --unstable-kv --unstable-cron main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
