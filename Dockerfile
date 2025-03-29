@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-2.2.6
+FROM denoland/deno:2.2.6
 
 WORKDIR /app
 
@@ -9,6 +9,7 @@ RUN deno install
 COPY . .
 RUN deno cache main.ts
 
+# Environment variables required for the build step.
 ARG TURSO_API_KEY
 ARG TURSO_PRODUCTION_DB_URL
 ARG INTAEK_API_KEY
