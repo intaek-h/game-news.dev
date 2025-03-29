@@ -21,6 +21,7 @@ export class ArticleAtom {
   // trending = all articles created last 24 hours
   static async GetTrendingArticles(languageCode: string = "en") {
     try {
+      const start = performance.now();
       const twentyFourHoursAgo = new Date();
       twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1);
 
@@ -46,6 +47,11 @@ export class ArticleAtom {
         )
         .orderBy(desc(articles.createdAt));
 
+      const end = performance.now();
+      console.log(
+        `ArticleAtom.GetTrendingArticles() -> ${Math.round(end - start)}ms`,
+      );
+
       return { data: articlesWithTranslations, error: null };
     } catch (error) {
       console.error("Error fetching trending articles", error);
@@ -55,6 +61,7 @@ export class ArticleAtom {
 
   static async GetArticleById(id: number, languageCode: string = "en") {
     try {
+      const start = performance.now();
       const articleWithTranslations = await db
         .select({
           id: articles.id,
@@ -76,6 +83,11 @@ export class ArticleAtom {
           ),
         )
         .limit(1);
+
+      const end = performance.now();
+      console.log(
+        `ArticleAtom.GetArticleById() -> ${Math.round(end - start)}ms`,
+      );
 
       return { data: articleWithTranslations[0], error: null };
     } catch (error) {

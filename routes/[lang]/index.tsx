@@ -1,17 +1,9 @@
 import { RouteContext } from "$fresh/server.ts";
-import { LanguageAtom } from "~/jobs/atoms/language.ts";
 import { ArticleAtom } from "~/jobs/atoms/article.ts";
 import { TrendingContainer } from "~/components/trending-container.tsx";
 
 export default async function Home(_req: Request, ctx: RouteContext) {
   const { lang } = ctx.params;
-
-  const { data, error } = await LanguageAtom.GetAllLanguages();
-
-  if (error || !data || !data.some((l) => l.code === lang)) {
-    console.error("Error fetching languages", error);
-    return ctx.renderNotFound();
-  }
 
   const { data: recentArticles, error: recentArticlesErr } = await ArticleAtom
     .GetTrendingArticles(lang);

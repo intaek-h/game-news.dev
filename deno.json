@@ -38,7 +38,10 @@
     "serve": "deno run --allow-env --allow-net --allow-import --allow-read main.ts",
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A --unstable-kv --unstable-cron main.ts",
-    "update": "deno run -A -r https://fresh.deno.dev/update ."
+    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "docker:build": "docker build -t game-news .",
+    "docker:run": "docker run -p 8000:8000 game-news",
+    "docker:dev": "docker-compose --file docker-compose.dev.yml up"
   },
 
   "lint": {
