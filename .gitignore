@@ -2,3 +2,4 @@
 node_modules
 hono_docs.md
 _fresh
+*.db*

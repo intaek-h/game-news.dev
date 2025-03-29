@@ -1,8 +1,9 @@
+# Local Development Environment (deno task docker:dev)
 services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - .:/app
     ports:
