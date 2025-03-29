@@ -9,6 +9,8 @@ RUN deno install
 COPY . .
 RUN deno cache main.ts
 
+RUN deno task build
+
 # open port 8000 when running the container. (-p 8000:8000)
 ARG PORT=8000
 EXPOSE $PORT

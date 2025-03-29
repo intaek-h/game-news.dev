@@ -75,6 +75,7 @@ export class ArticleCompound {
       let hotTopicsCount = 0;
       for await (const topic of filteredTopics) {
         hotTopicsCount++;
+        // @ts-expect-error: See kv.ts
         await kv.enqueue(["hot-topic", { topic: topic, gid: genTime.id }], {
           delay: (1000 * 70) * (Math.floor(hotTopicsCount / 3) + 1),
         });
