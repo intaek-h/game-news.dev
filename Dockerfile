@@ -1,5 +1,7 @@
 FROM denoland/deno:2.2.6
 
+RUN apt-get update && apt-get install -y ca-certificates
+
 WORKDIR /app
 
 COPY deno.json .
@@ -7,6 +9,7 @@ COPY deno.json .
 RUN deno install
 
 COPY . .
+
 RUN deno cache main.ts
 
 # Environment variables required for the build step.
