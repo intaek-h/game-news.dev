@@ -20,6 +20,7 @@ import * as $gossips_index from "./routes/gossips/index.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $login_index from "./routes/login/index.tsx";
 import * as $more_index from "./routes/more/index.tsx";
+import * as $news_id_ from "./routes/news/[id].tsx";
 import * as $register_index from "./routes/register/index.tsx";
 import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
@@ -50,6 +51,7 @@ const manifest = {
     "./routes/index.tsx": $index,
     "./routes/login/index.tsx": $login_index,
     "./routes/more/index.tsx": $more_index,
+    "./routes/news/[id].tsx": $news_id_,
     "./routes/register/index.tsx": $register_index,
     "./routes/sign-out/index.tsx": $sign_out_index,
   },
