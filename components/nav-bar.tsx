@@ -22,40 +22,12 @@ export function NavBar() {
 
         <li>
           <a
-            href="more"
+            href="/more"
             className="hover:underline"
           >
             more
           </a>
         </li>
-
-        {
-          /* {props.user
-          ? (
-            <>
-              <li>
-                <a href="/sign-out" className="hover:underline">
-                  leave
-                </a>
-              </li>
-            </>
-          )
-          : (
-            <li>
-              <a href="/login" className="hover:underline">
-                join
-              </a>
-            </li>
-          )}
-
-        {props.user?.type === "admin" && (
-          <li>
-            <a href="/admin" className="hover:underline">
-              admin
-            </a>
-          </li>
-        )} */
-        }
       </ul>
     </nav>
   );

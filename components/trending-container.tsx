@@ -1,4 +1,5 @@
 import { gossips } from "~/db/migrations/schema.ts";
+import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
 
 type Props = {
   articles: {
@@ -11,41 +12,28 @@ type Props = {
 export function TrendingContainer(props: Props) {
   return (
     <section className="text-center px-4 pb-48 break-keep">
-      <h1 className="mb-8 font-light select-none">
-        <i className="font-light">
-          trending
-        </i>
-      </h1>
-
-      <div className="mb-10">
-        <h2 className="mb-2">
-          <a href={`/gossips/${props.articles[0].id}`}>
-            {props.articles[0].title}
-          </a>
-        </h2>
-
-        {props.articles[0].keyPoints && (
-          <ul className="text-gray-400 text-sm leading-loose">
-            {props.articles[0].keyPoints.map((point, index) => (
-              <li key={index} className="ml-4">
-                {point}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="space-y-6">
-        {props.articles.slice(1).map((article) => (
+      <div className="space-y-20">
+        {props.articles.map((article) => (
           <div key={article.id}>
             <h2>
-              <a href={`/gossips/${article.id}`}>
+              <a
+                href={`/gossips/${article.id}`}
+                className="text-xl hover:underline visited:text-gray-500 underline-offset-4 text-gray-900"
+              >
                 {article.title}
               </a>
             </h2>
           </div>
         ))}
       </div>
+
+      <a
+        href={`/more?${QueryParamsAtom.Focus.key}=${QueryParamsAtom.Focus.vals.HowWeGatherGossips}`}
+      >
+        <i className="inline-block text-gray-300 my-8">
+          how we gather everyday gossips
+        </i>
+      </a>
     </section>
   );
 }

@@ -1,3 +1,5 @@
+import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
+
 interface Props {
   news: { title: string; newsId: number }[];
 }
@@ -5,6 +7,23 @@ interface Props {
 export function NewsContainer({ news }: Props) {
   return (
     <div>
+      <div className="px-4 mb-4 break-keep max-w-screen-sm text-left mx-auto">
+        <div className="grid grid-cols-[40px_1fr] sm:grid-cols-[70px_1fr] text-xs">
+          <div>
+            <span className="text-xs font-mono text-gray-400">-</span>
+          </div>
+
+          <div>
+            <a
+              href={`/more?${QueryParamsAtom.Focus.key}=${QueryParamsAtom.Focus.vals.HowWeRank}`}
+              className="hover:underline underline-offset-4"
+            >
+              <i className="text-gray-300">how we rank</i>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <section className="px-4 pb-48 break-keep max-w-screen-sm text-left mx-auto">
         <ol>
           {news.map((v, i) => (

@@ -11,7 +11,7 @@ export default async function Home(_req: Request) {
     return (
       <div>
         <div>hello</div>
-        <span>no articles to show for {lang}</span>
+        <span>no articles to show</span>
       </div>
     );
   }
