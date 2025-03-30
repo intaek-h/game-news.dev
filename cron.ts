@@ -1,8 +1,3 @@
-/**
- * READ ~/kv.ts for the comments
- */
-
-/*
 import { ArticleCompound } from "~/jobs/compounds/article.ts";
 
 const SELF_URL = Deno.env.get("SELF_URL") ?? "";
@@ -25,4 +20,3 @@ Deno.cron("Article Generator", "0 10 * * *", async () => {
     "\x1b[0m",
   );
 });
-*/
