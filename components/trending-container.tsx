@@ -1,8 +1,8 @@
-import { articles } from "~/db/migrations/schema.ts";
+import { gossips } from "~/db/migrations/schema.ts";
 
 type Props = {
   articles: {
-    id: typeof articles.$inferSelect["id"];
+    id: typeof gossips.$inferSelect["id"];
     title: string;
     keyPoints?: string[];
   }[];

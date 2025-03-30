@@ -1,7 +1,7 @@
 import { Handlers } from "$fresh/server.ts";
 import { ArticleData, extract } from "@extractus/article-extractor";
 import { db } from "~/db/client.ts";
-import { articles } from "~/db/migrations/schema.ts";
+import { gossips } from "~/db/migrations/schema.ts";
 import { eq } from "drizzle-orm";
 
 export const handler: Handlers = {
@@ -27,9 +27,9 @@ export const handler: Handlers = {
 
       // Fetch article data from the database
       const [result] = await db
-        .select({ citations: articles.citations })
-        .from(articles)
-        .where(eq(articles.id, articleIdNum))
+        .select({ citations: gossips.citations })
+        .from(gossips)
+        .where(eq(gossips.id, articleIdNum))
         .execute();
 
       if (!result) {

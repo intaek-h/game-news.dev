@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 import { db } from "~/db/client.ts";
-import { articles } from "~/db/migrations/schema.ts";
+import { gossips } from "~/db/migrations/schema.ts";
 import { eq } from "drizzle-orm";
 import { R2Atom } from "~/jobs/atoms/r2.ts";
 
@@ -66,14 +66,14 @@ export const handler: Handlers = {
 
       // Update article with the R2 thumbnail URL
       const result = await db
-        .update(articles)
+        .update(gossips)
         .set({
           thumbnail: r2Result.url,
           thumbnailSource: source?.toString() || "r2",
           updatedAt: new Date().toISOString(),
         })
-        .where(eq(articles.id, articleIdNum))
-        .returning({ id: articles.id });
+        .where(eq(gossips.id, articleIdNum))
+        .returning({ id: gossips.id });
 
       // Check if the article was found and updated
       if (!result.length) {

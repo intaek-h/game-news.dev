@@ -1,7 +1,7 @@
 import { db } from "~/db/client.ts";
 import {
-  articles,
   genTimes,
+  gossips,
   hotTopics,
   languages,
   rawTopics,
@@ -117,12 +117,12 @@ export class ArticleCompound {
       [inspectedArticle],
     );
 
-    const [caconicalArticle] = await db.insert(articles).values({
+    const [caconicalArticle] = await db.insert(gossips).values({
       gid: gid,
       citations: aiArticle.citations,
       entities: entities,
       createdAt: new Date().toISOString(),
-    }).returning({ id: articles.id });
+    }).returning({ id: gossips.id });
 
     const languageCodes = await db.select().from(languages).all();
 
@@ -130,19 +130,19 @@ export class ArticleCompound {
       .insert(translations)
       .values([
         {
-          articleId: caconicalArticle.id,
+          gossipId: caconicalArticle.id,
           article: JSON.parse(translatedArticle) as unknown as ArticleFormat,
           createdAt: new Date().toISOString(),
           languageCode: languageCodes.find((l) => l.name === "korean")?.code!,
         },
         {
-          articleId: caconicalArticle.id,
+          gossipId: caconicalArticle.id,
           article: JSON.parse(inspectedArticle) as unknown as ArticleFormat,
           createdAt: new Date().toISOString(),
           languageCode: languageCodes.find((l) => l.name === "english")?.code!,
         },
       ]).returning({
-        articleId: translations.articleId,
+        articleId: translations.gossipId,
         translationId: translations.id,
         languageCode: translations.languageCode,
       });

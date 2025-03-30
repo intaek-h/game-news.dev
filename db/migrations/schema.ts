@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
 
-export const articles = sqliteTable("articles", {
+export const gossips = sqliteTable("gossips", {
   id: integer().primaryKey({ autoIncrement: true }),
   gid: integer().notNull(),
   createdAt: text("created_at").notNull(),
@@ -14,8 +14,10 @@ export const articles = sqliteTable("articles", {
 
 export const translations = sqliteTable("translations", {
   id: integer().primaryKey({ autoIncrement: true }),
-  articleId: integer().notNull().references(() => articles.id),
-  languageCode: text().notNull().references(() => languages.code),
+  gossipId: integer("gossip_id").notNull().references(() => gossips.id),
+  languageCode: text("language_code").notNull().references(() =>
+    languages.code
+  ),
   article: text({ mode: "json" }).$type<ArticleFormat>(),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),
@@ -113,7 +115,7 @@ export const verification = sqliteTable("verification", {
 });
 
 export default {
-  articles,
+  articles: gossips,
   translations,
   languages,
   genTimes,

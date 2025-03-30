@@ -8,6 +8,8 @@ export default async function Home(_req: Request, ctx: RouteContext) {
   const { data: recentArticles, error: recentArticlesErr } = await ArticleAtom
     .GetTrendingArticles(lang);
 
+  console.log("recentArticles", recentArticlesErr);
+
   if (recentArticlesErr || !recentArticles?.length) {
     return (
       <div>

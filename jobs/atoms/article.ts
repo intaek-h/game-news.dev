@@ -1,5 +1,5 @@
 import { db } from "~/db/client.ts";
-import { articles, hotTopics, translations } from "~/db/migrations/schema.ts";
+import { gossips, hotTopics, translations } from "~/db/migrations/schema.ts";
 import { and, desc, eq, gte } from "drizzle-orm";
 
 export class ArticleAtom {
@@ -27,25 +27,25 @@ export class ArticleAtom {
 
       const articlesWithTranslations = await db
         .select({
-          id: articles.id,
-          createdAt: articles.createdAt,
-          citations: articles.citations,
-          entities: articles.entities,
-          thumbnail: articles.thumbnail,
+          id: gossips.id,
+          createdAt: gossips.createdAt,
+          citations: gossips.citations,
+          entities: gossips.entities,
+          thumbnail: gossips.thumbnail,
           article: translations.article,
         })
-        .from(articles)
+        .from(gossips)
         .innerJoin(
           translations,
-          eq(translations.articleId, articles.id),
+          eq(translations.gossipId, gossips.id),
         )
         .where(
           and(
-            gte(articles.createdAt, twentyFourHoursAgo.toISOString()),
+            gte(gossips.createdAt, twentyFourHoursAgo.toISOString()),
             eq(translations.languageCode, languageCode),
           ),
         )
-        .orderBy(desc(articles.createdAt));
+        .orderBy(desc(gossips.createdAt));
 
       const end = performance.now();
       console.log(
@@ -64,21 +64,21 @@ export class ArticleAtom {
       const start = performance.now();
       const articleWithTranslations = await db
         .select({
-          id: articles.id,
-          createdAt: articles.createdAt,
-          citations: articles.citations,
-          entities: articles.entities,
-          thumbnail: articles.thumbnail,
+          id: gossips.id,
+          createdAt: gossips.createdAt,
+          citations: gossips.citations,
+          entities: gossips.entities,
+          thumbnail: gossips.thumbnail,
           article: translations.article,
         })
-        .from(articles)
+        .from(gossips)
         .innerJoin(
           translations,
-          eq(translations.articleId, articles.id),
+          eq(translations.gossipId, gossips.id),
         )
         .where(
           and(
-            eq(articles.id, id),
+            eq(gossips.id, id),
             eq(translations.languageCode, languageCode),
           ),
         )
@@ -103,25 +103,25 @@ export class ArticleAtom {
 
       const articlesWithTranslations = await db
         .select({
-          id: articles.id,
-          createdAt: articles.createdAt,
-          citations: articles.citations,
-          entities: articles.entities,
-          thumbnail: articles.thumbnail,
+          id: gossips.id,
+          createdAt: gossips.createdAt,
+          citations: gossips.citations,
+          entities: gossips.entities,
+          thumbnail: gossips.thumbnail,
           article: translations.article,
         })
-        .from(articles)
+        .from(gossips)
         .innerJoin(
           translations,
-          eq(translations.articleId, articles.id),
+          eq(translations.gossipId, gossips.id),
         )
         .where(
           and(
-            gte(articles.createdAt, fiveDaysAgo.toISOString()),
+            gte(gossips.createdAt, fiveDaysAgo.toISOString()),
             eq(translations.languageCode, languageCode),
           ),
         )
-        .orderBy(desc(articles.createdAt));
+        .orderBy(desc(gossips.createdAt));
 
       return { data: articlesWithTranslations, error: null };
     } catch (error) {
