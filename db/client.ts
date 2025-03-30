@@ -15,8 +15,8 @@ export const client = createClient({
   syncInterval: 3600, // 1h
 });
 
-await client.sync();
+// await client.sync();
 
-console.log("Replica DB Synced With Production DB");
+// console.log("Replica DB Synced With Production DB");
 
 export const db = drizzle({ client });

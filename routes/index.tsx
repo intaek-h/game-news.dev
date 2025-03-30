@@ -1,43 +1,24 @@
-import { Handlers } from "$fresh/server.ts";
-import { determineBestLanguage, setLanguageCookie } from "~/utils/language.ts";
-import { auth } from "~/auth.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { NewsContainer } from "~/components/news-container.tsx";
+import { ArticleAtom } from "~/jobs/atoms/article.ts";
 
-// This route simply redirects to the appropriate language route
-export const handler: Handlers = {
-  async GET(req) {
-    // Get the user session if available
-    const session = await auth.api.getSession({
-      headers: req.headers,
-    });
+type Props = {
+  news: { title: string; newsId: number }[];
+};
 
-    // Determine the best language based on user preferences
-    const preferredLanguage = await determineBestLanguage({
-      user: session?.user
-        ? {
-          id: session.user.id,
-          preferredLanguage: session.user.preferredLanguage,
-        }
-        : undefined,
-      cookieHeader: req.headers.get("cookie") || undefined,
-      acceptLanguageHeader: req.headers.get("accept-language") || undefined,
-    });
+export const handler: Handlers<Props> = {
+  async GET(_req, ctx) {
+    const { data } = await ArticleAtom.GetRecentArticles();
 
-    // Redirect to the preferred language
-    return new Response(null, {
-      status: 302,
-      headers: {
-        "Location": `/${preferredLanguage}`,
-        "Set-Cookie": setLanguageCookie(preferredLanguage),
-      },
+    return ctx.render({
+      news: data?.map((v) => ({
+        title: v.article?.title ?? "",
+        newsId: v.id,
+      })) ?? [],
     });
   },
 };
 
-// This is just a fallback that should never be rendered
-export default function Home() {
-  return (
-    <div>
-      <p>Redirecting to your preferred language...</p>
-    </div>
-  );
+export default function Home({ data }: PageProps<Props>) {
+  return <NewsContainer news={data.news} />;
 }

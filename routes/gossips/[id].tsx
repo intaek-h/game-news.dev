@@ -15,7 +15,7 @@ type Props = {
 export const handler: Handlers<Props> = {
   async GET(_req, ctx) {
     try {
-      const languageCode = ctx.params.lang;
+      const languageCode = "en";
       const { data, error } = await ArticleAtom.GetArticleById(
         parseInt(ctx.params.id),
         languageCode,

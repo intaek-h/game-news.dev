@@ -2,10 +2,6 @@
 // This file SHOULD be checked into source version control.
 // This file is automatically updated during development when running `dev.ts`.
 
-import * as $_lang_articles_id_ from "./routes/[lang]/articles/[id].tsx";
-import * as $_lang_index from "./routes/[lang]/index.tsx";
-import * as $_lang_login_index from "./routes/[lang]/login/index.tsx";
-import * as $_lang_register_index from "./routes/[lang]/register/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_layout from "./routes/_layout.tsx";
@@ -19,7 +15,11 @@ import * as $api_image_search_index from "./routes/api/image-search/index.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
 import * as $api_user_language_preference from "./routes/api/user/language-preference.ts";
+import * as $gossips_id_ from "./routes/gossips/[id].tsx";
+import * as $gossips_index from "./routes/gossips/index.tsx";
 import * as $index from "./routes/index.tsx";
+import * as $login_index from "./routes/login/index.tsx";
+import * as $register_index from "./routes/register/index.tsx";
 import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
@@ -29,10 +29,6 @@ import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
-    "./routes/[lang]/articles/[id].tsx": $_lang_articles_id_,
-    "./routes/[lang]/index.tsx": $_lang_index,
-    "./routes/[lang]/login/index.tsx": $_lang_login_index,
-    "./routes/[lang]/register/index.tsx": $_lang_register_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_layout.tsx": $_layout,
@@ -48,7 +44,11 @@ const manifest = {
       $api_scrape_article_extractor_index,
     "./routes/api/test.ts": $api_test,
     "./routes/api/user/language-preference.ts": $api_user_language_preference,
+    "./routes/gossips/[id].tsx": $gossips_id_,
+    "./routes/gossips/index.tsx": $gossips_index,
     "./routes/index.tsx": $index,
+    "./routes/login/index.tsx": $login_index,
+    "./routes/register/index.tsx": $register_index,
     "./routes/sign-out/index.tsx": $sign_out_index,
   },
   islands: {

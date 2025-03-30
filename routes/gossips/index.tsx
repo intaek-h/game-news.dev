@@ -1,14 +1,11 @@
-import { RouteContext } from "$fresh/server.ts";
 import { ArticleAtom } from "~/jobs/atoms/article.ts";
 import { TrendingContainer } from "~/components/trending-container.tsx";
 
-export default async function Home(_req: Request, ctx: RouteContext) {
-  const { lang } = ctx.params;
+export default async function Home(_req: Request) {
+  const lang = "en";
 
   const { data: recentArticles, error: recentArticlesErr } = await ArticleAtom
     .GetTrendingArticles(lang);
-
-  console.log("recentArticles", recentArticlesErr);
 
   if (recentArticlesErr || !recentArticles?.length) {
     return (
@@ -22,7 +19,6 @@ export default async function Home(_req: Request, ctx: RouteContext) {
   return (
     <div>
       <TrendingContainer
-        languageCode={lang}
         articles={recentArticles
           .filter((a) => typeof a.article === "object")
           .map((article, i) => ({

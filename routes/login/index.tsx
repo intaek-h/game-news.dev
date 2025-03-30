@@ -75,7 +75,7 @@ export default function Home(props: PageProps<Props>) {
     <div className="">
       <form
         method="post"
-        action={`/${props.params.lang}/login`}
+        action={`/login`}
         encType="multipart/form-data"
         className="my-4 px-4 mx-auto w-[300px]"
       >

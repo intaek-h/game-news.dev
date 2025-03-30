@@ -1,37 +1,36 @@
-import { auth } from "~/auth.ts";
-import LanguageSwitcher from "~/islands/language-switcher.tsx";
-
-export interface Props {
-  user?: typeof auth.$Infer.Session.user;
-  currentLanguage: string;
-  availableLanguages: { code: string; name: string }[];
-}
-
-export function NavBar(props: Props) {
-  const isLoggedIn = !!props.user;
-
+export function NavBar() {
   return (
     <nav className="mb-20">
       <ul className="flex justify-center mx-auto space-x-4 underline-offset-4 aria-[current='page']:[&_a]:decoration-gray-300 aria-[current='page']:[&_a]:underline">
         <li>
           <a
-            href={`/${props.currentLanguage}`}
+            href={`/gossips`}
             className="aria-[current='page']:decoration-gray-300 aria-[current='page']:underline hover:underline"
           >
-            now
+            gossips
           </a>
         </li>
 
         <li>
           <a
-            href={`/news`}
+            href={`/`}
             className="hover:underline"
           >
             news
           </a>
         </li>
 
-        {props.user
+        <li>
+          <a
+            href="more"
+            className="hover:underline"
+          >
+            more
+          </a>
+        </li>
+
+        {
+          /* {props.user
           ? (
             <>
               <li>
@@ -55,15 +54,8 @@ export function NavBar(props: Props) {
               admin
             </a>
           </li>
-        )}
-
-        <li className="">
-          <LanguageSwitcher
-            currentLanguage={props.currentLanguage}
-            availableLanguages={props.availableLanguages}
-            isLoggedIn={isLoggedIn}
-          />
-        </li>
+        )} */
+        }
       </ul>
     </nav>
   );

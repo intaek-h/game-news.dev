@@ -6,7 +6,6 @@ type Props = {
     title: string;
     keyPoints?: string[];
   }[];
-  languageCode: string;
 };
 
 export function TrendingContainer(props: Props) {
@@ -20,7 +19,7 @@ export function TrendingContainer(props: Props) {
 
       <div className="mb-10">
         <h2 className="mb-2">
-          <a href={`/${props.languageCode}/articles/${props.articles[0].id}`}>
+          <a href={`/gossips/${props.articles[0].id}`}>
             {props.articles[0].title}
           </a>
         </h2>
@@ -40,7 +39,7 @@ export function TrendingContainer(props: Props) {
         {props.articles.slice(1).map((article) => (
           <div key={article.id}>
             <h2>
-              <a href={`/${props.languageCode}/articles/${article.id}`}>
+              <a href={`/gossips/${article.id}`}>
                 {article.title}
               </a>
             </h2>
