@@ -13,7 +13,7 @@ COPY . .
 
 RUN deno cache main.ts
 
-RUN deno task build
+RUN deno task build:no-sync
 
 # open port 8000 when running the container. (-p 8000:8000)
 ARG PORT=8000

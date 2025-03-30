@@ -15,8 +15,15 @@ export const client = createClient({
   syncInterval: 3600, // 1h
 });
 
-await client.sync();
+if (Deno.args.includes("sync-replica")) {
+  await client.sync();
 
-console.log("Replica DB Synced With Production DB");
+  console.info("Replica DB Synced With Production DB");
+} else {
+  console.info("Skipping Replica DB Sync");
+  console.info(
+    "To sync, run the build command with the 'sync-replica' argument",
+  );
+}
 
 export const db = drizzle({ client });
