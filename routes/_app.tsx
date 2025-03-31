@@ -1,7 +1,21 @@
-import { type PageProps } from "$fresh/server.ts";
-import { asset } from "$fresh/runtime.ts";
+import { FreshContext } from "$fresh/server.ts";
+import * as path from "$std/path/mod.ts";
+import { walk } from "$std/fs/walk.ts";
 
-export default function App({ Component }: PageProps) {
+export default async function App(_req: Request, ctx: FreshContext) {
+  const outDir = path.join(ctx.config.build.outDir, "static");
+  const files = walk(outDir, {
+    exts: ["css"],
+    includeDirs: false,
+    includeFiles: true,
+  });
+
+  let criticalCSS = ""; // technically it's every tailwind style. just because it's tiny after all.
+
+  for await (const file of files) {
+    criticalCSS = await Deno.readTextFile(file.path); // it's only one file
+  }
+
   return (
     <html>
       <head>
@@ -19,21 +33,16 @@ export default function App({ Component }: PageProps) {
           // @ts-expect-error: OK to ignore
           onLoad="this.onload=null;this.rel='stylesheet'"
         />
-        <link
-          rel="preload"
-          href={asset("/styles.css")}
-          as="style"
-          // @ts-expect-error: OK to ignore
-          onLoad="this.onload=null;this.rel='stylesheet'"
-        />
-        <noscript>
-          <link rel="stylesheet" href={asset("/styles.css")} />
-        </noscript>
+
+        <style type="text/css">
+          {criticalCSS}
+        </style>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Game News</title>
       </head>
       <body className="mx-auto max-w-4xl">
-        <Component />
+        <ctx.Component />
       </body>
     </html>
   );
