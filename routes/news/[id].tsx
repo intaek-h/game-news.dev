@@ -2,11 +2,11 @@ export default function Home() {
   return (
     <div>
       <div className="px-4 mb-4 break-keep max-w-screen-sm text-left mx-auto">
-        <div className="px-4">
+        <div className="">
           <div className="mb-8">
             <a
               href={`/news`}
-              className="hover:underline underline-offset-4 text-lg text-gray-900"
+              className="hover:underline underline-offset-4 text-xl text-gray-900"
             >
               Everyone knows all the apps on your phone
             </a>
@@ -60,7 +60,7 @@ export default function Home() {
                 name="text"
                 wrap="virtual"
                 rows={6}
-                className="w-full p-2 border-l border-gray-300 font-mono text-gray-900 placeholder:text-gray-400"
+                className="w-full p-2 border-l border-gray-200 rounded-none font-mono text-gray-900 placeholder:text-gray-400"
                 placeholder="What do you think?"
               >
               </textarea>

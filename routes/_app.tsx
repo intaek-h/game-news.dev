@@ -1,6 +1,7 @@
 import { FreshContext } from "$fresh/server.ts";
 import * as path from "$std/path/mod.ts";
 import { walk } from "$std/fs/walk.ts";
+import { asset } from "$fresh/runtime.ts";
 
 export default async function App(_req: Request, ctx: FreshContext) {
   const outDir = path.join(ctx.config.build.outDir, "static");
@@ -39,7 +40,19 @@ export default async function App(_req: Request, ctx: FreshContext) {
         </style>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <title>Game News</title>
+
+        <link
+          rel="preload"
+          href={asset("/styles.css")}
+          as="style"
+          // @ts-expect-error: OK to ignore
+          onLoad="this.onload=null;this.rel='stylesheet'"
+        />
+        <noscript>
+          <link rel="stylesheet" href={asset("/styles.css")} />
+        </noscript>
       </head>
       <body className="mx-auto max-w-4xl">
         <ctx.Component />
