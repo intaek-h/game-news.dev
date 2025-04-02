@@ -2,11 +2,11 @@ export default function Home() {
   return (
     <div>
       <div className="px-4 mb-4 break-keep max-w-screen-sm text-left mx-auto">
-        <div className="">
+        <div className="px-4">
           <div className="mb-8">
             <a
               href={`/news`}
-              className="hover:underline underline-offset-4 text-xl text-gray-900"
+              className="hover:underline underline-offset-4 text-2xl text-gray-900"
             >
               Everyone knows all the apps on your phone
             </a>
@@ -39,7 +39,7 @@ export default function Home() {
           </div>
 
           <div className="mb-16">
-            <ul className="text-sm text-gray-500 list-[circle] [&>li]:mb-4">
+            <ul className="text-sm text-gray-500 list-[circle] [&>li]:mb-4 list-outside ml-4">
               <li>Absent from that link but important context.</li>
               <li>
                 That's a strong exaggeration; it's millions of km across in
@@ -60,7 +60,7 @@ export default function Home() {
                 name="text"
                 wrap="virtual"
                 rows={6}
-                className="w-full p-2 border-l border-gray-200 rounded-none font-mono text-gray-900 placeholder:text-gray-400"
+                className="w-full p-2 border-none rounded-none font-mono text-gray-900 placeholder:text-gray-400 bg-[#ebeef0] outline-[#bdbbbb]"
                 placeholder="What do you think?"
               >
               </textarea>
