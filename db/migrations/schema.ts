@@ -1,4 +1,9 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  type AnySQLiteColumn,
+  integer,
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
 import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
 
 export const gossips = sqliteTable("gossips", {
@@ -19,6 +24,17 @@ export const translations = sqliteTable("translations", {
     languages.code
   ),
   article: text({ mode: "json" }).$type<ArticleFormat>(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at"),
+  deletedAt: text("deleted_at"),
+});
+
+export const posts = sqliteTable("posts", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  title: text().notNull(),
+  content: text().notNull(),
+  url: text().notNull(),
+  urlHost: text("url_host").notNull(),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),
   deletedAt: text("deleted_at"),
@@ -114,9 +130,57 @@ export const verification = sqliteTable("verification", {
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
+/**
+ * Comment system schema
+ */
+export const comments = sqliteTable("comments", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  content: text().notNull(),
+  parentId: integer("parent_id").references((): AnySQLiteColumn => comments.id), // Self-referencing for nested comments - optional to allow top-level comments
+  postId: integer("post_id").references(() => posts.id),
+  userId: text("user_id").notNull().references(() => user.id),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
+});
+
+export const commentVotes = sqliteTable("comment_votes", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  commentId: integer("comment_id").notNull().references(() => comments.id, {
+    onDelete: "cascade",
+  }),
+  userId: text("user_id").notNull().references(() => user.id),
+  value: integer().notNull().default(1),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const userPoints = sqliteTable("user_points", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull().references(() => user.id, {
+    onDelete: "cascade",
+  }),
+  points: integer().notNull().default(0),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
+export const pointTransactions = sqliteTable("point_transactions", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull().references(() => user.id, {
+    onDelete: "cascade",
+  }),
+  points: integer().notNull(), // Can be positive or negative
+  actionType: text("action_type").notNull(), // 'post_create', 'comment_create', 'comment_received_upvote', etc.
+  referenceId: text("reference_id"), // ID of the related post/comment/etc
+  referenceType: text("reference_type"), // 'post', 'comment', etc.
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
 export default {
-  articles: gossips,
+  gossips,
   translations,
+  posts,
   languages,
   genTimes,
   rawTopics,
@@ -125,4 +189,8 @@ export default {
   session,
   account,
   verification,
+  comments,
+  commentVotes,
+  userPoints,
+  pointTransactions,
 };

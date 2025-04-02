@@ -26,7 +26,7 @@
 
   "tasks": {
     "db:pull": "deno run -A --node-modules-dir npm:drizzle-kit pull --config=drizzle.config.ts",
-    "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate:sqlite --config=drizzle.config.ts",
+    "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate --config=drizzle.config.ts",
     "db:migrate": "deno run -A --node-modules-dir ./db/migrate.ts",
     "db:push": "deno run -A --node-modules-dir npm:drizzle-kit push --config=drizzle.config.ts",
     "db:studio": "deno run -A --node-modules-dir npm:drizzle-kit studio --config=drizzle.config.ts",
