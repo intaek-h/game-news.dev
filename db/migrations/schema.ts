@@ -31,10 +31,11 @@ export const translations = sqliteTable("translations", {
 
 export const posts = sqliteTable("posts", {
   id: integer().primaryKey({ autoIncrement: true }),
+  postType: text("post_type").notNull().$type<"news" | "ask">(),
   title: text().notNull(),
   content: text().notNull(),
   url: text().notNull(),
-  urlHost: text("url_host").notNull(),
+  urlHost: text("url_host").notNull(), // for searching
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),
   deletedAt: text("deleted_at"),
@@ -136,8 +137,10 @@ export const verification = sqliteTable("verification", {
 export const comments = sqliteTable("comments", {
   id: integer().primaryKey({ autoIncrement: true }),
   content: text().notNull(),
+  contentType: text("content_type").notNull().$type<"post" | "gossip">(),
   parentId: integer("parent_id").references((): AnySQLiteColumn => comments.id), // Self-referencing for nested comments - optional to allow top-level comments
   postId: integer("post_id").references(() => posts.id),
+  gossipId: integer("gossip_id").references(() => gossips.id),
   userId: text("user_id").notNull().references(() => user.id),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
