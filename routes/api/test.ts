@@ -1,7 +1,7 @@
 import { Handlers } from "$fresh/server.ts";
 import { chatGoogleGemini } from "~/jobs/utils/google.ts";
-import Parser from "rss-parser";
 import jsonParser from "json-like-parse";
+import { GameDeveloperNewsScraper } from "~/jobs/compounds/game-dev-news-scraper.ts";
 
 export const handler: Handlers = {
   async POST(_req) {
@@ -65,19 +65,11 @@ export const handler: Handlers = {
     });
   },
 
-  async GET(req) {
-    const url = new URL(req.url);
-    const value = url.searchParams.get("value");
+  async GET(_req) {
+    const news = await GameDeveloperNewsScraper.ScrapeNewsPostedYesterday();
 
-    if (!value) {
-      return Response.json(
-        { error: "Missing value parameter" },
-        { status: 400 },
-      );
-    }
-
-    const parser = new Parser();
-    const feed = await parser.parseURL(value);
-    return Response.json({ feed });
+    return Response.json({
+      news,
+    });
   },
 };

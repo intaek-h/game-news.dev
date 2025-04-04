@@ -1,4 +1,5 @@
 import { RedditScrapingResult } from "~/types/redditScraper.ts";
+import Parser from "rss-parser";
 
 const INTAEK_API_KEY = Deno.env.get("INTAEK_API_KEY");
 
@@ -33,4 +34,152 @@ export class ScrapeAtom {
 
     return data;
   };
+
+  static ScrapeGameDeveloperNews = async (param: RSSSource) => {
+    const parser = new Parser();
+    const feed = await parser.parseURL(param.url);
+
+    const items = feed.items?.map((item) => {
+      return {
+        ...item,
+        title: item[param.keys.title] as string || "",
+        link: item[param.keys.link] as string || "",
+        createdAt: item[param.keys.createdAt] as string || "",
+      };
+    });
+
+    return items;
+  };
 }
+
+type RSSSource = {
+  url: string;
+  keys: {
+    title: string;
+    link: string;
+    createdAt: string;
+  };
+};
+
+export const GameDeveloperNewsRSS: RSSSource[] = [
+  {
+    "url": "https://www.gamedeveloper.com/rss.xml",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://www.gamesindustry.biz/feed",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://www.developer-tech.com/categories/developer-gaming/feed/",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://venturebeat.com/category/game-development/feed/",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://gamefromscratch.com/feed/",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://80.lv/feed",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://mas-bandwidth.com/rss/",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://www.redblobgames.com/blog/posts.xml",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://etodd.io/index.xml",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://fabiensanglard.net/rss.xml",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://chickensoft.games/blog/rss",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://technology.riotgames.com/news/feed",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://unitydevelopers.co.uk/feed/",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://www.tomlooman.com/feed/",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+  {
+    "url": "https://www.factorio.com/blog/rss",
+    "keys": {
+      "title": "title",
+      "link": "link",
+      "createdAt": "isoDate",
+    },
+  },
+];
