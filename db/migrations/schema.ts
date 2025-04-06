@@ -31,11 +31,12 @@ export const translations = sqliteTable("translations", {
 
 export const posts = sqliteTable("posts", {
   id: integer().primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull().references(() => user.id),
   postType: text("post_type").notNull().$type<"news" | "ask">(),
   title: text().notNull(),
-  content: text().notNull(),
-  url: text().notNull(),
-  urlHost: text("url_host").notNull(), // for searching
+  content: text(),
+  url: text(),
+  urlHost: text("url_host"), // for searching
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),
   deletedAt: text("deleted_at"),
