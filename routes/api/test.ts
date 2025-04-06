@@ -66,10 +66,10 @@ export const handler: Handlers = {
   },
 
   async GET(_req) {
-    const news = await GameDeveloperNewsScraper.ScrapeNewsPostedYesterday();
+    const result = await GameDeveloperNewsScraper.ScrapeDaily();
 
     return Response.json({
-      news,
+      result,
     });
   },
 };

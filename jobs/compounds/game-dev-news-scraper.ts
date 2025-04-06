@@ -1,34 +1,54 @@
-import { GameDeveloperNewsRSS, ScrapeAtom } from "~/jobs/atoms/scrape.ts";
-import { addDays, isAfter, startOfDay } from "date-fns";
-import { UTCDate } from "@date-fns/utc";
+import { ScrapeAtom } from "~/jobs/atoms/scrape.ts";
+import { ArticleAiAtom } from "~/jobs/atoms/article-ai.ts";
+import { db } from "~/db/client.ts";
+import { posts, user } from "~/db/migrations/schema.ts";
+import { and, eq } from "drizzle-orm";
 
 export class GameDeveloperNewsScraper {
-  static ScrapeNewsPostedYesterday = async (
-    todayUTC: UTCDate = new UTCDate(),
-  ) => {
-    const scrapePromise = GameDeveloperNewsRSS.map(
-      (v) => ScrapeAtom.ScrapeGameDeveloperNews(v),
-    );
-    const scrapeResults = await Promise.allSettled(scrapePromise);
-    const allResults = scrapeResults.flatMap((result) => {
-      if (result.status === "fulfilled") {
-        return result.value;
-      } else {
-        console.error("Scrape failed:", result.reason);
-        return [];
-      }
-    });
+  /**
+   * - 매일 00시에 전일 뉴스 스크랩.
+   * - AI 가 유용한 것만 선택.
+   * - 게시물 업로드.
+   */
+  static ScrapeDaily = async () => {
+    const newsTopics = await ScrapeAtom.ScrapeGameDevNewsPostedYesterday();
 
-    return allResults
-      .filter((item) => {
-        const yesterdayStart = addDays(startOfDay(todayUTC), -1);
-        const createdAt = new UTCDate(item.createdAt);
-        return isAfter(createdAt, yesterdayStart);
-      })
-      .map((item) => ({
-        title: item.title,
-        link: item.link,
-        createdAt: item.createdAt,
-      }));
+    const aiSelection = await ArticleAiAtom.SelectUsefulGameDevNewsTitles(
+      newsTopics.map((v) => ({ ...v, isSelected: false })),
+    );
+
+    if (!aiSelection) {
+      console.error(
+        "GameDeveloperNewsScraper: AI selection failed",
+      );
+      return;
+    }
+
+    const [newsAdmin] = await db
+      .select()
+      .from(user)
+      .where(
+        and(eq(user.type, "admin"), eq(user.name, "news-administrator")),
+      );
+
+    if (!newsAdmin) {
+      console.error(
+        "GameDeveloperNewsScraper: news administrator not found",
+      );
+      return;
+    }
+
+    const inserted = await db.insert(posts).values(
+      aiSelection.filter((v) => !!v.title && !!v.link).map((v) => ({
+        createdAt: new Date(v.createdAt).toISOString(),
+        title: v.title,
+        postType: "news" as const,
+        url: v.link,
+        userId: newsAdmin.id,
+        urlHost: new URL(v.link).host,
+      })),
+    ).returning();
+
+    return inserted;
   };
 }

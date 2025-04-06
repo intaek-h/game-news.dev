@@ -1,10 +1,13 @@
 import parser from "json-like-parse";
 
-export function unstableJsonParser<T>(p: { maybeJson: string }): T | undefined {
+interface Options {
+  maybeJson: string;
+}
+
+export function unstableJsonParser<T>({ maybeJson }: Options): T | undefined {
   try {
-    const { maybeJson } = p;
-    const objArr = parser(maybeJson);
-    return objArr[0];
+    const result = parser(maybeJson);
+    return result as T;
   } catch (error) {
     console.error("Error parsing JSON-like string:", error);
     return undefined;

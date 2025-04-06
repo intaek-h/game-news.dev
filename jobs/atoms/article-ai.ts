@@ -4,7 +4,12 @@ import {
 } from "~/jobs/utils/anthropic.ts";
 import { chatPerplexity } from "~/jobs/utils/perplexity.ts";
 import { unstableJsonParser } from "~/jobs/utils/json.ts";
-import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
+import {
+  ArticleEntities,
+  ArticleFormat,
+  DeveloperArticleCandidate,
+} from "~/types/articleFormat.ts";
+import { chatGoogleGemini } from "~/jobs/utils/google.ts";
 
 export class ArticleAiAtom {
   static FilterHotTopics = async (
@@ -110,8 +115,11 @@ export class ArticleAiAtom {
       .map((a) => a.find((c) => c.type === "text")?.text ?? "")
       .filter((v) => "<fail>" !== v.trim())
       .map((v) => {
-        const result = unstableJsonParser<ArticleFormat>({ maybeJson: v });
+        let result = unstableJsonParser<ArticleFormat>({ maybeJson: v });
         if (!result) return;
+        if (Array.isArray(result)) {
+          result = result[0];
+        }
         return JSON.stringify(result);
       })
       .filter((v) => typeof v === "string");
@@ -153,8 +161,11 @@ export class ArticleAiAtom {
       .map((a) => a.find((c) => c.type === "text")?.text ?? "")
       .filter((v) => "<fail>" !== v.trim())
       .map((v) => {
-        const result = unstableJsonParser<ArticleFormat>({ maybeJson: v });
+        let result = unstableJsonParser<ArticleFormat>({ maybeJson: v });
         if (!result) return;
+        if (Array.isArray(result)) {
+          result = result[0];
+        }
         return JSON.stringify(result);
       })
       .filter((v) => typeof v === "string");
@@ -170,13 +181,18 @@ export class ArticleAiAtom {
       message: article,
     });
 
+    console.log("result", result);
+
     const endTime = performance.now();
 
     const reply = result.find((c) => c.type === "text")?.text;
 
-    const entities = unstableJsonParser<ArticleEntities>({
+    let entities = unstableJsonParser<ArticleEntities>({
       maybeJson: reply ?? "",
     });
+    if (Array.isArray(entities)) {
+      entities = entities[0];
+    }
 
     console.info(
       "\x1b[32m",
@@ -197,5 +213,33 @@ export class ArticleAiAtom {
     }
 
     return entities;
+  }
+
+  static async SelectUsefulGameDevNewsTitles(
+    data: DeveloperArticleCandidate[],
+  ) {
+    const startTime = performance.now();
+    const systemPrompt = Deno.readTextFileSync(
+      Deno.cwd() + "/jobs/system-prompts/game-dev-news-title-selection.txt",
+    );
+    const result = await chatGoogleGemini({
+      systemP: systemPrompt,
+      message: JSON.stringify(data),
+    });
+
+    const parsed = unstableJsonParser<DeveloperArticleCandidate[]>({
+      maybeJson: result.text ?? "",
+    });
+
+    const endTime = performance.now();
+
+    console.info(
+      "\x1b[32m",
+      `[...] AI Game Developer News Selection Finished.`,
+      "\x1b[0m",
+      `(Took ${(endTime - startTime) / 1000}s)`,
+    );
+
+    return (parsed ?? []).filter((v) => v.isSelected);
   }
 }

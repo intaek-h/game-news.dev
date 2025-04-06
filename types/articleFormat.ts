@@ -12,3 +12,10 @@ export interface ArticleEntities {
   people: string[];
   products: string[];
 }
+
+export interface DeveloperArticleCandidate {
+  title: string;
+  link: string;
+  createdAt: string;
+  isSelected: boolean;
+}

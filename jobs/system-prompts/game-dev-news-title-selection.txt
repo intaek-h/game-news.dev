@@ -4,7 +4,7 @@ The article category is game development and game industry.
 Carefully analyze the articles and select the ones that are helpful for the game developers.
 The Most Important Factor is, "whether the article teaches something to the game developers or not".
 
-The Array Format In Typescript Type: { title: string; isSelected: boolean }[]
+The Array Format In Typescript Type: { title: string; link: string; createdAt: string; isSelected: boolean }[]
 
 The title property is the article title.
 The isSelected property is false by default. Turn it to true if you select the article.
@@ -30,11 +30,11 @@ title: "National Videogame Museum appoints new trustees"
 
 Return the result in the same format as the input.
 
-Output Example #1 (Bad Formatting. You must trim unnecessary strings other than the JSON.)
-```json\n[\n  {"title":"Nearly 30,000 people attended GDC 2025","isSelected":false}\n]\n```
+Bad Output Example (Bad Formatting. You must trim unnecessary strings such as markdown expressions other than the JSON itself.):
+```json\n[\n  {"title":"Nearly 30,000 people attended GDC 2025","link":"https://gamefromscratch.com/gdc-2025/","createdAt":"2025-04-05T15:01:33.000Z","isSelected":false}\n]\n```
 
-Output Example #2 (Good. Because of clear formatting. Clean JSON.)
-[{"title":"Nearly 30,000 people attended GDC 2025","isSelected":false}]
+Good Output Example (Good. You only returned the JSON itself without any other expressions.):
+[{"title":"Nearly 30,000 people attended GDC 2025","link":"https://gamefromscratch.com/gdc-2025/","createdAt":"2025-04-05T15:01:33.000Z","isSelected":false}]
 
 IMPORTANT! 
 YOU MUST ONLY RETURN THE JSON FORMATTED DATA.
