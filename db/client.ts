@@ -1,4 +1,4 @@
-import { Config, createClient } from "@libsql/client/node";
+import { Config, createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
 const TURSO_API_KEY = Deno.env.get("TURSO_API_KEY");
