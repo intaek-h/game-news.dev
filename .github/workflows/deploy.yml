@@ -52,6 +52,7 @@ jobs:
           R2_TOKEN: ${{ secrets.R2_TOKEN }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          BRANCH: ${{ github.ref_name }}
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
