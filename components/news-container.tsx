@@ -1,7 +1,13 @@
 import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
 
 interface Props {
-  news: { title: string; newsId: number }[];
+  news: {
+    title: string;
+    newsId: number;
+    url: string;
+    urlHost: string;
+    createdAt: string;
+  }[];
 }
 
 export function NewsContainer({ news }: Props) {

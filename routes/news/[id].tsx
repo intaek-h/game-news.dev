@@ -1,4 +1,37 @@
-export default function Home() {
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { NewsAtom } from "~/jobs/atoms/news.ts";
+
+type Props = {
+  username: string;
+  title: string;
+  url: string;
+  urlHost: string;
+  createdAt: string;
+  content: string;
+  id: number;
+};
+
+export const handler: Handlers<Props> = {
+  async GET(_req, ctx) {
+    const newsId = ctx.params.id;
+    if (!newsId || isNaN(Number(newsId)) || Number(newsId) < 1) {
+      return ctx.renderNotFound();
+    }
+    const article = await NewsAtom.GetNewsDetail(Number(newsId));
+
+    return ctx.render({
+      username: article.username,
+      title: article.title,
+      url: article.url ?? "",
+      urlHost: article.urlHost ?? "",
+      createdAt: article.createdAt,
+      content: article.content ?? "",
+      id: article.id,
+    }) ?? [];
+  },
+};
+
+export default function Home(props: PageProps<Props>) {
   return (
     <div>
       <div className="px-4 mb-4 break-keep max-w-screen-sm text-left mx-auto">
@@ -8,15 +41,15 @@ export default function Home() {
               href={`/news`}
               className="hover:underline underline-offset-4 text-2xl text-gray-900"
             >
-              Everyone knows all the apps on your phone
+              {props.data.title}
             </a>
             <a
               href=""
               className="hover:underline text-gray-400 underline-offset-4 text-xs ml-1"
             >
-              (peabee.substack.com)
+              ({props.data.urlHost})
             </a>
-            <div className="flex text-xs items-center text-gray-300 gap-1">
+            <div className="flex text-xs items-center text-gray-400 gap-1">
               <button
                 className="hover:underline underline-offset-4"
                 type="button"
@@ -33,25 +66,15 @@ export default function Home() {
                 by
               </span>
               <a href="" className="hover:underline underline-offset-4">
-                jamigo
+                {props.data.username}
               </a>
             </div>
           </div>
 
           <div className="mb-16">
-            <ul className="text-sm text-gray-500 list-[circle] [&>li]:mb-4 list-outside ml-4">
-              <li>Absent from that link but important context.</li>
-              <li>
-                That's a strong exaggeration; it's millions of km across in
-                three dimensions.
-              </li>
-              <li>
-                Weird, I checked the link but there's no mention of time travel.
-              </li>
-              <li>
-                Don't anthropomorphize machines. They hate it when you do that.
-              </li>
-            </ul>
+            <p className="text-sm text-gray-500">
+              {props.data.content}
+            </p>
           </div>
 
           <div className="mb-16">
@@ -60,8 +83,8 @@ export default function Home() {
                 name="text"
                 wrap="virtual"
                 rows={6}
-                className="w-full p-2 border-none rounded-none font-mono text-gray-900 placeholder:text-gray-400 bg-[#ebeef0] outline-[#bdbbbb]"
-                placeholder="What do you think?"
+                className="w-full p-2 border-none rounded-none font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] outline-[#bdbbbb]"
+                placeholder="your thoughts"
               >
               </textarea>
             </form>
