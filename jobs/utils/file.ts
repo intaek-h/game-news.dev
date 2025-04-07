@@ -1,3 +1,5 @@
+import { err, ok } from "neverthrow";
+
 export class FileUtilities {
   static DetectContentTypeFromExtension(filename: string): string {
     const extension = filename.split(".").pop()?.toLowerCase() || "";
@@ -18,12 +20,9 @@ export class FileUtilities {
       "js": "application/javascript",
       "xml": "application/xml",
       "zip": "application/zip",
-      "docx":
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "xlsx":
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "pptx":
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       "mp3": "audio/mpeg",
       "mp4": "video/mp4",
       "webm": "video/webm",
@@ -133,5 +132,13 @@ export class FileUtilities {
 
     // Default fallback
     return null;
+  }
+
+  static ReadFileSafeSync(filePath: string) {
+    try {
+      return ok(Deno.readTextFileSync(Deno.cwd() + filePath));
+    } catch (error) {
+      return err({ err: error, message: "Failed to read file" });
+    }
   }
 }
