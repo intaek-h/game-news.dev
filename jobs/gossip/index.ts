@@ -1,4 +1,4 @@
-import { err, ok, ResultAsync } from "neverthrow";
+import { err, ResultAsync } from "neverthrow";
 import type { RedditScrapingResult } from "~/types/redditScraper.ts";
 import { db } from "~/db/client.ts";
 import { genTimes, hotTopics, rawTopics } from "~/db/migrations/schema.ts";
@@ -7,6 +7,8 @@ import { UTCDate } from "@date-fns/utc";
 import { gte } from "drizzle-orm";
 import { chatAnthropicSonnet2 } from "~/jobs/utils/anthropic.ts";
 import { FileUtilities } from "~/jobs/utils/file.ts";
+import { kv } from "~/kv.ts";
+import { Logg } from "~/jobs/logger/index.ts";
 
 const INTAEK_API_KEY = Deno.env.get("INTAEK_API_KEY");
 
@@ -15,7 +17,7 @@ export class DailyGossip {
     const urlParams = new URLSearchParams();
 
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "30");
+    urlParams.append("limit", "3");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
 
@@ -26,7 +28,8 @@ export class DailyGossip {
           headers: { "X-API-KEY": INTAEK_API_KEY ?? "" },
         }),
         (err) => ({ err, message: "Failed to fetch Reddit topics" }),
-      ).andThen((response) =>
+      )
+      .andThen((response) =>
         ResultAsync.fromPromise<RedditScrapingResult, { err: unknown; message: string }>(
           response.json(),
           (err) => ({ err, message: "Failed to parse Reddit topics" }),
@@ -34,7 +37,7 @@ export class DailyGossip {
       );
   };
 
-  static GetRecentGossips = () => {
+  static GetRecentGossipsFromDB = () => {
     const fiveDaysAgo = addDays(startOfDay(new UTCDate()), -5);
     return ResultAsync.fromPromise(
       db.select().from(hotTopics).where(
@@ -52,15 +55,7 @@ export class DailyGossip {
     }
 
     return chatAnthropicSonnet2({ systemP: prompt.value, message: rawTopics.join("\n") })
-      .andThen((chatResponse) => {
-        const informativeTopics = chatResponse.find((c) => c.type === "text")?.text;
-
-        if (!informativeTopics) {
-          return err({ err: null, message: "Failed to extract informative topics" });
-        }
-
-        return ok(informativeTopics);
-      });
+      .map((chatResponse) => chatResponse.find((c) => c.type === "text")?.text ?? "");
   };
 
   static RemoveDuplicateTopics = ({ candidateTopics, topicPool }: { topicPool: string[]; candidateTopics: string }) => {
@@ -76,15 +71,7 @@ export class DailyGossip {
         `<Recent Topics>\n${topicPool.join("\n")}\n</Recent Topics>`,
         `<New Topics>\n${candidateTopics}</New Topics>`,
       ].join("\n\n"),
-    }).andThen((chatResponse) => {
-      const deduplicatedTopics = chatResponse.find((c) => c.type === "text")?.text;
-
-      if (!deduplicatedTopics) {
-        return err({ err: null, message: "Failed to extract deduplicated topics" });
-      }
-
-      return ok(deduplicatedTopics);
-    });
+    }).map((chatResponse) => chatResponse.find((c) => c.type === "text")?.text ?? "");
   };
 
   static GossipPipeline = () => {
@@ -94,6 +81,14 @@ export class DailyGossip {
         const GEN_TIME = new Date().toISOString();
         return { trendingTopics: topics, genTimeISOString: GEN_TIME };
       })
+      .andThen((data) =>
+        Logg.SendDiscord({
+          title: "Gossip Pipeline",
+          description: "Scraping finished.",
+          message: `${data.trendingTopics.length} topics found.`,
+        })
+          .map(() => data)
+      )
       .andThen(({ genTimeISOString, trendingTopics }) =>
         ResultAsync.fromPromise(
           db.insert(genTimes)
@@ -116,7 +111,7 @@ export class DailyGossip {
           .map(() => ({ genTimeId, trendingTopics }))
       )
       .andThen(({ genTimeId, trendingTopics }) =>
-        this.GetRecentGossips().map((recentGossips) => ({
+        this.GetRecentGossipsFromDB().map((recentGossips) => ({
           genTimeId,
           trendingTopics,
           recentGossips,
@@ -129,24 +124,58 @@ export class DailyGossip {
           informativeTopics,
         }))
       )
+      .andThen((data) =>
+        Logg.SendDiscord({
+          title: "Gossip Pipeline",
+          description: "Informative topic selection finished.",
+          message: `${data.informativeTopics.split("\n").length} informative topics selected.`,
+          code: data.informativeTopics,
+        })
+          .map(() => data)
+      )
       .andThen(({ genTimeId, informativeTopics, recentGossips }) =>
         this.RemoveDuplicateTopics({
           topicPool: recentGossips.filter((t) => !!t.topics).map((t) => t.topics!),
           candidateTopics: informativeTopics,
         }).map((deduplicatedTopics) => ({
-          deduplicatedTopics: deduplicatedTopics.split("\n"),
+          deduplicatedTopics: deduplicatedTopics?.split("\n") ?? [],
           genTimeId,
         }))
-      );
-    // .andThen(({ deduplicatedTopics, genTimeId }) => {
-    //   let hotTopicsCount = 0;
-    //   for  (const topic of deduplicatedTopics) {
-    //     hotTopicsCount++;
-    //     // @ts-ignore: See kv.ts
-    //      kv.enqueue(["hot-topic", { topic: topic, gid: genTime.id }], {
-    //       delay: (1000 * 70) * (Math.floor(hotTopicsCount / 3) + 1),
-    //     });
-    //   }
-    // });
+      )
+      .andThen((data) =>
+        Logg.SendDiscord({
+          title: "Gossip Pipeline",
+          description: "Topic deduplication finished.",
+          message: `${data.deduplicatedTopics.length} unique topics remaining.`,
+          code: data.deduplicatedTopics.join("\n"),
+        })
+          .map(() => data)
+      )
+      .andThen((data) =>
+        Logg.SendDiscord({
+          title: "Gossip Pipeline",
+          description: "Now enqueuing.",
+          message: "",
+        })
+          .map(() => data)
+      )
+      .map(({ deduplicatedTopics, genTimeId }) => {
+        let hotTopicsCount = 0;
+        for (const topic of deduplicatedTopics) {
+          hotTopicsCount++;
+          // @ts-ignore: See kv.ts
+          kv.enqueue(["hot-topic", { topic: topic, gid: genTimeId }], {
+            delay: (1000 * 70) * (Math.floor(hotTopicsCount / 3) + 1),
+          });
+        }
+      })
+      .mapErr((err) => {
+        console.error("GossipPipeline error:", err);
+        Logg.SendDiscord({
+          title: "Gossip Pipeline Failed",
+          description: err.message,
+          message: "",
+        });
+      });
   };
 }
