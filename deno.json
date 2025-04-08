@@ -15,6 +15,7 @@
     "drizzle-orm": "npm:drizzle-orm@^0.40.0",
     "json-like-parse": "npm:json-like-parse@^1.0.3",
     "marked": "npm:marked@^15.0.7",
+    "neverthrow": "npm:neverthrow@^8.2.0",
     "rss-parser": "npm:rss-parser@^3.13.0",
     "~/": "./",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
@@ -56,6 +57,10 @@
         "recommended"
       ]
     }
+  },
+
+  "fmt": {
+    "lineWidth": 120
   },
 
   "exclude": [
