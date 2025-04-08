@@ -1,20 +1,12 @@
-const SELF_URL = Deno.env.get("SELF_URL") ?? "";
-
-if (!SELF_URL) {
-  console.error("SELF_URL is not set");
-  Deno.exit(1);
-}
+// import { DailyGossip } from "~/jobs/gossip/index.ts";
 
 // 매일 UTC 10:00에 실행 (뉴욕 아침 6:00)
-// Deno.cron("Article Generator", "0 10 * * *", async () => {
-//   const response = await ArticleCompound.EnqueueHotTopics();
+// Deno.cron("Article Generator", "0 10 * * *", () => {
+//   DailyGossip.GossipPipeline();
 
 //   console.info(
 //     "\x1b[32m",
-//     `====================\nARTICLE GENERATION\n====================\n`,
-//     response,
-//     "\n",
-//     `====================\nARTICLE GENERATION\n====================\n`,
+//     `====================\nGossip Pipeline Running\n====================\n`,
 //     "\x1b[0m",
 //   );
 // });

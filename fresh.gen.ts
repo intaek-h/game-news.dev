@@ -37,13 +37,11 @@ const manifest = {
     "./routes/admin/entity-images.tsx": $admin_entity_images,
     "./routes/admin/index.tsx": $admin_index,
     "./routes/api/_middleware.ts": $api_middleware,
-    "./routes/api/articles/manual-generate/index.ts":
-      $api_articles_manual_generate_index,
+    "./routes/api/articles/manual-generate/index.ts": $api_articles_manual_generate_index,
     "./routes/api/articles/thumbnail.ts": $api_articles_thumbnail,
     "./routes/api/auth/[...path].ts": $api_auth_path_,
     "./routes/api/image-search/index.ts": $api_image_search_index,
-    "./routes/api/scrape/article-extractor/index.ts":
-      $api_scrape_article_extractor_index,
+    "./routes/api/scrape/article-extractor/index.ts": $api_scrape_article_extractor_index,
     "./routes/api/test.ts": $api_test,
     "./routes/api/user/language-preference.ts": $api_user_language_preference,
     "./routes/gossips/[id].tsx": $gossips_id_,
@@ -57,8 +55,7 @@ const manifest = {
   },
   islands: {
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,
-    "./islands/articles/enhanced-article-row.tsx":
-      $articles_enhanced_article_row,
+    "./islands/articles/enhanced-article-row.tsx": $articles_enhanced_article_row,
     "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
     "./islands/language-switcher.tsx": $language_switcher,
   },

@@ -1,5 +1,5 @@
 import { Handlers } from "$fresh/server.ts";
-import { GameDeveloperNewsScraper } from "~/jobs/compounds/game-dev-news-scraper.ts";
+import { DailyNews } from "~/jobs/news/index.ts";
 
 export const handler: Handlers = {
   POST(_req) {
@@ -9,10 +9,10 @@ export const handler: Handlers = {
   },
 
   async GET(_req) {
-    const result = await GameDeveloperNewsScraper.ScrapeDaily();
+    const result = await DailyNews.NewsPipeline();
 
     return Response.json({
-      result,
+      result: result.unwrapOr([]),
     });
   },
 };
