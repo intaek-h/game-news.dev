@@ -11,7 +11,7 @@ export class ScrapeAtom {
 
     const urlParams = new URLSearchParams();
     urlParams.append("subreddits", "gaming,Games,IndieGaming,pcgaming");
-    urlParams.append("limit", "30");
+    urlParams.append("limit", "4");
     urlParams.append("min_score", "3");
     urlParams.append("time_window", "86400");
     const response = await fetch(
