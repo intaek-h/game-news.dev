@@ -1,5 +1,5 @@
 import { MessageGuard } from "~/jobs/utils/kv.ts";
-import { ArticleCompound } from "~/jobs/compounds/article.ts";
+import { DailyGossip } from "~/jobs/gossip/index.ts";
 
 export const kv = await Deno.openKv();
 
@@ -40,9 +40,10 @@ kv.listenQueue(async (msg: unknown) => {
     try {
       console.log(`Processing topic: ${topic}, gid: ${gid}`);
 
-      const writeResult = await ArticleCompound.WriteArticles({ topic, gid });
+      // const writeResult = await ArticleCompound.WriteArticles({ topic, gid });
+      const writeResult = await DailyGossip.GossipPipeLineComplete({ topic, gid });
 
-      console.log("WriteArticles result: ", writeResult);
+      console.log("WriteArticles result: ", writeResult.unwrapOr([]));
     } catch (error) {
       console.error(`Error processing topic ${topic}:`, error);
       // In case of an unrecoverable error, we still keep the message marked as processed
