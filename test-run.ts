@@ -1,5 +1,3 @@
-import { db } from "~/db/client.ts";
-import { user } from "~/db/migrations/schema.ts";
+import { DailyNews } from "~/jobs/news/index.ts";
 
-const users = await db.select().from(user);
-console.log("hi", users);
+DailyNews.NewsPipeline();

@@ -1,10 +1,7 @@
 // filepath: /Users/ahiou/Documents/repositories/extinguish-backend/routes/api/user/language-preference.ts
 import { Handlers } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
-import {
-  setLanguageCookie,
-  updateUserLanguagePreference,
-} from "~/utils/language.ts";
+import { setLanguageCookie, updateUserLanguagePreference } from "~/utils/language.ts";
 
 export const handler: Handlers = {
   async POST(req) {

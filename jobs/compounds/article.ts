@@ -1,12 +1,5 @@
 import { db } from "~/db/client.ts";
-import {
-  genTimes,
-  gossips,
-  hotTopics,
-  languages,
-  rawTopics,
-  translations,
-} from "~/db/migrations/schema.ts";
+import { genTimes, gossips, hotTopics, languages, rawTopics, translations } from "~/db/migrations/schema.ts";
 import { kv } from "~/kv.ts";
 import { ArticleFormat } from "~/types/articleFormat.ts";
 import { ScrapeAtom } from "~/jobs/atoms/scrape.ts";

@@ -117,9 +117,7 @@ export default function EnhancedArticleRow(
   };
 
   // Get the current entity results based on the selected entity
-  const currentEntityResults = selectedEntity
-    ? (entitySearchResults.get(selectedEntity) || [])
-    : [];
+  const currentEntityResults = selectedEntity ? (entitySearchResults.get(selectedEntity) || []) : [];
   const hasCitationImages = citationImages.length > 0;
   const hasEntityResults = currentEntityResults.length > 0;
 
@@ -158,9 +156,7 @@ export default function EnhancedArticleRow(
                   type="button"
                   key={entity}
                   className={`text-sm py-0.5 px-2 rounded-md ${
-                    selectedEntity === entity
-                      ? "bg-blue-200 text-blue-800"
-                      : "bg-gray-100 text-gray-800"
+                    selectedEntity === entity ? "bg-blue-200 text-blue-800" : "bg-gray-100 text-gray-800"
                   } truncate max-w-[150px]`}
                   onClick={() => handleEntityClick(entity)}
                   title={entity}
@@ -209,8 +205,7 @@ export default function EnhancedArticleRow(
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
-                  Citation Images{" "}
-                  {hasCitationImages ? `(${citationImages.length})` : ""}
+                  Citation Images {hasCitationImages ? `(${citationImages.length})` : ""}
                 </button>
                 <button
                   type="button"
@@ -222,8 +217,7 @@ export default function EnhancedArticleRow(
                   }`}
                   disabled={!selectedEntity}
                 >
-                  Entity Images{" "}
-                  {hasEntityResults ? `(${currentEntityResults.length})` : ""}
+                  Entity Images {hasEntityResults ? `(${currentEntityResults.length})` : ""}
                 </button>
               </nav>
             </div>
@@ -235,8 +229,7 @@ export default function EnhancedArticleRow(
               {!isLoading && citationImages.length === 0 && !error && (
                 <div className="py-2 text-center text-gray-500">
                   <p>
-                    No images found in citation links. Try searching by entity
-                    instead.
+                    No images found in citation links. Try searching by entity instead.
                   </p>
                 </div>
               )}
@@ -290,8 +283,7 @@ export default function EnhancedArticleRow(
             !isEntitySearchLoading && (
             <div className="text-sm text-gray-500 mt-2">
               <p>
-                Start by clicking an entity to search for images, or wait for
-                citation images to load.
+                Start by clicking an entity to search for images, or wait for citation images to load.
               </p>
             </div>
           )}
