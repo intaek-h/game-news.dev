@@ -38,7 +38,8 @@ export default function Home(props: PageProps<Props>) {
         <div className="px-4">
           <div className="mb-8">
             <a
-              href={`/news`}
+              href={props.data.url}
+              target="_blank"
               className="hover:underline underline-offset-4 text-2xl text-gray-900"
             >
               {props.data.title}
