@@ -38,6 +38,29 @@ export const chatAnthropicSonnet2 = ({ message, systemP }: { systemP: string; me
   )
     .map((data) => data.content);
 
+export const chatAnthropicHaiku2 = ({ message, systemP }: { systemP: string; message: string }) =>
+  ResultAsync.fromPromise(
+    anthropic.messages.create({
+      model: "claude-3-5-haiku-latest",
+      max_tokens: 4096,
+      temperature: 1,
+      system: systemP,
+      messages: [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": message,
+            },
+          ],
+        },
+      ],
+    }),
+    (err) => ({ err, message: "Failed to create message" }),
+  )
+    .map((data) => data.content);
+
 export const chatAnthropicSonnet = async (
   d: { systemP: string; message: string },
 ) => {
@@ -76,7 +99,6 @@ export const chatAnthropicHaiku = async (
     max_tokens: 4096,
     temperature: 1,
     system: systemP,
-
     messages: [
       {
         "role": "user",

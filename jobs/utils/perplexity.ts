@@ -1,4 +1,5 @@
 import { PerplexityResponse } from "~/types/perplexity.ts";
+import { ResultAsync } from "neverthrow";
 
 const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
 
@@ -82,4 +83,68 @@ export const chatPerplexity = async (
 
     return { think, reply, citations: data.citations ?? [] };
   }
+};
+
+export const chatPerplexity2 = (
+  d: { message: string; systemP?: string },
+) => {
+  const { message, systemP } = d;
+
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "temperature": 0.4,
+      "top_p": 0.9,
+      "search_domain_filter": [],
+      "return_images": false,
+      "return_related_questions": false,
+      "top_k": 0,
+      "stream": false,
+      "presence_penalty": 0,
+      "frequency_penalty": 1,
+      "model": "sonar-reasoning-pro",
+      "messages": systemP
+        ? [
+          {
+            "role": "system",
+            "content": systemP,
+          },
+          {
+            "role": "user",
+            "content": message,
+          },
+        ]
+        : [
+          {
+            "role": "user",
+            "content": message,
+          },
+        ],
+      "max_tokens": 4096,
+    }),
+  };
+
+  const response = ResultAsync.fromPromise(
+    fetch("https://api.perplexity.ai/chat/completions", options),
+    (err) => ({ err, message: "Failed to fetch from Perplexity API" }),
+  ).andThen((response) =>
+    ResultAsync.fromPromise(
+      response.json() as Promise<PerplexityResponse>,
+      (err) => ({ err, message: "Failed to parse Perplexity API response" }),
+    )
+  ).map((data) => {
+    if (data.choices.length > 0 && data.choices[0].message) {
+      const content = data.choices[0].message.content || "";
+      const { reply, think } = extractThinkBlocks(content);
+
+      return { think, reply, citations: data.citations ?? [] };
+    }
+    return { think: "", reply: "", citations: data.citations ?? [] };
+  });
+
+  return response;
 };

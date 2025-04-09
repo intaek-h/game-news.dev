@@ -12,12 +12,6 @@ import { and, eq } from "drizzle-orm";
 import { Logg } from "~/jobs/logger/index.ts";
 
 export class DailyNews {
-  get yesterday() {
-    const todayUTC = new UTCDate();
-    const yesterdayStart = addDays(startOfDay(todayUTC), -1);
-    return yesterdayStart;
-  }
-
   static ScrapeGameDeveloperNews = (param: RSSSource) => {
     const parser = new Parser();
 

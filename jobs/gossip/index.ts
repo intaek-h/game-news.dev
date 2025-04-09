@@ -1,14 +1,17 @@
-import { err, ResultAsync } from "neverthrow";
+import { err, errAsync, ResultAsync } from "neverthrow";
 import type { RedditScrapingResult } from "~/types/redditScraper.ts";
 import { db } from "~/db/client.ts";
-import { genTimes, hotTopics, rawTopics } from "~/db/migrations/schema.ts";
+import { genTimes, gossips, hotTopics, languages, rawTopics, translations } from "~/db/migrations/schema.ts";
 import { addDays, startOfDay } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import { gte } from "drizzle-orm";
-import { chatAnthropicSonnet2 } from "~/jobs/utils/anthropic.ts";
+import { chatAnthropicHaiku2, chatAnthropicSonnet2 } from "~/jobs/utils/anthropic.ts";
 import { FileUtilities } from "~/jobs/utils/file.ts";
 import { kv } from "~/kv.ts";
 import { Logg } from "~/jobs/logger/index.ts";
+import { chatPerplexity2 } from "~/jobs/utils/perplexity.ts";
+import { unstableJsonParser } from "~/jobs/utils/json.ts";
+import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
 
 const INTAEK_API_KEY = Deno.env.get("INTAEK_API_KEY");
 
@@ -177,5 +180,183 @@ export class DailyGossip {
           message: "",
         });
       });
+  };
+
+  static WriteEnglishSummary = (topic: string) => {
+    const prompt = FileUtilities.ReadFileSafeSync("/jobs/system-prompts/english-article-generation.txt");
+
+    if (prompt.isErr()) {
+      return errAsync(prompt.error);
+    }
+
+    return chatPerplexity2({ systemP: prompt.value, message: topic });
+  };
+
+  static InspectSummary = (summary: string) => {
+    const prompt = FileUtilities.ReadFileSafeSync("/jobs/system-prompts/final-article-inspection.txt");
+
+    if (prompt.isErr()) {
+      return errAsync(prompt.error);
+    }
+
+    return chatAnthropicSonnet2({ systemP: prompt.value, message: summary }).map((data) => {
+      const result = data.find((c) => c.type === "text")?.text ?? "";
+
+      if (result.trim() === "<fail>") {
+        new Error("Failed to inspect summary");
+      }
+
+      let parsed = unstableJsonParser<ArticleFormat>({ maybeJson: result });
+
+      if (!parsed) {
+        new Error("Failed to parse summary");
+      }
+      if (Array.isArray(parsed)) {
+        parsed = parsed[0];
+      }
+
+      return JSON.stringify(parsed);
+    });
+  };
+
+  static TranslateIntoKorean = (summary: string) => {
+    const prompt = FileUtilities.ReadFileSafeSync("/jobs/system-prompts/english-to-korean-article-translation.txt");
+
+    if (prompt.isErr()) {
+      return errAsync(prompt.error);
+    }
+
+    return chatAnthropicSonnet2({ systemP: prompt.value, message: summary }).map((data) => {
+      const result = data.find((c) => c.type === "text")?.text ?? "";
+
+      if (result.trim() === "<fail>") {
+        new Error("Failed to inspect summary");
+      }
+
+      let parsed = unstableJsonParser<ArticleFormat>({ maybeJson: result });
+      if (!parsed) {
+        new Error("Failed to parse summary");
+      }
+      if (Array.isArray(parsed)) {
+        parsed = parsed[0];
+      }
+
+      return JSON.stringify(parsed);
+    });
+  };
+
+  static ExtractEntities = (summary: string) => {
+    const prompt = FileUtilities.ReadFileSafeSync("/jobs/system-prompts/article-entity-extraction.txt");
+
+    if (prompt.isErr()) {
+      return errAsync(prompt.error);
+    }
+
+    return chatAnthropicHaiku2({ systemP: prompt.value, message: summary }).map((data) => {
+      const reply = data.find((c) => c.type === "text")?.text;
+
+      let entities = unstableJsonParser<ArticleEntities>({
+        maybeJson: reply ?? "",
+      });
+      if (!entities) {
+        return;
+      }
+      if (Array.isArray(entities)) {
+        entities = entities[0];
+      }
+
+      if (
+        !entities ||
+        (
+          entities.companies.length === 0 &&
+          entities.people.length === 0 &&
+          entities.products.length === 0
+        )
+      ) {
+        return;
+      }
+
+      return entities;
+    });
+  };
+
+  static GossipPipeLineComplete = ({ topic, gid }: { topic: string; gid: number }) => {
+    return this.WriteEnglishSummary(topic).map((data) => ({
+      summary: data,
+      gid,
+    }))
+      .andThen((data) =>
+        this.InspectSummary(data.summary.reply).map((inspectResult) => ({
+          summary: inspectResult,
+          citations: data.summary.citations,
+          gid,
+        }))
+      )
+      .andThen((data) =>
+        this.ExtractEntities(data.summary).map((entities) => ({
+          summary: data.summary,
+          citations: data.citations,
+          entities,
+          gid: data.gid,
+        }))
+      )
+      .andThen((data) =>
+        this.TranslateIntoKorean(data.summary).map((summaryKor) => ({
+          summary: data.summary,
+          entities: data.entities,
+          citations: data.citations,
+          gid: data.gid,
+          koreanSummary: summaryKor,
+        }))
+      )
+      .andThen((data) =>
+        ResultAsync.fromPromise(
+          db.insert(gossips).values({
+            gid: gid,
+            citations: data.citations,
+            entities: data.entities,
+            createdAt: new Date().toISOString(),
+          }).returning({ id: gossips.id }),
+          (err) => ({ err, message: "Failed to insert gossips" }),
+        ).map(([{ id }]) => ({
+          ...data,
+          gossipId: id,
+        }))
+      )
+      .andThen((data) =>
+        ResultAsync.fromPromise(
+          db.select().from(languages).all(),
+          (err) => ({ err, message: "Failed to fetch languages" }),
+        ).map((languages) => ({
+          ...data,
+          languages,
+        }))
+      )
+      .andThen((data) =>
+        ResultAsync.fromPromise(
+          db
+            .insert(translations)
+            .values([
+              {
+                gossipId: data.gossipId,
+                article: JSON.parse(data.koreanSummary) as unknown as ArticleFormat,
+                createdAt: new Date().toISOString(),
+                languageCode: data.languages.find((l) => l.name === "korean")?.code!,
+              },
+              {
+                gossipId: data.gossipId,
+                article: JSON.parse(data.summary) as unknown as ArticleFormat,
+                createdAt: new Date().toISOString(),
+                languageCode: data.languages.find((l) => l.name === "english")?.code!,
+              },
+            ])
+            .returning({
+              articleId: translations.gossipId,
+              translationId: translations.id,
+              languageCode: translations.languageCode,
+            }),
+          (err) => ({ err, message: "Failed to insert translations" }),
+        )
+      );
   };
 }
