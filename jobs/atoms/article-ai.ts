@@ -1,14 +1,7 @@
-import {
-  chatAnthropicHaiku,
-  chatAnthropicSonnet,
-} from "~/jobs/utils/anthropic.ts";
+import { chatAnthropicHaiku, chatAnthropicSonnet } from "~/jobs/utils/anthropic.ts";
 import { chatPerplexity } from "~/jobs/utils/perplexity.ts";
 import { unstableJsonParser } from "~/jobs/utils/json.ts";
-import {
-  ArticleEntities,
-  ArticleFormat,
-  DeveloperArticleCandidate,
-} from "~/types/articleFormat.ts";
+import { ArticleEntities, ArticleFormat, DeveloperArticleCandidate } from "~/types/articleFormat.ts";
 import { chatGoogleGemini } from "~/jobs/utils/google.ts";
 
 export class ArticleAiAtom {
@@ -25,9 +18,7 @@ export class ArticleAiAtom {
       message: rawTopics.join("\n"),
     });
 
-    const informativeTopicText = informativeTopics.find((c) =>
-      c.type === "text"
-    )?.text;
+    const informativeTopicText = informativeTopics.find((c) => c.type === "text")?.text;
 
     if (!informativeTopicText) {
       return "";
@@ -48,9 +39,7 @@ export class ArticleAiAtom {
       ].join("\n\n"),
     });
 
-    const deduplicatedTopicText = deduplicatedTopics.find((c) =>
-      c.type === "text"
-    )?.text;
+    const deduplicatedTopicText = deduplicatedTopics.find((c) => c.type === "text")?.text;
 
     if (!deduplicatedTopicText) {
       return "";
@@ -60,9 +49,7 @@ export class ArticleAiAtom {
 
     console.info(
       "\x1b[32m",
-      `[...] AI Topic Filtering Finished (${
-        deduplicatedTopicText.split("\n").length
-      }).`,
+      `[...] AI Topic Filtering Finished (${deduplicatedTopicText.split("\n").length}).`,
       "\x1b[0m",
       `(Took ${(endTime - startTime) / 1000}s)`,
     );
@@ -137,7 +124,7 @@ export class ArticleAiAtom {
   static async TranslateArticles(articles: string[]) {
     const startTime = performance.now();
     const systemPrompt = Deno.readTextFileSync(
-      Deno.cwd() + "/jobs/system-prompts/game-dev-news-title-selection.txt",
+      Deno.cwd() + "/jobs/system-prompts/english-to-korean-article-translation.txt",
     );
     const articlePromise = articles.map((t) =>
       chatAnthropicSonnet({
@@ -180,8 +167,6 @@ export class ArticleAiAtom {
       systemP: systemPrompt,
       message: article,
     });
-
-    console.log("result", result);
 
     const endTime = performance.now();
 

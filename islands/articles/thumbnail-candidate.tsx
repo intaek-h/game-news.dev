@@ -99,8 +99,7 @@ export default function ThumbnailCandidate(props: ThumbnailCandidateProps) {
 
               <div className="text-sm text-gray-600 mb-4 text-center">
                 <p>
-                  Entity:{" "}
-                  <span className="font-medium">{props.entityName}</span>
+                  Entity: <span className="font-medium">{props.entityName}</span>
                 </p>
                 <p className="mt-1 break-all">URL: {props.imageUrl}</p>
               </div>
@@ -118,11 +117,7 @@ export default function ThumbnailCandidate(props: ThumbnailCandidateProps) {
                       : "bg-blue-500 text-white hover:bg-blue-600"
                   }`}
                 >
-                  {isSelected
-                    ? "✓ Selected as Thumbnail"
-                    : isSubmitting
-                    ? "Setting..."
-                    : "Use as Article Thumbnail"}
+                  {isSelected ? "✓ Selected as Thumbnail" : isSubmitting ? "Setting..." : "Use as Article Thumbnail"}
                 </button>
 
                 <button

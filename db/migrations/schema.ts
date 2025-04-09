@@ -1,9 +1,4 @@
-import {
-  type AnySQLiteColumn,
-  integer,
-  sqliteTable,
-  text,
-} from "drizzle-orm/sqlite-core";
+import { type AnySQLiteColumn, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
 
 export const gossips = sqliteTable("gossips", {
@@ -20,9 +15,7 @@ export const gossips = sqliteTable("gossips", {
 export const translations = sqliteTable("translations", {
   id: integer().primaryKey({ autoIncrement: true }),
   gossipId: integer("gossip_id").notNull().references(() => gossips.id),
-  languageCode: text("language_code").notNull().references(() =>
-    languages.code
-  ),
+  languageCode: text("language_code").notNull().references(() => languages.code),
   article: text({ mode: "json" }).$type<ArticleFormat>(),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at"),

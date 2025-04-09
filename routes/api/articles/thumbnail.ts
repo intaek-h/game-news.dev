@@ -45,8 +45,7 @@ export const handler: Handlers = {
       const fileExtension = urlWithoutParams.split(".").pop()?.toLowerCase() ||
         "jpg";
       const timestamp = Date.now();
-      const key =
-        `thumbnails/article-${articleIdNum}-${timestamp}.${fileExtension}`;
+      const key = `thumbnails/article-${articleIdNum}-${timestamp}.${fileExtension}`;
 
       // Get R2 configuration from environment
       const r2AccountId = Deno.env.get("R2_ACCOUNT_ID");

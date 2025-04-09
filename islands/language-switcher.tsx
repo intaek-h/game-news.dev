@@ -47,8 +47,7 @@ export default function LanguageSwitcher(
         // Set cookie with expiration of 1 year
         const expires = new Date();
         expires.setFullYear(expires.getFullYear() + 1);
-        document.cookie =
-          `preferred_language=${langCode}; Path=/; Expires=${expires.toUTCString()}; SameSite=Lax`;
+        document.cookie = `preferred_language=${langCode}; Path=/; Expires=${expires.toUTCString()}; SameSite=Lax`;
       } catch (error) {
         console.error("Error setting language cookie:", error);
       }
