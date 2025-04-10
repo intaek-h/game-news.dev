@@ -13,7 +13,7 @@ Deno.cron("Article Generator", "0 10 * * *", () => {
 });
 
 // 매일 UTC 9:00에 실행 (뉴욕 아침 5:00)
-Deno.cron("Article Generator", "0 9 * * *", () => {
+Deno.cron("Daily News Generator", "0 9 * * *", () => {
   DailyNews.NewsPipeline();
 
   console.info(
