@@ -1,49 +1,45 @@
-import { err, ResultAsync } from "neverthrow";
+import { Embed, Webhook } from "@vermaysha/discord-webhook";
+import { ResultAsync } from "neverthrow";
 
-export class Logg {
-  static SendDiscord = (p: { title: string; message: string; description?: string; color?: string; code?: string }) => {
-    const webhookUrl = Deno.env.get("DISCORD_LOG_CHANNEL_URL") ?? "";
+const webhookUrl = Deno.env.get("DISCORD_LOG_CHANNEL_URL") ?? "";
 
-    if (!webhookUrl) {
-      return err({ err: new Error("Discord webhook URL is not set"), message: "webhookUrl not found" });
+if (!webhookUrl) {
+  throw new Error("Discord webhook URL is not set");
+}
+
+class Logg {
+  private hook: Webhook;
+
+  constructor() {
+    this.hook = new Webhook(webhookUrl);
+  }
+
+  DiscordAlert = (p: { title: string; description?: string; code?: string; level?: "info" | "error" | "success" }) => {
+    const embed = new Embed();
+
+    embed.setTitle(p.title);
+    embed.setFooter({ text: "서버 로그 알림" });
+    embed.setTimestamp();
+    embed.setColor("#1e1e1e");
+
+    if (p.level === "error") {
+      embed.setColor("#e32d2d");
+    }
+    if (p.level === "success") {
+      embed.setColor("#2d9e2d");
+    }
+    if (p.description) {
+      embed.setDescription(p.description);
+    }
+    if (p.code) {
+      embed.addField({ name: "Data", value: "```plaintext\n" + p.code + "\n```" });
     }
 
-    const { title, message, description, color, code } = p;
-
     return ResultAsync.fromPromise(
-      fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: "Server Log",
-          embeds: [
-            {
-              title: title,
-              description: description,
-              color: color ?? 16711680,
-              fields: [
-                {
-                  "name": "Message",
-                  "value": message,
-                  "inline": false,
-                },
-                ...(code
-                  ? [{
-                    "name": "Code",
-                    "value": "```javascript\n" + code + "\n```",
-                    "inline": false,
-                  }]
-                  : []),
-              ],
-              footer: {
-                text: "서버 로그 알림",
-              },
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        }),
-      }),
+      this.hook.addEmbed(embed).send(),
       (err) => ({ err, message: "Failed to send Discord message" }),
     );
   };
 }
+
+export const logg = new Logg();

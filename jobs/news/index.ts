@@ -9,23 +9,41 @@ import { unstableJsonParser } from "~/jobs/utils/json.ts";
 import { db } from "~/db/client.ts";
 import { posts, user } from "~/db/migrations/schema.ts";
 import { and, eq } from "drizzle-orm";
-import { Logg } from "~/jobs/logger/index.ts";
+import { logg } from "~/jobs/logger/index.ts";
 
 export class DailyNews {
-  static ScrapeGameDeveloperNews = (param: RSSSource) => {
+  static ScrapeGameDeveloperNews = (param: RSSSource[]) => {
     const parser = new Parser();
 
     return ResultAsync.fromPromise(
-      parser.parseURL(param.url),
-      (err) => ({ err, message: `Failed to parse RSS feed (${param.url})` }),
+      Promise.allSettled(param.map((source) => parser.parseURL(source.url).then((result) => ({ result, source })))),
+      (err) => ({ err, message: `Failed to parse RSS feeds` }),
     ).map(
       (feed) =>
-        feed.items.map((item) => ({
-          ...item,
-          title: item[param.keys.title] as string || "",
-          link: item[param.keys.link] as string || "",
-          createdAt: item[param.keys.createdAt] as string || "",
-        })),
+        feed
+          .flatMap((result, i) => {
+            if (result.status === "fulfilled") {
+              return [result.value];
+            } else {
+              console.error("Failed to parse RSS feed:", param[i].url);
+              console.error("Scrape failed:", result.reason);
+              logg.DiscordAlert({
+                title: "뉴스 파이프라인 (스크래핑 실패)",
+                description: param[i].url,
+                level: "error",
+              }).mapErr(console.error);
+              return [];
+            }
+          })
+          .flatMap(({ result, source }) =>
+            result.items.map((item) => ({
+              ...item,
+              title: item[source.keys.title] as string || "",
+              link: item[source.keys.link] as string || "",
+              createdAt: item[source.keys.createdAt] as string || "",
+              sourceUrl: source.url,
+            }))
+          ),
     );
   };
 
@@ -53,9 +71,7 @@ export class DailyNews {
 
     scrapeFrom = scrapeFrom ?? yesterday;
 
-    const scrapePromise = GameDeveloperNewsRSS.map((v) => this.ScrapeGameDeveloperNews(v));
-
-    const result = ResultAsync.combine(scrapePromise) // FIXME: Fails when one of the promises fails
+    const result = this.ScrapeGameDeveloperNews(GameDeveloperNewsRSS)
       .map((data) =>
         data
           .flat()
@@ -70,10 +86,8 @@ export class DailyNews {
           }))
       )
       .andThen((data) =>
-        Logg.SendDiscord({
-          title: "News Pipeline",
-          description: "Scraping finished.",
-          message: `${data.length} news found.`,
+        logg.DiscordAlert({
+          title: `뉴스 파이프라인 (스크래핑 완료 - ${data.length}개)`,
           code: data.map((v) => v.title).join("\n"),
         })
           .map(() => data)
@@ -82,10 +96,8 @@ export class DailyNews {
         (data) => this.SelectUsefulNewsTitles(data.map((v) => ({ ...v, isSelected: false }))),
       )
       .andThen((data) =>
-        Logg.SendDiscord({
-          title: "News Pipeline",
-          description: "AI selection finished.",
-          message: `${data.length} news selected.`,
+        logg.DiscordAlert({
+          title: `뉴스 파이프라인 (AI 감별 작업 완료 - ${data.length}개)`,
           code: data.map((v) => v.title).join("\n"),
         })
           .map(() => data)
@@ -130,19 +142,17 @@ export class DailyNews {
           ),
       )
       .map((data) =>
-        Logg.SendDiscord({
-          title: "News Pipeline",
-          description: "News insertion finished.",
-          message: `${data.length} news inserted.`,
+        logg.DiscordAlert({
+          title: `뉴스 파이프라인 (DB 저장 완료 - ${data.length}개)`,
         })
           .map(() => data)
       )
       .mapErr((err) => {
-        console.error("NewsPipeline error:", err);
-        Logg.SendDiscord({
-          title: "News Pipeline Failed",
-          description: err.message,
-          message: "",
+        console.error("뉴스 파이프라인 에러:", err);
+        logg.DiscordAlert({
+          title: "뉴스 파이프라인 (폭파됨)",
+          code: err.message,
+          level: "error",
         });
       });
 
