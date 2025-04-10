@@ -8,7 +8,7 @@ import { gte } from "drizzle-orm";
 import { chatAnthropicHaiku2, chatAnthropicSonnet2 } from "~/jobs/utils/anthropic.ts";
 import { FileUtilities } from "~/jobs/utils/file.ts";
 import { kv } from "~/kv.ts";
-import { Logg } from "~/jobs/logger/index.ts";
+import { logg } from "~/jobs/logger/index.ts";
 import { chatPerplexity2 } from "~/jobs/utils/perplexity.ts";
 import { unstableJsonParser } from "~/jobs/utils/json.ts";
 import { ArticleEntities, ArticleFormat } from "~/types/articleFormat.ts";
@@ -85,11 +85,7 @@ export class DailyGossip {
         return { trendingTopics: topics, genTimeISOString: GEN_TIME };
       })
       .andThen((data) =>
-        Logg.SendDiscord({
-          title: "Gossip Pipeline",
-          description: "Scraping finished.",
-          message: `${data.trendingTopics.length} topics found.`,
-        })
+        logg.DiscordAlert({ title: `가십 파이프라인 (스크래핑 완료 - ${data.trendingTopics.length}개)` })
           .map(() => data)
       )
       .andThen(({ genTimeISOString, trendingTopics }) =>
@@ -128,10 +124,8 @@ export class DailyGossip {
         }))
       )
       .andThen((data) =>
-        Logg.SendDiscord({
-          title: "Gossip Pipeline",
-          description: "Informative topic selection finished.",
-          message: `${data.informativeTopics.split("\n").length} informative topics selected.`,
+        logg.DiscordAlert({
+          title: `가십 파이프라인 (기삿거리 선별 완료 - ${data.informativeTopics.split("\n").length}개)`,
           code: data.informativeTopics,
         })
           .map(() => data)
@@ -146,19 +140,16 @@ export class DailyGossip {
         }))
       )
       .andThen((data) =>
-        Logg.SendDiscord({
-          title: "Gossip Pipeline",
-          description: "Topic deduplication finished.",
-          message: `${data.deduplicatedTopics.length} unique topics remaining.`,
+        logg.DiscordAlert({
+          title: `가십 파이프라인 (기삿거리 중복 제거 완료 - ${data.deduplicatedTopics.length}개)`,
           code: data.deduplicatedTopics.join("\n"),
         })
           .map(() => data)
       )
       .andThen((data) =>
-        Logg.SendDiscord({
-          title: "Gossip Pipeline",
-          description: "Now enqueuing.",
-          message: "",
+        logg.DiscordAlert({
+          title: "가십 파이프라인 (기사 작성 스케줄러 가동중)",
+          level: "success",
         })
           .map(() => data)
       )
@@ -173,11 +164,11 @@ export class DailyGossip {
         }
       })
       .mapErr((err) => {
-        console.error("GossipPipeline error:", err);
-        Logg.SendDiscord({
-          title: "Gossip Pipeline Failed",
-          description: err.message,
-          message: "",
+        console.error("가십 파이프라인 에러:", err);
+        logg.DiscordAlert({
+          title: "가십 파이프라인 (폭파됨)",
+          code: err.message,
+          level: "error",
         });
       });
   };
