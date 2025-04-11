@@ -1,14 +1,16 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { NewsContainer } from "~/components/news-container.tsx";
-import { NewsAtom } from "~/jobs/atoms/news.ts";
+import { NewsQueries } from "~/jobs/news/queries.ts";
 
 type Props = {
+  page: number;
   news: {
     title: string;
-    newsId: number;
+    postId: number;
     url: string;
     urlHost: string;
     createdAt: string;
+    voteCount: number;
   }[];
 };
 
@@ -19,20 +21,26 @@ export const handler: Handlers<Props> = {
     if (isNaN(page) || page < 1) {
       return ctx.renderNotFound();
     }
-    const article = await NewsAtom.GetNewsListForPage(page);
+    const article = await NewsQueries.PageQuery(page);
+
+    if (article.isErr()) {
+      return ctx.renderNotFound();
+    }
 
     return ctx.render({
-      news: article?.map((v) => ({
+      page: page,
+      news: article.value.map((v) => ({
         title: v.title,
         url: v.url ?? "",
         urlHost: v.urlHost ?? "",
         createdAt: v.createdAt,
-        newsId: v.id,
-      })) ?? [],
+        postId: v.id,
+        voteCount: v.voteCount,
+      })),
     });
   },
 };
 
 export default function Home({ data }: PageProps<Props>) {
-  return <NewsContainer news={data.news} />;
+  return <NewsContainer news={data.news} page={data.page} />;
 }

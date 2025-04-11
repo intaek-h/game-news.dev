@@ -152,12 +152,40 @@ export const commentVotes = sqliteTable("comment_votes", {
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
+export const pointCategories = sqliteTable("point_categories", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  name: text().notNull(), // e.g., "contribution", "community", "moderation"
+  description: text(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const pointMultipliers = sqliteTable("point_multipliers", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  actionType: text("action_type").notNull(), // e.g., "post_create", "comment_upvote"
+  multiplier: integer().notNull().default(1), // Using 1 as base for multiplier
+  startDate: integer("start_date", { mode: "timestamp" }),
+  endDate: integer("end_date", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const pointLimits = sqliteTable("point_limits", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  actionType: text("action_type").notNull(),
+  limit: integer().notNull(),
+  period: text().notNull(), // 'daily', 'weekly', 'monthly'
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
 export const userPoints = sqliteTable("user_points", {
   id: integer().primaryKey({ autoIncrement: true }),
   userId: text("user_id").notNull().references(() => user.id, {
     onDelete: "cascade",
   }),
   points: integer().notNull().default(0),
+  categoryId: integer("category_id").references(() => pointCategories.id),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
@@ -171,7 +199,20 @@ export const pointTransactions = sqliteTable("point_transactions", {
   actionType: text("action_type").notNull(), // 'post_create', 'comment_create', 'comment_received_upvote', etc.
   referenceId: text("reference_id"), // ID of the related post/comment/etc
   referenceType: text("reference_type"), // 'post', 'comment', etc.
+  categoryId: integer("category_id").references(() => pointCategories.id),
+  multiplierId: integer("multiplier_id").references(() => pointMultipliers.id),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
+export const postVotes = sqliteTable("post_votes", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  postId: integer("post_id").notNull().references(() => posts.id, {
+    onDelete: "cascade",
+  }),
+  userId: text("user_id").notNull().references(() => user.id),
+  value: integer().notNull().default(1),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
 export default {
@@ -190,4 +231,8 @@ export default {
   commentVotes,
   userPoints,
   pointTransactions,
+  postVotes,
+  pointCategories,
+  pointMultipliers,
+  pointLimits,
 };

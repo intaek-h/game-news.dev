@@ -6,4 +6,8 @@ export class QueryParamsAtom {
       HowWeGatherGossips: "how-we-gather-gossips",
     },
   };
+
+  static Page = {
+    key: "page",
+  };
 }

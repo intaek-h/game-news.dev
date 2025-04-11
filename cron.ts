@@ -10,7 +10,3 @@
 //     "\x1b[0m",
 //   );
 // });
-
-Deno.cron("cron test", "* * * * *", () => {
-  console.info("cron test");
-});
