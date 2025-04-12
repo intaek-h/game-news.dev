@@ -1,12 +1,15 @@
-// import { DailyGossip } from "~/jobs/gossip/index.ts";
+// import { DailyNews } from "~/jobs/news/index.ts";
 
-// 매일 UTC 10:00에 실행 (뉴욕 아침 6:00)
-// Deno.cron("Article Generator", "0 10 * * *", () => {
-//   DailyGossip.GossipPipeline();
+const kv = await Deno.openKv();
 
-//   console.info(
-//     "\x1b[32m",
-//     `====================\nGossip Pipeline Running\n====================\n`,
-//     "\x1b[0m",
-//   );
+// Deno.cron("Daily News", "0 10 * * *", () => {
+//   DailyNews.NewsPipeline();
 // });
+
+Deno.cron("kv test", "*/1 * * * *", () => {
+  let count = 0;
+  kv.enqueue(["kv-test", { count: count }], {
+    delay: 1000 * 10,
+  });
+  count++;
+});
