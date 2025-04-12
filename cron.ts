@@ -13,3 +13,7 @@ Deno.cron("kv test", "*/1 * * * *", () => {
   });
   count++;
 });
+
+kv.listenQueue((msg: unknown) => {
+  console.log(msg);
+});
