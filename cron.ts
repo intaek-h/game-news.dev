@@ -1,5 +1,7 @@
 // import { DailyNews } from "~/jobs/news/index.ts";
 
+import { logg } from "~/jobs/logger/index.ts";
+
 const kv = await Deno.openKv();
 
 // Deno.cron("Daily News", "0 10 * * *", () => {
@@ -19,4 +21,10 @@ Deno.cron("kv test", "*/1 * * * *", () => {
 
 kv.listenQueue((msg: unknown) => {
   console.log(msg);
+  logg
+    .DiscordAlert({ title: "kv test", description: JSON.stringify(msg) })
+    .match(
+      console.log,
+      console.error,
+    );
 });
