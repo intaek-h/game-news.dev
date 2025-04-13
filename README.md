@@ -1,35 +1,41 @@
-# Notice
-
-This is a `main` branch. This branch is specifically developed to be deployed as a docker container. It does not utilize
-the DenoKV and Deno Cron feature which is necessary for the service to gather news information on a daily basis. It is
-because DenoKV and cron is currently only natively supported by Deno Deploy, the serverless hosting platform. All the
-related codes are commented out (see kv.ts).
-
-Currently, this branch is deployed to Railway.com. The `deno-cron` branch, which utilizes the DenoKV and etc, is
-deployed to Deno Deploy just for those limited features.
-
-To summarize, `deno-cron` branch is for the cron jobs only. `main` branch is for the rest of the service.
-
 # Game News
 
-This website aggregates daily hot topics in the gaming world.
+This website is a community for the game developers. Anyone can share anything that is _helpful for the game
+development_.
 
-# Roadmap
+## Guidelines for the users.
 
-Here are the list of works to do. The list is not ordered.
+_Please submit if,_
 
-- [x] Implement email+password auth using BetterAuth.
-- [x] Separate admin user and ordinary user and restrict access
-- [x] Store thumbnail images to Cloudflare R2
-- [x] Implement Cloudflare Worker for on-demand image transformation and CDN caching of images
+- The subject gratifies game developers' intellectual curiosity. (borrowed from HN)
 
-# Local Development
+_Please don't submit if,_
+
+- The subject does not relate to the mission of the site.
+- The subject is gossipy. (We already aggregate gossip for you in the /gossips page.)
+
+_Important rules for submission:_
+
+- It's okay to promote your product, but only if it satisfies our mission. (read above)
+- Remove anything that makes the title unnecessarily attention-grabbing. It's already implicit that the content is
+  important.
+- Preserve the original title from the source whenever possible.
+
+_Important rules for comments:_
+
+- Be kind. Don't be snarky. Converse curiously; don't cross-examine. (borrowed from HN)
+- Don't post shallow dismissals.
+- Praise comments that are both gentle and critical.
+
+# Contribution
+
+## Local Development
 
 ```
 deno task docker:dev
 ```
 
-# Tech
+## Tech
 
 - Deno 2.0+
 - Fresh

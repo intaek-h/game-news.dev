@@ -21,7 +21,7 @@ export const handler: Handlers<Props> = {
     if (isNaN(page) || page < 1) {
       return ctx.renderNotFound();
     }
-    const article = await NewsQueries.PageQuery(page);
+    const article = await NewsQueries.ListPageQuery(page);
 
     if (article.isErr()) {
       return ctx.renderNotFound();

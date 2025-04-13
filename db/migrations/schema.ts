@@ -197,7 +197,7 @@ export const pointTransactions = sqliteTable("point_transactions", {
   }),
   points: integer().notNull(), // Can be positive or negative
   actionType: text("action_type").notNull(), // 'post_create', 'comment_create', 'comment_received_upvote', etc.
-  referenceId: text("reference_id"), // ID of the related post/comment/etc
+  referenceId: integer("reference_id"), // ID of the related post/comment/etc
   referenceType: text("reference_type"), // 'post', 'comment', etc.
   categoryId: integer("category_id").references(() => pointCategories.id),
   multiplierId: integer("multiplier_id").references(() => pointMultipliers.id),

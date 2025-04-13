@@ -11,7 +11,10 @@ import * as $api_middleware from "./routes/api/_middleware.ts";
 import * as $api_articles_manual_generate_index from "./routes/api/articles/manual-generate/index.ts";
 import * as $api_articles_thumbnail from "./routes/api/articles/thumbnail.ts";
 import * as $api_auth_path_ from "./routes/api/auth/[...path].ts";
+import * as $api_comments_id_upvote from "./routes/api/comments/[id]/upvote.ts";
 import * as $api_image_search_index from "./routes/api/image-search/index.ts";
+import * as $api_news_id_comments from "./routes/api/news/[id]/comments.ts";
+import * as $api_news_id_upvote from "./routes/api/news/[id]/upvote.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
 import * as $api_user_language_preference from "./routes/api/user/language-preference.ts";
@@ -26,7 +29,9 @@ import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
 import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
+import * as $comment_viewer from "./islands/comment-viewer.tsx";
 import * as $language_switcher from "./islands/language-switcher.tsx";
+import * as $upvote_button from "./islands/upvote-button.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -40,7 +45,10 @@ const manifest = {
     "./routes/api/articles/manual-generate/index.ts": $api_articles_manual_generate_index,
     "./routes/api/articles/thumbnail.ts": $api_articles_thumbnail,
     "./routes/api/auth/[...path].ts": $api_auth_path_,
+    "./routes/api/comments/[id]/upvote.ts": $api_comments_id_upvote,
     "./routes/api/image-search/index.ts": $api_image_search_index,
+    "./routes/api/news/[id]/comments.ts": $api_news_id_comments,
+    "./routes/api/news/[id]/upvote.ts": $api_news_id_upvote,
     "./routes/api/scrape/article-extractor/index.ts": $api_scrape_article_extractor_index,
     "./routes/api/test.ts": $api_test,
     "./routes/api/user/language-preference.ts": $api_user_language_preference,
@@ -57,7 +65,9 @@ const manifest = {
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,
     "./islands/articles/enhanced-article-row.tsx": $articles_enhanced_article_row,
     "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
+    "./islands/comment-viewer.tsx": $comment_viewer,
     "./islands/language-switcher.tsx": $language_switcher,
+    "./islands/upvote-button.tsx": $upvote_button,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

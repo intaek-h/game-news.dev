@@ -38,7 +38,7 @@ export function NewsContainer({ news, page }: Props) {
           {news.map((v, i) => (
             <li
               key={v.postId}
-              className="grid grid-cols-[40px_1fr] sm:grid-cols-[70px_1fr] mb-2"
+              className="grid grid-cols-[40px_1fr] sm:grid-cols-[70px_1fr] mb-3"
             >
               <div className="p-0.5">
                 <span className="text-sm font-mono text-gray-400">{i + 1}</span>

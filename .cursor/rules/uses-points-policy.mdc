@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Everytime a user takes an action(e.g. posting a news, upvote a comment), he/she gets a reward in points.
+This document describes the policy for the reward system.
+
+- A user submits a news -> 10 points
+- A user comments a news/gossip -> 10 points
+- A user upvotes a news -> 1 point
+- A user upvotes a comment -> 1 point
+- A user's news gets an upvote -> 5 points
+- A user's comments gets an upvote -> 1 point
+
+The reward policy on post/comment deletion is not set yet.
+Because it is unclear that we will implement the deletion feature or not.
+
+Refer to the database schema: [schema.ts](mdc:db/migrations/schema.ts) for the system structure.

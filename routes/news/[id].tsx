@@ -1,33 +1,135 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { NewsAtom } from "~/jobs/atoms/news.ts";
+import { auth } from "~/auth.ts";
+import { comments } from "~/db/migrations/schema.ts";
+import UpvoteButton from "../../islands/upvote-button.tsx";
+import CommentsContainer from "../../components/comments-container.tsx";
+import { NewsQueries } from "~/jobs/news/queries.ts";
+import { CommentQueries } from "~/jobs/comment/queries.ts";
+import { Time } from "~/jobs/time/index.ts";
 
 type Props = {
-  username: string;
-  title: string;
-  url: string;
-  urlHost: string;
-  createdAt: string;
-  content: string;
-  id: number;
+  news: {
+    id: number;
+    title: string;
+    url: string | null;
+    urlHost: string | null;
+    createdAt: string;
+    content: string | null;
+    username: string;
+  };
+  voteCount: number;
+  hasVoted: boolean;
+  comments: {
+    id: number;
+    content: string;
+    userId: string;
+    username: string;
+    createdAt: typeof comments.$inferSelect["createdAt"];
+    parentId: number | null;
+    hasUpvoted: boolean;
+  }[];
 };
 
 export const handler: Handlers<Props> = {
-  async GET(_req, ctx) {
+  async GET(req, ctx) {
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
     const newsId = ctx.params.id;
     if (!newsId || isNaN(Number(newsId)) || Number(newsId) < 1) {
       return ctx.renderNotFound();
     }
-    const article = await NewsAtom.GetNewsDetail(Number(newsId));
+
+    const data = await NewsQueries.DetailPageQuery({ id: Number(newsId), userId: session?.user.id });
+
+    if (data.isErr()) {
+      console.error(data.error);
+      return ctx.renderNotFound();
+    }
+
+    const { news, comments, voteCount, hasVoted } = data.value;
 
     return ctx.render({
-      username: article.username,
-      title: article.title,
-      url: article.url ?? "",
-      urlHost: article.urlHost ?? "",
-      createdAt: article.createdAt,
-      content: article.content ?? "",
-      id: article.id,
-    }) ?? [];
+      news,
+      comments: comments.map((comment) => ({
+        id: comment.id,
+        content: comment.content,
+        userId: comment.userId,
+        username: comment.user.name,
+        createdAt: comment.createdAt,
+        parentId: comment.parentId,
+        hasUpvoted: comment.hasUpvoted,
+      })),
+      voteCount,
+      hasVoted,
+    });
+  },
+
+  async POST(req, ctx) {
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (!session) {
+      return new Response(null, {
+        status: 303,
+        headers: {
+          "Location": "/login",
+        },
+      });
+    }
+
+    const newsId = ctx.params.id;
+    if (!newsId || isNaN(Number(newsId)) || Number(newsId) < 1) {
+      return ctx.renderNotFound();
+    }
+
+    const form = await req.formData();
+    const text = form.get("text")?.toString();
+
+    if (!text || text.trim().length === 0) {
+      return new Response(null, {
+        status: 303,
+        headers: {
+          "Location": `/news/${newsId}`,
+        },
+      });
+    }
+
+    try {
+      const result = await CommentQueries.CreateComment({
+        content: text.trim(),
+        postId: Number(newsId),
+        userId: session.user.id,
+        parentId: null,
+      });
+
+      if (result.isErr()) {
+        console.error("Error creating comment:", result.error);
+        return new Response(null, {
+          status: 303,
+          headers: {
+            "Location": `/news/${newsId}`,
+          },
+        });
+      }
+
+      return new Response(null, {
+        status: 303,
+        headers: {
+          "Location": `/news/${newsId}`,
+        },
+      });
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      return new Response(null, {
+        status: 303,
+        headers: {
+          "Location": `/news/${newsId}`,
+        },
+      });
+    }
   },
 };
 
@@ -38,48 +140,47 @@ export default function Home(props: PageProps<Props>) {
         <div className="px-4">
           <div className="mb-8">
             <a
-              href={props.data.url}
+              href={props.data.news.url ?? ""}
               target="_blank"
               className="hover:underline underline-offset-4 text-2xl text-gray-900"
             >
-              {props.data.title}
+              {props.data.news.title}
             </a>
             <a
               href=""
               className="hover:underline text-gray-400 underline-offset-4 text-xs ml-1"
             >
-              ({props.data.urlHost})
+              ({props.data.news.urlHost})
             </a>
             <div className="flex text-xs items-center text-gray-400 gap-1">
-              <button
-                className="hover:underline underline-offset-4"
-                type="button"
-              >
-                upvote
-              </button>
+              <UpvoteButton
+                postId={props.data.news.id}
+                initialVoteCount={props.data.voteCount}
+                hasVoted={props.data.hasVoted}
+              />
               <span>|</span>
               <a href="" className="hover:underline underline-offset-4">
                 article link
               </a>
               <span>|</span>
-              <span>1 hour ago</span>
+              <span>{Time.Ago(props.data.news.createdAt)}</span>
               <span>
                 by
               </span>
               <a href="" className="hover:underline underline-offset-4">
-                {props.data.username}
+                {props.data.news.username}
               </a>
             </div>
           </div>
 
           <div className="mb-16">
             <p className="text-sm text-gray-500">
-              {props.data.content}
+              {props.data.news.content}
             </p>
           </div>
 
           <div className="mb-16">
-            <form action="comment" method="post" id="comment">
+            <form action={`/api/news/${props.data.news.id}/comments`} method="post" id="comment">
               <textarea
                 name="text"
                 wrap="virtual"
@@ -92,18 +193,13 @@ export default function Home(props: PageProps<Props>) {
             <button
               type="submit"
               form="comment"
-              className="mt-4 text-medium text-blue-900 underline"
+              className="mt-4 text-medium text-blue-600 underline-offset-4 underline"
             >
               add comment
             </button>
           </div>
 
-          <div>
-            <div>
-              <a href="">amigdima</a>
-              <span>15 minutes ago</span>
-            </div>
-          </div>
+          <CommentsContainer comments={props.data.comments} newsId={props.data.news.id} />
         </div>
       </div>
     </div>

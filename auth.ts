@@ -4,6 +4,7 @@ import { db } from "./db/client.ts";
 import schema from "./db/migrations/schema.ts";
 
 export const auth = betterAuth({
+  baseURL: Deno.env.get("SELF_URL"),
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: schema,

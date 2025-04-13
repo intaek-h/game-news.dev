@@ -1,10 +1,11 @@
 import { ResultAsync } from "neverthrow";
 import { db } from "~/db/client.ts";
-import { posts, postVotes } from "~/db/migrations/schema.ts";
-import { eq, sql } from "drizzle-orm";
+import { posts, postVotes, user } from "~/db/migrations/schema.ts";
+import { and, eq, sql } from "drizzle-orm";
+import { CommentQueries } from "~/jobs/comment/queries.ts";
 
 export class NewsQueries {
-  static PageQuery(page: number) {
+  static ListPageQuery(page: number) {
     const GRAVITY = 1.8; // Hacker News gravity factor
     const POSTS_PER_PAGE = 10;
     const offset = (page - 1) * POSTS_PER_PAGE;
@@ -35,5 +36,80 @@ export class NewsQueries {
         .offset(offset),
       (err) => ({ err, message: "Failed to fetch news" }),
     );
+  }
+
+  static DetailPageQuery({ id, userId }: { id: number; userId?: string }) {
+    if (!userId) {
+      return ResultAsync.fromPromise(
+        db
+          .select({
+            id: posts.id,
+            title: posts.title,
+            url: posts.url,
+            urlHost: posts.urlHost,
+            createdAt: posts.createdAt,
+            content: posts.content,
+            username: user.name,
+          })
+          .from(posts)
+          .innerJoin(user, eq(posts.userId, user.id))
+          .where(and(eq(posts.postType, "news"), eq(posts.id, id)))
+          .limit(1),
+        (err) => ({ err, message: "Failed to fetch news" }),
+      )
+        .map(([news]) => news)
+        .andThen((news) =>
+          ResultAsync.fromPromise(
+            db.$count(postVotes, eq(postVotes.postId, id)),
+            (err) => ({ err, message: "Failed to fetch news vote count" }),
+          )
+            .map((voteCount) => ({ news, voteCount }))
+        )
+        .andThen(({ news, voteCount }) =>
+          CommentQueries.GetNewsComments(id, userId)
+            .map((comments) => ({ news, comments, voteCount, hasVoted: false }))
+        );
+    }
+
+    return ResultAsync.fromPromise(
+      db
+        .select({
+          id: posts.id,
+          title: posts.title,
+          url: posts.url,
+          urlHost: posts.urlHost,
+          createdAt: posts.createdAt,
+          content: posts.content,
+          username: user.name,
+        })
+        .from(posts)
+        .innerJoin(user, eq(posts.userId, user.id))
+        .where(and(eq(posts.postType, "news"), eq(posts.id, id)))
+        .limit(1),
+      (err) => ({ err, message: "Failed to fetch news" }),
+    )
+      .map(([news]) => news)
+      .andThen((news) =>
+        CommentQueries.GetNewsComments(id, userId)
+          .map((comments) => ({ news, comments }))
+      )
+      .andThen(({ news, comments }) =>
+        ResultAsync.fromPromise(
+          db.$count(postVotes, eq(postVotes.postId, id)),
+          (err) => ({ err, message: "Failed to fetch news vote count" }),
+        )
+          .map((voteCount) => ({ news, comments, voteCount }))
+      )
+      .andThen(({ news, comments, voteCount }) =>
+        ResultAsync.fromPromise(
+          db
+            .select()
+            .from(postVotes)
+            .where(and(eq(postVotes.postId, id), eq(postVotes.userId, userId)))
+            .then((result) => result.length > 0),
+          (err) => ({ err, message: "Failed to fetch news vote status" }),
+        )
+          .map((hasVoted) => ({ news, comments, voteCount, hasVoted }))
+      );
   }
 }
