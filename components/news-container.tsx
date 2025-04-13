@@ -41,7 +41,7 @@ export function NewsContainer({ news, page }: Props) {
               className="grid grid-cols-[40px_1fr] sm:grid-cols-[70px_1fr] mb-3"
             >
               <div className="p-0.5">
-                <span className="text-sm font-mono text-gray-400">{i + 1}</span>
+                <span className="text-sm font-mono text-gray-400">{(page - 1) * 10 + i + 1}</span>
               </div>
               <div>
                 <a

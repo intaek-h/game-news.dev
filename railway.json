@@ -9,7 +9,7 @@
     "numReplicas": 1,
     "sleepApplication": false,
     "multiRegionConfig": {
-      "asia-southeast1-eqsg3a": {
+      "us-east4": {
         "numReplicas": 1
       }
     },
