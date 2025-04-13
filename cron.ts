@@ -8,13 +8,13 @@ const kv = await Deno.openKv();
 
 console.log("kv", kv);
 
+let count = 0;
+
 Deno.cron("kv test", "*/1 * * * *", () => {
-  let count = 0;
   kv.enqueue(["kv-test", { count: count }], {
     delay: 1000 * 10,
   });
   count++;
-  console.log("count", count);
 });
 
 kv.listenQueue((msg: unknown) => {
