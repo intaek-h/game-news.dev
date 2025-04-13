@@ -271,8 +271,8 @@ export class DailyGossip {
     });
   };
 
-  static GossipPipeLineComplete = ({ topic, gid }: { topic: string; gid: number }) => {
-    return this.WriteEnglishSummary(topic).map((data) => ({
+  static GossipPipeLineComplete = ({ topic, gid }: { topic: string; gid: number }) =>
+    this.WriteEnglishSummary(topic).map((data) => ({
       summary: data,
       gid,
     }))
@@ -349,5 +349,4 @@ export class DailyGossip {
           (err) => ({ err, message: "Failed to insert translations" }),
         )
       );
-  };
 }
