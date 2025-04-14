@@ -152,21 +152,17 @@ export default function Home(props: PageProps<Props>) {
             >
               ({props.data.news.urlHost})
             </a>
-            <div className="flex text-xs items-center text-gray-400 gap-1">
+            <div className="flex flex-wrap text-xs items-center text-gray-400 gap-1">
               <UpvoteButton
                 postId={props.data.news.id}
                 initialVoteCount={props.data.voteCount}
                 hasVoted={props.data.hasVoted}
               />
               <span>|</span>
-              <a href="" className="hover:underline underline-offset-4">
-                article link
-              </a>
+              <span>{props.data.comments.length} opinions</span>
               <span>|</span>
               <span>{Time.Ago(props.data.news.createdAt)}</span>
-              <span>
-                by
-              </span>
+              <span>by</span>
               <a href="" className="hover:underline underline-offset-4">
                 {props.data.news.username}
               </a>

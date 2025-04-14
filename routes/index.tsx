@@ -10,7 +10,7 @@ type Props = {
     url: string;
     urlHost: string;
     createdAt: string;
-    voteCount: number;
+    commentCount: number;
   }[];
 };
 
@@ -24,6 +24,7 @@ export const handler: Handlers<Props> = {
     const article = await NewsQueries.ListPageQuery(page);
 
     if (article.isErr()) {
+      console.error(article.error);
       return ctx.renderNotFound();
     }
 
@@ -35,7 +36,7 @@ export const handler: Handlers<Props> = {
         urlHost: v.urlHost ?? "",
         createdAt: v.createdAt,
         postId: v.id,
-        voteCount: v.voteCount,
+        commentCount: v.commentCount,
       })),
     });
   },

@@ -9,7 +9,7 @@ interface Props {
     url: string;
     urlHost: string;
     createdAt: string;
-    voteCount: number;
+    commentCount: number;
   }[];
 }
 
@@ -55,7 +55,7 @@ export function NewsContainer({ news, page }: Props) {
                     className="hover:underline underline-offset-4"
                     type="button"
                   >
-                    {v.voteCount > 0 ? `upvote(${v.voteCount})` : "upvote"}
+                    upvote
                   </button>
                   <span>|</span>
                   <a
@@ -66,6 +66,14 @@ export function NewsContainer({ news, page }: Props) {
                   </a>
                   <span>|</span>
                   <span>{Time.Ago(v.createdAt)}</span>
+                  {v.commentCount > 0
+                    ? (
+                      <>
+                        <span>|</span>
+                        <span>{v.commentCount} opinions</span>
+                      </>
+                    )
+                    : null}
                 </div>
               </div>
             </li>

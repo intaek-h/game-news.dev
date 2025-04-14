@@ -1,6 +1,6 @@
 import { ResultAsync } from "neverthrow";
 import { db } from "~/db/client.ts";
-import { posts, postVotes, user } from "~/db/migrations/schema.ts";
+import { comments, posts, postVotes, user } from "~/db/migrations/schema.ts";
 import { and, eq, sql } from "drizzle-orm";
 import { CommentQueries } from "~/jobs/comment/queries.ts";
 
@@ -18,7 +18,7 @@ export class NewsQueries {
           url: posts.url,
           urlHost: posts.urlHost,
           createdAt: posts.createdAt,
-          voteCount: sql<number>`COALESCE(SUM(${postVotes.value}), 0)`.as("voteCount"),
+          commentCount: sql<number>`COUNT(${comments.id})`.as("commentCount"),
           score: sql<number>`(
             (COALESCE(SUM(${postVotes.value}), 0) - 1) / 
             POWER(
@@ -29,6 +29,7 @@ export class NewsQueries {
         })
         .from(posts)
         .leftJoin(postVotes, eq(posts.id, postVotes.postId))
+        .leftJoin(comments, eq(posts.id, comments.postId))
         .where(eq(posts.postType, "news"))
         .groupBy(posts.id)
         .orderBy(sql`score DESC`)
