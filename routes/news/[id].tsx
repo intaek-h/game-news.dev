@@ -139,14 +139,16 @@ export default function Home(props: PageProps<Props>) {
       <div className="mb-4 break-keep max-w-screen-sm text-left mx-auto">
         <div className="px-4">
           <div className="mb-8">
-            <a
-              href={props.data.news.url ?? ""}
-              target="_blank"
-              className="hover:underline underline-offset-4 text-2xl text-gray-900"
-            >
-              {props.data.news.title}
-            </a>
-            <span className="text-gray-400 text-xs ml-1">({props.data.news.urlHost})</span>
+            <div className="flex items-baseline gap-1 flex-wrap">
+              <a
+                href={props.data.news.url ?? ""}
+                target="_blank"
+                className="hover:underline underline-offset-4 text-2xl text-gray-900"
+              >
+                {props.data.news.title}
+              </a>
+              <span className="text-gray-400 text-xs">({props.data.news.urlHost})</span>
+            </div>
             <div className="flex flex-wrap text-xs items-center text-gray-400 gap-1">
               <UpvoteButton
                 postId={props.data.news.id}
