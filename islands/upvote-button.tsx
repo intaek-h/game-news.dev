@@ -19,7 +19,6 @@ export default function UpvoteButton({ postId, initialVoteCount, hasVoted }: Pro
     isLoading.value = true;
     try {
       if (isVoted.value) {
-        // Remove vote
         const response = await fetch(`/api/news/${postId}/upvote`, {
           method: "DELETE",
         });
@@ -28,7 +27,6 @@ export default function UpvoteButton({ postId, initialVoteCount, hasVoted }: Pro
           isVoted.value = false;
         }
       } else {
-        // Add vote
         const response = await fetch(`/api/news/${postId}/upvote`, {
           method: "POST",
         });
@@ -49,7 +47,7 @@ export default function UpvoteButton({ postId, initialVoteCount, hasVoted }: Pro
       type="button"
       onClick={handleVote}
       disabled={isLoading.value}
-      className={`hover:underline underline-offset-4 disabled:opacity-50 text-gray-400 disabled:cursor-progress`}
+      className={`hover:underline underline-offset-4 disabled:opacity-50 text-gray-500 disabled:cursor-progress`}
     >
       {isVoted.value ? "downvote" : "upvote"}({voteCount.value})
     </button>

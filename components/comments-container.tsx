@@ -39,10 +39,9 @@ export default function CommentsContainer({ comments, newsId }: CommentsContaine
     const children = commentMap.get(comment.id) || [];
 
     return (
-      <div key={comment.id}>
+      <div key={comment.id} style={{ paddingLeft: `${depth * 1}rem` }}>
         <CommentViewer
           comment={comment}
-          depth={depth}
           newsId={newsId}
         />
         {children.map((child) => renderComment(child, depth + 1))}

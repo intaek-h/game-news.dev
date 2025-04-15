@@ -136,7 +136,7 @@ export const handler: Handlers<Props> = {
 export default function Home(props: PageProps<Props>) {
   return (
     <div>
-      <div className="px-4 mb-4 break-keep max-w-screen-sm text-left mx-auto">
+      <div className="mb-4 break-keep max-w-screen-sm text-left mx-auto">
         <div className="px-4">
           <div className="mb-8">
             <a
@@ -146,12 +146,7 @@ export default function Home(props: PageProps<Props>) {
             >
               {props.data.news.title}
             </a>
-            <a
-              href=""
-              className="hover:underline text-gray-400 underline-offset-4 text-xs ml-1"
-            >
-              ({props.data.news.urlHost})
-            </a>
+            <span className="text-gray-400 text-xs ml-1">({props.data.news.urlHost})</span>
             <div className="flex flex-wrap text-xs items-center text-gray-400 gap-1">
               <UpvoteButton
                 postId={props.data.news.id}
@@ -162,10 +157,7 @@ export default function Home(props: PageProps<Props>) {
               <span>{props.data.comments.length} opinions</span>
               <span>|</span>
               <span>{Time.Ago(props.data.news.createdAt)}</span>
-              <span>by</span>
-              <a href="" className="hover:underline underline-offset-4">
-                {props.data.news.username}
-              </a>
+              <span>by {props.data.news.username}</span>
             </div>
           </div>
 

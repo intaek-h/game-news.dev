@@ -51,13 +51,6 @@ export function NewsContainer({ news, page }: Props) {
                   {v.title}
                 </a>
                 <div className="flex text-xs items-center text-gray-400 gap-1">
-                  <button
-                    className="hover:underline underline-offset-4"
-                    type="button"
-                  >
-                    upvote
-                  </button>
-                  <span>|</span>
                   <a
                     href={v.url}
                     className="hover:underline underline-offset-4"

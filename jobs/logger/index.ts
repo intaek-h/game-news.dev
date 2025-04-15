@@ -37,7 +37,12 @@ class Logg {
 
     return ResultAsync.fromPromise(
       this.hook.addEmbed(embed).send(),
-      (err) => ({ err, message: "Failed to send Discord message" }),
+      (err) => {
+        console.info("discord error", err);
+        console.info("embed", embed);
+        console.info("params", p);
+        return ({ err, message: "Failed to send Discord message" });
+      },
     );
   };
 }
