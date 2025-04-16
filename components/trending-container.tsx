@@ -1,5 +1,4 @@
 import { gossips } from "~/db/migrations/schema.ts";
-import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
 
 type Props = {
   articles: {
@@ -26,14 +25,6 @@ export function TrendingContainer(props: Props) {
           </div>
         ))}
       </div>
-
-      <a
-        href={`/more?${QueryParamsAtom.Focus.key}=${QueryParamsAtom.Focus.vals.HowWeGatherGossips}`}
-      >
-        <i className="inline-block text-gray-300 my-8">
-          how we gather everyday gossips
-        </i>
-      </a>
     </section>
   );
 }

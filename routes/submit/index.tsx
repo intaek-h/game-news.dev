@@ -95,7 +95,7 @@ export default function Home(props: PageProps<Props>) {
             id="url"
             required
             pattern="https?://.+"
-            className="border border-black p-0.5 w-full font-mono"
+            className="border border-black p-0.5 w-full font-mono px-1"
             placeholder="https://example.com"
           />
           <p className="text-xs text-gray-500 mt-1">must start with https://</p>
@@ -114,7 +114,7 @@ export default function Home(props: PageProps<Props>) {
             id="title"
             required
             maxLength={100}
-            className="border border-black p-0.5 w-full font-mono"
+            className="border border-black p-0.5 w-full font-mono px-1"
             placeholder="CUDA is going open source"
           />
           <p className="text-xs text-gray-500 mt-1">Max 100 characters</p>
@@ -132,8 +132,8 @@ export default function Home(props: PageProps<Props>) {
             id="content"
             rows={4}
             maxLength={1000}
-            className="border border-black p-0.5 w-full font-mono"
-            placeholder="more story to add. if you have any"
+            className="border border-gray-300 p-0.5 w-full font-mono px-1"
+            placeholder="if you want to add any"
           />
           <p className="text-xs text-gray-500 mt-1">Max 1000 characters</p>
         </div>

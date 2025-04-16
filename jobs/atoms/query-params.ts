@@ -3,7 +3,6 @@ export class QueryParamsAtom {
     key: "focus",
     vals: {
       HowWeRank: "how-we-rank",
-      HowWeGatherGossips: "how-we-gather-gossips",
     },
   };
 

@@ -77,7 +77,7 @@ export function NewsContainer({ news, page }: Props) {
           <div>
             <a
               href={`/?${QueryParamsAtom.Page.key}=${page + 1}`}
-              className="pt-4 text-right pr-4 pb-1 mt-9 text-2xl block hover:border-b-2 hover:border-gray-900"
+              className="pt-4 italic hover:bg-gray-100 text-right pr-4 pb-1 mt-9 text-2xl block"
             >
               next
             </a>

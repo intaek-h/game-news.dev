@@ -80,8 +80,7 @@ export default function CommentViewer({ comment, newsId }: CommentViewerProps) {
             wrap="virtual"
             rows={4}
             className="w-full p-2 border-2 rounded-lg font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] border-[#bdbbbb] outline-[#979494]"
-            placeholder="your reply"
-            autoFocus
+            placeholder="reply"
           />
           <button
             type="submit"
