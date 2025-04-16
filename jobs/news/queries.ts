@@ -1,6 +1,6 @@
-import { ResultAsync } from "neverthrow";
+import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import { db } from "~/db/client.ts";
-import { comments, posts, postVotes, user } from "~/db/migrations/schema.ts";
+import { comments, pointTransactions, posts, postVotes, user } from "~/db/migrations/schema.ts";
 import { and, eq, sql } from "drizzle-orm";
 import { CommentQueries } from "~/jobs/comment/queries.ts";
 
@@ -18,9 +18,9 @@ export class NewsQueries {
           url: posts.url,
           urlHost: posts.urlHost,
           createdAt: posts.createdAt,
-          commentCount: sql<number>`COUNT(${comments.id})`.as("commentCount"),
+          commentCount: sql<number>`COUNT(DISTINCT ${comments.id})`.as("commentCount"),
           score: sql<number>`(
-            (COALESCE(SUM(${postVotes.value}), 0) - 1) / 
+            COALESCE(SUM(${postVotes.value}), 0) / 
             POWER(
               (strftime('%s', 'now') - strftime('%s', ${posts.createdAt})) / 3600 + 2,
               ${GRAVITY}
@@ -67,7 +67,7 @@ export class NewsQueries {
             .map((voteCount) => ({ news, voteCount }))
         )
         .andThen(({ news, voteCount }) =>
-          CommentQueries.GetNewsComments(id, userId)
+          CommentQueries.GetNewsCommentsRanked({ newsId: id, userId })
             .map((comments) => ({ news, comments, voteCount, hasVoted: false }))
         );
     }
@@ -91,7 +91,7 @@ export class NewsQueries {
     )
       .map(([news]) => news)
       .andThen((news) =>
-        CommentQueries.GetNewsComments(id, userId)
+        CommentQueries.GetNewsCommentsRanked({ newsId: id, userId })
           .map((comments) => ({ news, comments }))
       )
       .andThen(({ news, comments }) =>
@@ -112,5 +112,72 @@ export class NewsQueries {
         )
           .map((hasVoted) => ({ news, comments, voteCount, hasVoted }))
       );
+  }
+
+  static CreatePost({
+    userId,
+    postType,
+    title,
+    content,
+    url,
+    urlHost,
+  }: {
+    userId: string;
+    postType: "news" | "ask";
+    title: string;
+    content: string | null;
+    url: string;
+    urlHost: string;
+  }) {
+    // Input validation
+    if (title.length > 100) {
+      return errAsync({ err: new Error("Title too long"), message: "Title must be less than 100 characters" });
+    }
+    if (content && content.length > 1000) {
+      return errAsync({
+        err: new Error("Content too long"),
+        message: "Content must be less than 1000 characters",
+      });
+    }
+
+    // Check for duplicate URL
+    return ResultAsync.fromPromise(
+      db.select({ id: posts.id })
+        .from(posts)
+        .where(eq(posts.url, url))
+        .limit(1),
+      (err) => ({ err, message: "Failed to check for duplicate URL" }),
+    )
+      .andThen((existingPosts) => {
+        if (existingPosts.length > 0) {
+          return okAsync({ isDuplicate: true, id: existingPosts[0].id });
+        }
+
+        return ResultAsync.fromPromise(
+          db.transaction(async (tx) => {
+            const [post] = await tx.insert(posts).values({
+              userId,
+              postType,
+              title: title.trim(),
+              content: content ? content.trim() : null,
+              url: url.trim(),
+              urlHost,
+              createdAt: new Date().toISOString(),
+            }).returning();
+
+            await tx.insert(pointTransactions).values({
+              userId,
+              points: 10,
+              actionType: "post_create",
+              referenceId: post.id,
+              referenceType: "post",
+              createdAt: new Date(),
+            });
+
+            return { isDuplicate: false, id: post.id };
+          }),
+          (err) => ({ err, message: "Failed to create post" }),
+        );
+      });
   }
 }

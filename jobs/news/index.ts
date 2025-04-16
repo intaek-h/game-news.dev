@@ -85,22 +85,8 @@ export class DailyNews {
             createdAt: v.createdAt,
           }))
       )
-      .andThen((data) =>
-        logg.DiscordAlert({
-          title: `뉴스 파이프라인 (스크래핑 완료 - ${data.length}개)`,
-          code: data.map((v) => v.title).join("\n"),
-        })
-          .map(() => data)
-      )
       .andThen(
         (data) => this.SelectUsefulNewsTitles(data.map((v) => ({ ...v, isSelected: false }))),
-      )
-      .andThen((data) =>
-        logg.DiscordAlert({
-          title: `뉴스 파이프라인 (AI 감별 작업 완료 - ${data.length}개)`,
-          code: data.map((v) => v.title).join("\n"),
-        })
-          .map(() => data)
       )
       .andThen(
         (data) =>
@@ -141,19 +127,19 @@ export class DailyNews {
             (err) => ({ err, message: "Failed to insert news" }),
           ),
       )
-      .map((data) =>
-        logg.DiscordAlert({
-          title: `뉴스 파이프라인 (DB 저장 완료 - ${data.length}개)`,
-        })
-          .map(() => data)
-      )
+      // .map((data) =>
+      //   logg.DiscordAlert({
+      //     title: `뉴스 파이프라인 (DB 저장 완료 - ${data.length}개)`,
+      //   })
+      //     .map(() => data)
+      // )
       .mapErr((err) => {
         console.error("뉴스 파이프라인 에러:", err);
-        logg.DiscordAlert({
-          title: "뉴스 파이프라인 (폭파됨)",
-          code: err.message,
-          level: "error",
-        });
+        // logg.DiscordAlert({
+        //   title: "뉴스 파이프라인 (폭파됨)",
+        //   code: err.message,
+        //   level: "error",
+        // });
       });
 
     return result;

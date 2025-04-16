@@ -26,6 +26,7 @@ import * as $more_index from "./routes/more/index.tsx";
 import * as $news_id_ from "./routes/news/[id].tsx";
 import * as $register_index from "./routes/register/index.tsx";
 import * as $sign_out_index from "./routes/sign-out/index.tsx";
+import * as $submit_index from "./routes/submit/index.tsx";
 import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
 import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
 import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
@@ -60,6 +61,7 @@ const manifest = {
     "./routes/news/[id].tsx": $news_id_,
     "./routes/register/index.tsx": $register_index,
     "./routes/sign-out/index.tsx": $sign_out_index,
+    "./routes/submit/index.tsx": $submit_index,
   },
   islands: {
     "./islands/articles/article-viewer.tsx": $articles_article_viewer,

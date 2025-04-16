@@ -1,10 +1,9 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
-import { comments } from "~/db/migrations/schema.ts";
 import UpvoteButton from "../../islands/upvote-button.tsx";
 import CommentsContainer from "../../components/comments-container.tsx";
 import { NewsQueries } from "~/jobs/news/queries.ts";
-import { CommentQueries } from "~/jobs/comment/queries.ts";
+import { CommentQueries, RankedComment } from "~/jobs/comment/queries.ts";
 import { Time } from "~/jobs/time/index.ts";
 
 type Props = {
@@ -19,15 +18,7 @@ type Props = {
   };
   voteCount: number;
   hasVoted: boolean;
-  comments: {
-    id: number;
-    content: string;
-    userId: string;
-    username: string;
-    createdAt: typeof comments.$inferSelect["createdAt"];
-    parentId: number | null;
-    hasUpvoted: boolean;
-  }[];
+  comments: RankedComment[];
 };
 
 export const handler: Handlers<Props> = {
@@ -52,15 +43,7 @@ export const handler: Handlers<Props> = {
 
     return ctx.render({
       news,
-      comments: comments.map((comment) => ({
-        id: comment.id,
-        content: comment.content,
-        userId: comment.userId,
-        username: comment.user.name,
-        createdAt: comment.createdAt,
-        parentId: comment.parentId,
-        hasUpvoted: comment.hasUpvoted,
-      })),
+      comments,
       voteCount,
       hasVoted,
     });
@@ -137,7 +120,7 @@ export default function Home(props: PageProps<Props>) {
   return (
     <div>
       <div className="mb-4 break-keep max-w-screen-sm text-left mx-auto">
-        <div className="px-4">
+        <div className="px-4 pb-[300px]">
           <div className="mb-8">
             <div className="flex items-baseline gap-1 flex-wrap">
               <a
@@ -149,7 +132,7 @@ export default function Home(props: PageProps<Props>) {
               </a>
               <span className="text-gray-400 text-xs">({props.data.news.urlHost})</span>
             </div>
-            <div className="flex flex-wrap text-xs items-center text-gray-400 gap-1">
+            <div className="flex flex-wrap text-xs items-center mt-2 text-gray-400 gap-1">
               <UpvoteButton
                 postId={props.data.news.id}
                 initialVoteCount={props.data.voteCount}
@@ -170,20 +153,20 @@ export default function Home(props: PageProps<Props>) {
           </div>
 
           <div className="mb-16">
-            <form action={`/api/news/${props.data.news.id}/comments`} method="post" id="comment">
+            <form action={`/api/news/${props.data.news.id}/comments`} method="post" id="comment" className="flex">
               <textarea
                 name="text"
                 wrap="virtual"
                 rows={6}
-                className="w-full p-2 border-none rounded-none font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] outline-[#bdbbbb]"
-                placeholder="your thoughts"
+                className="w-full p-2 border-2 rounded-lg font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] border-[#bdbbbb] outline-[#979494]"
+                placeholder="your opinion"
               >
               </textarea>
             </form>
             <button
               type="submit"
               form="comment"
-              className="mt-4 text-medium text-blue-600 underline-offset-4 underline"
+              className="mt-1 text-medium text-blue-700 underline-offset-4 underline"
             >
               add comment
             </button>

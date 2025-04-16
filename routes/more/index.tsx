@@ -33,7 +33,7 @@ export default function Home(props: PageProps<Props>) {
 
   const menus = props.data?.user
     ? [
-      { name: "write", href: "/write" },
+      { name: "write", href: "/submit" },
       { name: "profile", href: "/profile" },
       { name: how_we_rank, href: "/how-we-rank" },
       { name: how_we_gather, href: "/how-we-gather" },

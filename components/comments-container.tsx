@@ -1,57 +1,32 @@
-import { comments } from "~/db/migrations/schema.ts";
 import CommentViewer from "../islands/comment-viewer.tsx";
-
-interface Comment {
-  id: number;
-  content: string;
-  userId: string;
-  username: string;
-  createdAt: typeof comments.$inferSelect["createdAt"];
-  parentId: number | null;
-  hasUpvoted: boolean;
-}
+import { RankedComment } from "~/jobs/comment/queries.ts";
 
 interface CommentsContainerProps {
-  comments: Comment[];
+  comments: RankedComment[];
   newsId: number;
 }
 
 export default function CommentsContainer({ comments, newsId }: CommentsContainerProps) {
-  // Sort comments by creation date, newest first
-  const sortedComments = [...comments].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-  // Create a map of parent comments to their children
-  const commentMap = new Map<number, Comment[]>();
-  const topLevelComments: Comment[] = [];
-
-  sortedComments.forEach((comment) => {
-    if (comment.parentId) {
-      if (!commentMap.has(comment.parentId)) {
-        commentMap.set(comment.parentId, []);
-      }
-      commentMap.get(comment.parentId)!.push(comment);
-    } else {
-      topLevelComments.push(comment);
-    }
-  });
-
-  const renderComment = (comment: Comment, depth: number = 0) => {
-    const children = commentMap.get(comment.id) || [];
-
+  const renderComment = (comment: RankedComment, depth: number = 0) => {
     return (
-      <div key={comment.id} style={{ paddingLeft: `${depth * 1}rem` }}>
+      <div key={comment.id} style={{ paddingLeft: `${depth === 0 ? 0 : 1.5}rem` }}>
         <CommentViewer
           comment={comment}
           newsId={newsId}
         />
-        {children.map((child) => renderComment(child, depth + 1))}
+        {comment.children.map((child) => renderComment(child, depth + 1))}
       </div>
     );
   };
 
   return (
     <div className="mt-8">
-      {topLevelComments.map((comment) => renderComment(comment))}
+      {comments.map((comment, index) => (
+        <div key={comment.id}>
+          {renderComment(comment)}
+          {index < comments.length - 1 && <hr className="my-4 border-gray-200" />}
+        </div>
+      ))}
     </div>
   );
 }

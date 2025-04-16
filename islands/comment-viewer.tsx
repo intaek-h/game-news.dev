@@ -1,19 +1,10 @@
 import { Time } from "~/jobs/time/index.ts";
 import { useSignal } from "@preact/signals";
 import { IS_BROWSER } from "$fresh/runtime.ts";
-
-interface Comment {
-  id: number;
-  content: string;
-  userId: string;
-  username: string;
-  createdAt: Date;
-  parentId: number | null;
-  hasUpvoted: boolean;
-}
+import { RankedComment } from "~/jobs/comment/queries.ts";
 
 interface CommentViewerProps {
-  comment: Comment;
+  comment: RankedComment;
   newsId: number;
 }
 
@@ -88,8 +79,9 @@ export default function CommentViewer({ comment, newsId }: CommentViewerProps) {
             name="text"
             wrap="virtual"
             rows={4}
-            className="w-full p-2 border-none rounded-none font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] outline-[#bdbbbb]"
+            className="w-full p-2 border-2 rounded-lg font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] border-[#bdbbbb] outline-[#979494]"
             placeholder="your reply"
+            autoFocus
           />
           <button
             type="submit"
