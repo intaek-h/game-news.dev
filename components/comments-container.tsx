@@ -25,7 +25,7 @@ export default function CommentsContainer({ comments, newsId }: CommentsContaine
       {comments.map((comment, index) => (
         <div key={comment.id}>
           {renderComment(comment)}
-          {index < comments.length - 1 && <hr className="my-4 border-gray-200" />}
+          {index < comments.length - 1 && <hr className="my-4 mx-1 border-gray-200" />}
         </div>
       ))}
     </div>
