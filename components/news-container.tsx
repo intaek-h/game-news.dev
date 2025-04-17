@@ -24,12 +24,16 @@ export function NewsContainer({ type, news, page }: Props) {
           </div>
 
           <div>
-            <a
-              href={`/more?${QueryParamsAtom.Focus.key}=${QueryParamsAtom.Focus.vals.HowWeRank}`}
-              className="hover:underline underline-offset-4"
-            >
-              <i className="text-gray-400">how we rank</i>
-            </a>
+            {type === "ranked"
+              ? (
+                <a
+                  href={`/more?${QueryParamsAtom.Focus.key}=${QueryParamsAtom.Focus.vals.HowWeRank}`}
+                  className="hover:underline underline-offset-4"
+                >
+                  <i className="text-gray-400">how we rank</i>
+                </a>
+              )
+              : <i className="text-gray-400">recently uploaded</i>}
           </div>
         </div>
       </div>
