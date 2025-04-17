@@ -19,6 +19,7 @@ import * as $api_news_id_upvote from "./routes/api/news/[id]/upvote.ts";
 import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
 import * as $api_test from "./routes/api/test.ts";
 import * as $api_user_language_preference from "./routes/api/user/language-preference.ts";
+import * as $delete_account_index from "./routes/delete-account/index.tsx";
 import * as $gossips_id_ from "./routes/gossips/[id].tsx";
 import * as $gossips_index from "./routes/gossips/index.tsx";
 import * as $index from "./routes/index.tsx";
@@ -56,6 +57,7 @@ const manifest = {
     "./routes/api/scrape/article-extractor/index.ts": $api_scrape_article_extractor_index,
     "./routes/api/test.ts": $api_test,
     "./routes/api/user/language-preference.ts": $api_user_language_preference,
+    "./routes/delete-account/index.tsx": $delete_account_index,
     "./routes/gossips/[id].tsx": $gossips_id_,
     "./routes/gossips/index.tsx": $gossips_index,
     "./routes/index.tsx": $index,

@@ -25,6 +25,11 @@ export const auth = betterAuth({
         default: "en",
         input: false,
       },
+      deletedAt: {
+        type: "date",
+        default: null,
+        input: false,
+      },
     },
   },
 });
