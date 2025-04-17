@@ -117,7 +117,7 @@ export default function Home(props: PageProps<Props>) {
             className="border border-black p-0.5 w-full font-mono px-1"
             placeholder="CUDA is going open source"
           />
-          <p className="text-xs text-gray-500 mt-1">Max 100 characters</p>
+          <p className="text-xs text-gray-500 mt-1">max 100 characters</p>
         </div>
 
         <div class="mb-6">
@@ -132,10 +132,10 @@ export default function Home(props: PageProps<Props>) {
             id="content"
             rows={4}
             maxLength={1000}
-            className="border border-gray-300 p-0.5 w-full font-mono px-1"
+            className="flex border border-gray-300 p-0.5 w-full font-mono px-1"
             placeholder="if you want to add any"
           />
-          <p className="text-xs text-gray-500 mt-1">Max 1000 characters</p>
+          <p className="text-xs text-gray-500 mt-1">max 1000 characters</p>
         </div>
 
         <hr />

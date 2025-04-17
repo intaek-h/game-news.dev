@@ -4,19 +4,19 @@ export function NavBar() {
       <ul className="flex justify-center mx-auto space-x-4 underline-offset-4 aria-[current='page']:[&_a]:decoration-gray-300 aria-[current='page']:[&_a]:underline">
         <li>
           <a
-            href={`/gossips`}
-            className="aria-[current='page']:decoration-gray-300 aria-[current='page']:underline hover:underline"
+            href={`/`}
+            className="hover:underline"
           >
-            gossips
+            ranked
           </a>
         </li>
 
         <li>
           <a
-            href={`/`}
-            className="hover:underline"
+            href={`/new`}
+            className="aria-[current='page']:decoration-gray-300 aria-[current='page']:underline hover:underline"
           >
-            news
+            new
           </a>
         </li>
 

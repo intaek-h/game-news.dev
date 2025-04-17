@@ -1,11 +1,11 @@
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import { db } from "~/db/client.ts";
 import { comments, pointTransactions, posts, postVotes, user } from "~/db/migrations/schema.ts";
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { CommentQueries } from "~/jobs/comment/queries.ts";
 
 export class NewsQueries {
-  static ListPageQuery(page: number) {
+  static RankedNewsPageQuery(page: number) {
     const GRAVITY = 1.8; // Hacker News gravity factor
     const POSTS_PER_PAGE = 10;
     const offset = (page - 1) * POSTS_PER_PAGE;
@@ -33,6 +33,33 @@ export class NewsQueries {
         .where(eq(posts.postType, "news"))
         .groupBy(posts.id)
         .orderBy(sql`score DESC`)
+        .limit(POSTS_PER_PAGE)
+        .offset(offset),
+      (err) => ({ err, message: "Failed to fetch news" }),
+    );
+  }
+
+  static RecentNewsPageQuery(page: number) {
+    const POSTS_PER_PAGE = 10;
+    const offset = (page - 1) * POSTS_PER_PAGE;
+
+    return ResultAsync.fromPromise(
+      db
+        .select({
+          id: posts.id,
+          title: posts.title,
+          url: posts.url,
+          urlHost: posts.urlHost,
+          createdAt: posts.createdAt,
+          commentCount: sql<number>`COUNT(DISTINCT ${comments.id})`.as("commentCount"),
+          score: sql<number>`COALESCE(SUM(${postVotes.value}), 0)`.as("score"),
+        })
+        .from(posts)
+        .leftJoin(postVotes, eq(posts.id, postVotes.postId))
+        .leftJoin(comments, eq(posts.id, comments.postId))
+        .where(eq(posts.postType, "news"))
+        .groupBy(posts.id, posts.createdAt, posts.title, posts.url, posts.urlHost)
+        .orderBy(desc(posts.createdAt))
         .limit(POSTS_PER_PAGE)
         .offset(offset),
       (err) => ({ err, message: "Failed to fetch news" }),

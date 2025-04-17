@@ -13,6 +13,7 @@ export default function CommentsContainer({ comments, newsId }: CommentsContaine
         <CommentViewer
           comment={comment}
           newsId={newsId}
+          isRoot={depth === 0}
         />
         {comment.children.map((child) => renderComment(child, depth + 1))}
       </div>

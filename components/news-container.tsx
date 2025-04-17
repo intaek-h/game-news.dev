@@ -2,6 +2,7 @@ import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
 import { Time } from "~/jobs/time/index.ts";
 
 interface Props {
+  type: "ranked" | "new";
   page: number;
   news: {
     title: string;
@@ -13,7 +14,7 @@ interface Props {
   }[];
 }
 
-export function NewsContainer({ news, page }: Props) {
+export function NewsContainer({ type, news, page }: Props) {
   return (
     <div>
       <div className="px-4 mb-4 break-keep max-w-screen-sm text-left mx-auto">
@@ -76,7 +77,7 @@ export function NewsContainer({ news, page }: Props) {
         {news.length === 10 && (
           <div>
             <a
-              href={`/?${QueryParamsAtom.Page.key}=${page + 1}`}
+              href={`/${type === "ranked" ? "" : "new"}?${QueryParamsAtom.Page.key}=${page + 1}`}
               className="pt-4 italic hover:bg-gray-100 text-right pr-4 pb-1 mt-9 text-2xl block"
             >
               next

@@ -6,9 +6,10 @@ import { RankedComment } from "~/jobs/comment/queries.ts";
 interface CommentViewerProps {
   comment: RankedComment;
   newsId: number;
+  isRoot: boolean;
 }
 
-export default function CommentViewer({ comment, newsId }: CommentViewerProps) {
+export default function CommentViewer({ comment, newsId, isRoot }: CommentViewerProps) {
   const isReplying = useSignal(false);
   const hasUpvoted = useSignal(comment.hasUpvoted);
   const isLoading = useSignal(false);
@@ -50,6 +51,7 @@ export default function CommentViewer({ comment, newsId }: CommentViewerProps) {
   return (
     <div className="mb-6">
       <div className="text-xs text-gray-400">
+        {!isRoot && <span className="mr-1">^</span>}
         <span>{comment.username}</span>
         <span className="mx-1">|</span>
         <span>{Time.Ago(comment.createdAt)}</span>

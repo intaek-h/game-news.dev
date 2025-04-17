@@ -21,7 +21,7 @@ export const handler: Handlers<Props> = {
     if (isNaN(page) || page < 1) {
       return ctx.renderNotFound();
     }
-    const article = await NewsQueries.RankedNewsPageQuery(page);
+    const article = await NewsQueries.RecentNewsPageQuery(page);
 
     if (article.isErr()) {
       console.error(article.error);
@@ -43,5 +43,5 @@ export const handler: Handlers<Props> = {
 };
 
 export default function Home({ data }: PageProps<Props>) {
-  return <NewsContainer news={data.news} page={data.page} type="ranked" />;
+  return <NewsContainer news={data.news} page={data.page} type="new" />;
 }
