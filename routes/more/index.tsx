@@ -33,14 +33,14 @@ export default function Home(props: PageProps<Props>) {
   const menus = props.data?.user
     ? [
       { name: "submit", href: "/submit" },
-      { name: how_we_rank, href: "/how-we-rank" },
+      { name: how_we_rank, href: "https://github.com/intaek-h/extinguish-backend/blob/main/README.md" },
       { name: "sign out", href: "/sign-out" },
       { name: "delete account", href: "/delete-account" },
     ]
     : [
       { name: "login", href: "/login" },
       { name: "register", href: "/register" },
-      { name: how_we_rank, href: "/how-we-rank" },
+      { name: how_we_rank, href: "https://github.com/intaek-h/extinguish-backend/blob/main/README.md" },
     ];
 
   const focus = props.url.searchParams.get(QueryParamsAtom.Focus.key);
@@ -59,6 +59,7 @@ export default function Home(props: PageProps<Props>) {
           <div key={menu.name} className="mb-8 text-xl">
             <a
               href={menu.href}
+              target={menu.name === how_we_rank ? "_blank" : "_self"}
               className={`hover:underline underline-offset-4 ${menu.name === "submit" ? "text-blue-700" : ""}`}
             >
               {menu.name}
