@@ -162,6 +162,7 @@ export default function Home(props: PageProps<Props>) {
                 <textarea
                   name="text"
                   wrap="virtual"
+                  required
                   rows={6}
                   className="w-full p-2 border-2 rounded-lg font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] border-[#bdbbbb] outline-[#979494]"
                   placeholder="your opinion"

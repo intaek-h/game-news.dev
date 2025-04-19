@@ -77,44 +77,38 @@ export default function Home(props: PageProps<Props>) {
       <Head>
         <title>Login</title>
       </Head>
-      <div className="">
+      <div className="max-w-[400px] mx-auto">
         <form
           method="post"
           action={`/login`}
           encType="multipart/form-data"
-          className="my-4 px-4 mx-auto w-[300px]"
+          className="my-4 px-4"
         >
-          <div class="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 text-sm font-medium mb-1"
-            >
-              Email
+          <div class="mb-6">
+            <label htmlFor="email" className="block text-gray-500 text-sm mb-1">
+              email
             </label>
             <input
               type="email"
               name="email"
               id="email"
               required
-              className="border border-black p-0.5"
+              className="border border-black p-0.5 w-full font-mono px-1"
               placeholder="abc@example.com"
             />
           </div>
 
-          <div class="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-gray-700 text-sm font-medium mb-1"
-            >
-              Password
+          <div class="mb-6">
+            <label htmlFor="password" className="block text-gray-500 text-sm mb-1">
+              password
             </label>
             <input
               type="password"
               name="password"
               id="password"
               required
-              className="border border-black p-0.5"
-              placeholder="a very strong password"
+              className="border border-black p-0.5 w-full font-mono px-1"
+              placeholder="****"
             />
           </div>
 

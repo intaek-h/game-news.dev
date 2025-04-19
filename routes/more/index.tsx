@@ -56,7 +56,7 @@ export default function Home(props: PageProps<Props>) {
   return (
     <>
       <Head>
-        <title>More+</title>
+        <title>More</title>
       </Head>
       <div>
         <div className="px-4 mb-4 break-keep max-w-screen-sm text-center mx-auto">

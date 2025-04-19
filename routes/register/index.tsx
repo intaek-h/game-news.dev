@@ -19,6 +19,26 @@ export const handler: Handlers<Props> = {
         error: "Missing required fields",
       });
     }
+    if (password.length < 8) {
+      return ctx.render({
+        error: "Password must be at least 8 characters long",
+      });
+    }
+    if (name.length < 3 || name.length > 20) {
+      return ctx.render({
+        error: "Display name must be between 3 and 20 characters",
+      });
+    }
+    if (!/^[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/.test(name)) {
+      return ctx.render({
+        error: "Name can only contain letters, numbers, single spaces, dashes and underscores",
+      });
+    }
+    if (email.length > 100) {
+      return ctx.render({
+        error: "Email too long",
+      });
+    }
 
     try {
       const { headers } = await auth.api.signUpEmail({
@@ -57,78 +77,52 @@ export default function Home(props: PageProps<Props>) {
       <Head>
         <title>Register</title>
       </Head>
-      <div className="">
+      <div className="max-w-[400px] mx-auto">
         <form
           method="post"
           action={`/register`}
           encType="multipart/form-data"
-          className="my-4 px-4 mx-auto w-[300px]"
+          className="my-4 px-4"
         >
-          <div class="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 text-sm font-medium mb-1"
-            >
-              Email
+          <div class="mb-6">
+            <label htmlFor="email" className="block text-gray-500 text-sm mb-1">
+              email
             </label>
             <input
               type="email"
               name="email"
               id="email"
               required
-              className="border border-black p-0.5"
+              className="border border-black p-0.5 w-full font-mono px-1"
               placeholder="abc@example.com"
             />
           </div>
 
-          <div class="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-gray-700 text-sm font-medium mb-1"
-            >
-              Password
+          <div class="mb-6">
+            <label htmlFor="password" className="block text-gray-500 text-sm mb-1">
+              password
             </label>
             <input
               type="password"
               name="password"
               id="password"
               required
-              className="border border-black p-0.5"
-              placeholder="a very strong password"
+              className="border border-black p-0.5 w-full font-mono px-1"
+              placeholder="at least 8 characters long"
             />
           </div>
 
-          <div class="mb-4">
-            <label
-              htmlFor="confirm-password"
-              className="block text-gray-700 text-sm font-medium mb-1"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirm-password"
-              id="confirm-password"
-              required
-              className="border border-black p-0.5"
-              placeholder="confirm your password"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label
-              htmlFor="name"
-              className="block text-gray-700 text-sm font-medium mb-1"
-            >
-              Display Name
+          <div class="mb-6">
+            <label htmlFor="name" className="block text-gray-500 text-sm mb-1">
+              displayed name
             </label>
             <input
               type="text"
               name="name"
               id="name"
               required
-              className="border border-black p-0.5"
-              placeholder="Slick Rick"
+              className="border border-black p-0.5 w-full font-mono px-1"
+              placeholder="john carmack"
             />
           </div>
 
