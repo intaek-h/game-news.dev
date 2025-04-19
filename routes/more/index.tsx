@@ -1,4 +1,5 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
+import { Head } from "$fresh/runtime.ts";
 import { auth } from "~/auth.ts";
 import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
 
@@ -53,20 +54,25 @@ export default function Home(props: PageProps<Props>) {
   }
 
   return (
-    <div>
-      <div className="px-4 mb-4 break-keep max-w-screen-sm text-center mx-auto">
-        {menus.map((menu) => (
-          <div key={menu.name} className="mb-8 text-xl">
-            <a
-              href={menu.href}
-              target={menu.name === how_we_rank ? "_blank" : "_self"}
-              className={`hover:underline underline-offset-4 ${menu.name === "submit" ? "text-blue-700" : ""}`}
-            >
-              {menu.name}
-            </a>
-          </div>
-        ))}
+    <>
+      <Head>
+        <title>More+</title>
+      </Head>
+      <div>
+        <div className="px-4 mb-4 break-keep max-w-screen-sm text-center mx-auto">
+          {menus.map((menu) => (
+            <div key={menu.name} className="mb-8 text-xl">
+              <a
+                href={menu.href}
+                target={menu.name === how_we_rank ? "_blank" : "_self"}
+                className={`hover:underline underline-offset-4 ${menu.name === "submit" ? "text-blue-700" : ""}`}
+              >
+                {menu.name}
+              </a>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -41,7 +41,9 @@ export default async function App(_req: Request, ctx: FreshContext) {
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Game News</title>
+        <meta property="og:image" content="/og-image.png" />
+
+        <title>Game Dev News</title>
 
         <link
           rel="preload"

@@ -1,6 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
 import { APIError } from "better-auth/api";
+import { Head } from "$fresh/runtime.ts";
 
 interface Props {
   error: string;
@@ -72,71 +73,76 @@ export const handler: Handlers<Props> = {
 
 export default function Home(props: PageProps<Props>) {
   return (
-    <div className="">
-      <form
-        method="post"
-        action={`/login`}
-        encType="multipart/form-data"
-        className="my-4 px-4 mx-auto w-[300px]"
-      >
-        <div class="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-gray-700 text-sm font-medium mb-1"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            required
-            className="border border-black p-0.5"
-            placeholder="abc@example.com"
-          />
-        </div>
-
-        <div class="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-gray-700 text-sm font-medium mb-1"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            required
-            className="border border-black p-0.5"
-            placeholder="a very strong password"
-          />
-        </div>
-
-        <hr />
-
-        {props.data?.error
-          ? (
-            <p className="mt-2 text-sm text-red-700 italic">
-              {props.data.error}
-            </p>
-          )
-          : null}
-
-        <button
-          type="submit"
-          className="mt-4 text-medium text-blue-900 underline"
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <div className="">
+        <form
+          method="post"
+          action={`/login`}
+          encType="multipart/form-data"
+          className="my-4 px-4 mx-auto w-[300px]"
         >
-          Login
-        </button>
+          <div class="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-gray-700 text-sm font-medium mb-1"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              className="border border-black p-0.5"
+              placeholder="abc@example.com"
+            />
+          </div>
 
-        <a
-          href="/register"
-          className="mt-4 ml-4 text-medium text-gray-400 underline"
-        >
-          I'm here to register
-        </a>
-      </form>
-    </div>
+          <div class="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 text-sm font-medium mb-1"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              required
+              className="border border-black p-0.5"
+              placeholder="a very strong password"
+            />
+          </div>
+
+          <hr />
+
+          {props.data?.error
+            ? (
+              <p className="mt-2 text-sm text-red-700 italic">
+                {props.data.error}
+              </p>
+            )
+            : null}
+
+          <button
+            type="submit"
+            className="mt-4 text-medium text-blue-900 underline"
+          >
+            Login
+          </button>
+
+          <a
+            href="/register"
+            className="mt-4 ml-4 text-medium text-gray-400 underline"
+          >
+            I'm here to register
+          </a>
+        </form>
+      </div>
+    </>
   );
 }

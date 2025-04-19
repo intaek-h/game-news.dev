@@ -1,4 +1,5 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
+import { Head } from "$fresh/runtime.ts";
 import { NewsContainer } from "~/components/news-container.tsx";
 import { NewsQueries } from "~/jobs/news/queries.ts";
 
@@ -43,5 +44,12 @@ export const handler: Handlers<Props> = {
 };
 
 export default function Home({ data }: PageProps<Props>) {
-  return <NewsContainer news={data.news} page={data.page} type="ranked" />;
+  return (
+    <>
+      <Head>
+        <title>{data.page === 1 ? "Ranked" : `Ranked | page ${data.page}`}</title>
+      </Head>
+      <NewsContainer news={data.news} page={data.page} type="ranked" />
+    </>
+  );
 }

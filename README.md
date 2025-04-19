@@ -5,11 +5,11 @@ development_.
 
 ## Guidelines for the users.
 
-_Please submit if,_
+_Please DO submit if,_
 
 - The subject gratifies game developers' intellectual curiosity. (borrowed from HN)
 
-_Please don't submit if,_
+_Please DON'T submit if,_
 
 - The subject does not relate to the mission of the site.
 - The subject is gossipy. (We already aggregate gossip for you in the /gossips page.)
