@@ -58,6 +58,7 @@ export function NewsContainer({ type, news, page }: Props) {
                 <div className="flex text-xs items-center text-gray-400 gap-1">
                   <a
                     href={v.url}
+                    target="_blank"
                     className="hover:underline underline-offset-4"
                   >
                     read news
