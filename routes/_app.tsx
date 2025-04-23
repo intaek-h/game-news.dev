@@ -40,7 +40,7 @@ export default async function App(_req: Request, ctx: FreshContext) {
         </style>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+        <meta name="google-site-verification" content="BDkUkjAnu2zFvh1QaPaTC0URrBkgPyTEHfjN2f9cWIg" />
         <meta property="og:image" content="/og-image.png" />
 
         <title>Game Dev News</title>
