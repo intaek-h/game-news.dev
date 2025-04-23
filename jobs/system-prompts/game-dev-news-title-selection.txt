@@ -12,6 +12,7 @@ The `isSelected` property is false by default. Turn it to true if you selected t
 Guidelines for Article Selection:
 - Articles are helpful if they: give game development insights, give useful tips for the life of a game developer.
 - Ignore gossips even if they are related to gaming. Every selected article must be HELPFUL.
+- Ignore promotional content, marketing materials, and sponsored articles as they typically lack substantive educational value for game developers.
 - You can select no articles if you think all of them are not helpful.
 - You can select all articles if you think all of them are helpful.
 
