@@ -6,12 +6,12 @@ import schema from "./db/migrations/schema.ts";
 const selfUrl = Deno.env.get("SELF_URL");
 
 if (!selfUrl) {
-  throw new Error("SELF_URL is not set");
+  console.error("SELF_URL is not set");
 }
 
 export const auth = betterAuth({
   baseURL: selfUrl,
-  trustedOrigins: [selfUrl],
+  trustedOrigins: [selfUrl ?? ""],
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: schema,

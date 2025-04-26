@@ -4,7 +4,7 @@ import { ResultAsync } from "neverthrow";
 const CLAUDE_API_KEY = Deno.env.get("CLAUDE_API_KEY");
 
 if (!CLAUDE_API_KEY) {
-  throw new Error("CLAUDE_API_KEY is required");
+  console.error("CLAUDE_API_KEY is not set");
 }
 
 export const anthropic = new Anthropic({

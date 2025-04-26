@@ -5,7 +5,7 @@ const TURSO_API_KEY = Deno.env.get("TURSO_API_KEY");
 const TURSO_PRODUCTION_DB_URL = Deno.env.get("TURSO_PRODUCTION_DB_URL");
 
 if (!TURSO_API_KEY || !TURSO_PRODUCTION_DB_URL) {
-  throw new Error("Missing Turso database credentials in .env file");
+  console.error("Missing Turso database credentials in .env file");
 }
 
 const config: Config = {

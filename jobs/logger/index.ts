@@ -4,7 +4,7 @@ import { ResultAsync } from "neverthrow";
 const webhookUrl = Deno.env.get("DISCORD_LOG_CHANNEL_URL") ?? "";
 
 if (!webhookUrl) {
-  throw new Error("Discord webhook URL is not set");
+  console.error("Discord webhook URL is not set");
 }
 
 class Logg {
