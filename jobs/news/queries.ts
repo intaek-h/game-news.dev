@@ -1,7 +1,7 @@
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import { db } from "~/db/client.ts";
 import { comments, pointTransactions, posts, postVotes, user } from "~/db/migrations/schema.ts";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { CommentQueries } from "~/jobs/comment/queries.ts";
 
 export class NewsQueries {

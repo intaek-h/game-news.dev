@@ -1,4 +1,4 @@
-import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
+import { QueryParamsAtom } from "../jobs/query-params/index.ts";
 import { Time } from "~/jobs/time/index.ts";
 
 interface Props {

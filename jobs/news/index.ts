@@ -3,13 +3,13 @@ import { ResultAsync } from "neverthrow";
 import { addDays, isAfter, startOfDay } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import { FileUtilities } from "~/jobs/utils/file.ts";
-import { chatGoogleGemini2 } from "~/jobs/utils/google.ts";
 import { DeveloperArticleCandidate } from "~/types/articleFormat.ts";
 import { unstableJsonParser } from "~/jobs/utils/json.ts";
 import { db } from "~/db/client.ts";
 import { posts, user } from "~/db/migrations/schema.ts";
 import { and, eq } from "drizzle-orm";
 import { logg } from "~/jobs/logger/index.ts";
+import { chatAnthropicHaiku } from "~/jobs/utils/anthropic.ts";
 
 export class DailyNews {
   static ScrapeGameDeveloperNews = (param: RSSSource[]) => {
@@ -54,10 +54,10 @@ export class DailyNews {
       return systemPrompt;
     }
 
-    return chatGoogleGemini2({ systemP: systemPrompt.value, message: JSON.stringify(data) })
+    return chatAnthropicHaiku({ systemP: systemPrompt.value, message: JSON.stringify(data) })
       .map((result) => {
         const parsed = unstableJsonParser<DeveloperArticleCandidate[]>({
-          maybeJson: result.text ?? "",
+          maybeJson: result.find((v) => v.type === "text")?.text ?? "", // FIXME: handle <fail>
         });
 
         return (parsed ?? []).filter((v) => v.isSelected);

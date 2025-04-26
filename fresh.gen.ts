@@ -6,22 +6,11 @@ import * as $_404 from "./routes/_404.tsx";
 import * as $_500 from "./routes/_500.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_layout from "./routes/_layout.tsx";
-import * as $admin_entity_images from "./routes/admin/entity-images.tsx";
-import * as $admin_index from "./routes/admin/index.tsx";
-import * as $api_middleware from "./routes/api/_middleware.ts";
-import * as $api_articles_manual_generate_index from "./routes/api/articles/manual-generate/index.ts";
-import * as $api_articles_thumbnail from "./routes/api/articles/thumbnail.ts";
 import * as $api_auth_path_ from "./routes/api/auth/[...path].ts";
 import * as $api_comments_id_upvote from "./routes/api/comments/[id]/upvote.ts";
-import * as $api_image_search_index from "./routes/api/image-search/index.ts";
 import * as $api_news_id_comments from "./routes/api/news/[id]/comments.ts";
 import * as $api_news_id_upvote from "./routes/api/news/[id]/upvote.ts";
-import * as $api_scrape_article_extractor_index from "./routes/api/scrape/article-extractor/index.ts";
-import * as $api_test from "./routes/api/test.ts";
-import * as $api_user_language_preference from "./routes/api/user/language-preference.ts";
 import * as $delete_account_index from "./routes/delete-account/index.tsx";
-import * as $gossips_id_ from "./routes/gossips/[id].tsx";
-import * as $gossips_index from "./routes/gossips/index.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $login_index from "./routes/login/index.tsx";
 import * as $more_index from "./routes/more/index.tsx";
@@ -30,11 +19,7 @@ import * as $news_id_ from "./routes/news/[id].tsx";
 import * as $register_index from "./routes/register/index.tsx";
 import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $submit_index from "./routes/submit/index.tsx";
-import * as $articles_article_viewer from "./islands/articles/article-viewer.tsx";
-import * as $articles_enhanced_article_row from "./islands/articles/enhanced-article-row.tsx";
-import * as $articles_thumbnail_candidate from "./islands/articles/thumbnail-candidate.tsx";
 import * as $comment_viewer from "./islands/comment-viewer.tsx";
-import * as $language_switcher from "./islands/language-switcher.tsx";
 import * as $upvote_button from "./islands/upvote-button.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -44,22 +29,11 @@ const manifest = {
     "./routes/_500.tsx": $_500,
     "./routes/_app.tsx": $_app,
     "./routes/_layout.tsx": $_layout,
-    "./routes/admin/entity-images.tsx": $admin_entity_images,
-    "./routes/admin/index.tsx": $admin_index,
-    "./routes/api/_middleware.ts": $api_middleware,
-    "./routes/api/articles/manual-generate/index.ts": $api_articles_manual_generate_index,
-    "./routes/api/articles/thumbnail.ts": $api_articles_thumbnail,
     "./routes/api/auth/[...path].ts": $api_auth_path_,
     "./routes/api/comments/[id]/upvote.ts": $api_comments_id_upvote,
-    "./routes/api/image-search/index.ts": $api_image_search_index,
     "./routes/api/news/[id]/comments.ts": $api_news_id_comments,
     "./routes/api/news/[id]/upvote.ts": $api_news_id_upvote,
-    "./routes/api/scrape/article-extractor/index.ts": $api_scrape_article_extractor_index,
-    "./routes/api/test.ts": $api_test,
-    "./routes/api/user/language-preference.ts": $api_user_language_preference,
     "./routes/delete-account/index.tsx": $delete_account_index,
-    "./routes/gossips/[id].tsx": $gossips_id_,
-    "./routes/gossips/index.tsx": $gossips_index,
     "./routes/index.tsx": $index,
     "./routes/login/index.tsx": $login_index,
     "./routes/more/index.tsx": $more_index,
@@ -70,11 +44,7 @@ const manifest = {
     "./routes/submit/index.tsx": $submit_index,
   },
   islands: {
-    "./islands/articles/article-viewer.tsx": $articles_article_viewer,
-    "./islands/articles/enhanced-article-row.tsx": $articles_enhanced_article_row,
-    "./islands/articles/thumbnail-candidate.tsx": $articles_thumbnail_candidate,
     "./islands/comment-viewer.tsx": $comment_viewer,
-    "./islands/language-switcher.tsx": $language_switcher,
     "./islands/upvote-button.tsx": $upvote_button,
   },
   baseUrl: import.meta.url,

@@ -11,7 +11,7 @@ export default async function App(_req: Request, ctx: FreshContext) {
     includeFiles: true,
   });
 
-  let criticalCSS = ""; // technically it's every tailwind style. just because it's tiny after all.
+  let criticalCSS = ""; // 사이트에서 사용한 Tailwind 클래스를 전부 추출해서 Critical CSS 로 만듭니다. 사이트 규모가 작아서 괜찮. (일부 누락되는 클래스가 있는데, 어차피 CSS 파일 따로 요청하기 때문에 괜찮)
 
   for await (const file of files) {
     criticalCSS = await Deno.readTextFile(file.path); // it's only one file
@@ -56,6 +56,7 @@ export default async function App(_req: Request, ctx: FreshContext) {
           <link rel="stylesheet" href={asset("/styles.css")} />
         </noscript>
       </head>
+
       <body className="mx-auto max-w-4xl">
         <ctx.Component />
       </body>

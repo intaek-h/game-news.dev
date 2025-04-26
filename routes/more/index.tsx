@@ -1,7 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { auth } from "~/auth.ts";
-import { QueryParamsAtom } from "~/jobs/atoms/query-params.ts";
+import { QueryParamsAtom } from "../../jobs/query-params/index.ts";
 
 interface Props {
   user?: typeof auth.$Infer.Session.user;

@@ -41,3 +41,9 @@ deno task docker:dev
 - Fresh
 - Turso(libsql)
 - Drizzle ORM
+
+## FAQ
+
+### Why `lock: false` in deno.json?
+
+https://github.com/denoland/fresh/issues/2734

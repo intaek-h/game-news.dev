@@ -17,7 +17,7 @@ export const auth = betterAuth({
     schema: schema,
   }),
   emailAndPassword: {
-    enabled: true,
+    enabled: true, // TODO: email verification
   },
   user: {
     additionalFields: {

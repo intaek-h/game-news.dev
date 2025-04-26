@@ -1,4 +1,3 @@
-// filepath: /Users/ahiou/Documents/repositories/extinguish-backend/utils/language.ts
 import { db } from "~/db/client.ts";
 import { languages, user } from "~/db/migrations/schema.ts";
 import { eq } from "drizzle-orm";

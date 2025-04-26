@@ -2,11 +2,9 @@
   "lock": false,
 
   "imports": {
+    "~/": "./",
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.39.0",
-    "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.772.0",
     "@date-fns/utc": "npm:@date-fns/utc@^2.1.0",
-    "@extractus/article-extractor": "npm:@extractus/article-extractor@^8.0.17",
-    "@google/genai": "npm:@google/genai@^0.7.0",
     "@libsql/client": "npm:@libsql/client@^0.14.0",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
     "@vermaysha/discord-webhook": "npm:@vermaysha/discord-webhook@^1.4.0",
@@ -15,10 +13,8 @@
     "drizzle-kit": "npm:drizzle-kit@^0.30.5",
     "drizzle-orm": "npm:drizzle-orm@^0.40.0",
     "json-like-parse": "npm:json-like-parse@^1.0.3",
-    "marked": "npm:marked@^15.0.7",
     "neverthrow": "npm:neverthrow@^8.2.0",
     "rss-parser": "npm:rss-parser@^3.13.0",
-    "~/": "./",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "preact": "https://esm.sh/preact@10.22.0",
     "preact/": "https://esm.sh/preact@10.22.0/",
@@ -42,14 +38,12 @@
     "manifest": "deno task cli manifest $(pwd)",
     "start": "deno run -A --watch=static/,routes/ --unstable-kv --unstable-cron dev.ts",
     "serve": "deno run --allow-env --allow-net --allow-import --allow-read --allow-sys --allow-ffi --unstable-kv --unstable-cron main.ts",
-    "build": "deno run -A --unstable-kv --unstable-cron dev.ts build -- sync-replica",
-    "build:cron": "deno run -A --unstable-kv --unstable-cron dev.ts build",
+    "build": "deno run -A --unstable-kv --unstable-cron dev.ts build",
     "preview": "deno run -A --unstable-kv --unstable-cron main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
     "docker:build": "docker build -t game-news .",
     "docker:run": "docker run -p 8000:8000 game-news",
-    "docker:dev": "docker-compose --file docker-compose.dev.yml up",
-    "standalone:daily-news-pipeline": "deno run -A jobs/standalones/daily-news-generator.ts"
+    "docker:dev": "docker-compose --file docker-compose.dev.yml up"
   },
 
   "lint": {

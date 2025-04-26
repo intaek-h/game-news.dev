@@ -25,7 +25,7 @@ export const handler: Handlers = {
 export default function Page() {
   return (
     <div>
-      don't go away
+      don't go
     </div>
   );
 }
