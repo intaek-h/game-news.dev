@@ -4,7 +4,7 @@
   "lock": false,
 
   "imports": {
-    "~/": "./",
+    "lodash-es": "npm:lodash-es@^4.17.21",
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.39.0",
     "@date-fns/utc": "npm:@date-fns/utc@^2.1.0",
     "@libsql/client": "npm:@libsql/client@^0.14.0",
@@ -25,7 +25,8 @@
     "tailwindcss": "npm:tailwindcss@3.4.1",
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
-    "$std/": "https://deno.land/std@0.216.0/"
+    "$std/": "https://deno.land/std@0.216.0/",
+    "~/": "./"
   },
 
   "tasks": {

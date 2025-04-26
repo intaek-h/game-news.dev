@@ -20,6 +20,7 @@ import * as $news_id_ from "./routes/news/[id].tsx";
 import * as $register_index from "./routes/register/index.tsx";
 import * as $sign_out_index from "./routes/sign-out/index.tsx";
 import * as $submit_index from "./routes/submit/index.tsx";
+import * as $comment_form from "./islands/comment-form.tsx";
 import * as $comment_viewer from "./islands/comment-viewer.tsx";
 import * as $upvote_button from "./islands/upvote-button.tsx";
 import type { Manifest } from "$fresh/server.ts";
@@ -46,6 +47,7 @@ const manifest = {
     "./routes/submit/index.tsx": $submit_index,
   },
   islands: {
+    "./islands/comment-form.tsx": $comment_form,
     "./islands/comment-viewer.tsx": $comment_viewer,
     "./islands/upvote-button.tsx": $upvote_button,
   },

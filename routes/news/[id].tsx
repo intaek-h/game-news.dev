@@ -7,6 +7,7 @@ import { CommentQueries, RankedComment } from "~/jobs/comment/queries.ts";
 import { Time } from "~/jobs/time/index.ts";
 import { Head } from "$fresh/runtime.ts";
 import { defaultCSP } from "~/jobs/utils/csp.ts";
+import CommentForm from "~/islands/comment-form.tsx";
 
 type Props = {
   news: {
@@ -161,24 +162,7 @@ export default function Home(props: PageProps<Props>) {
             </div>
 
             <div className="mb-16">
-              <form action={`/api/news/${props.data.news.id}/comments`} method="post" id="comment" className="flex">
-                <textarea
-                  name="text"
-                  wrap="virtual"
-                  required
-                  rows={6}
-                  className="w-full p-2 border-2 rounded-lg font-mono text-gray-900 placeholder:text-gray-400 bg-[#f8f9f9] border-[#bdbbbb] outline-[#979494]"
-                  placeholder="your opinion"
-                >
-                </textarea>
-              </form>
-              <button
-                type="submit"
-                form="comment"
-                className="mt-1 text-medium text-blue-700 underline-offset-4 underline"
-              >
-                add comment
-              </button>
+              <CommentForm newsId={props.data.news.id} />
             </div>
 
             <CommentsContainer comments={props.data.comments} newsId={props.data.news.id} />
