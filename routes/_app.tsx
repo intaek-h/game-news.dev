@@ -1,43 +1,18 @@
-import { FreshContext } from "$fresh/server.ts";
-import * as path from "$std/path/mod.ts";
-import { walk } from "$std/fs/walk.ts";
+import { PageProps } from "$fresh/server.ts";
 import { asset } from "$fresh/runtime.ts";
 
-export default async function App(_req: Request, ctx: FreshContext) {
-  const outDir = path.join(ctx.config.build.outDir, "static");
-  const files = walk(outDir, {
-    exts: ["css"],
-    includeDirs: false,
-    includeFiles: true,
-  });
-
-  let criticalCSS = ""; // 사이트에서 사용한 Tailwind 클래스를 전부 추출해서 Critical CSS 로 만듭니다. 사이트 규모가 작아서 괜찮. (일부 누락되는 클래스가 있는데, 어차피 CSS 파일 따로 요청하기 때문에 괜찮)
-
-  for await (const file of files) {
-    criticalCSS = await Deno.readTextFile(file.path); // it's only one file
-  }
-
+export default function App({ Component }: PageProps) {
   return (
     <html>
       <head>
         <meta charset="utf-8" />
-        <link rel="preconnect" href="https://fonts.googleapis.com"></link>
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin="true"
-        />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-          as="style"
-          // @ts-expect-error: OK to ignore
-          onLoad="this.onload=null;this.rel='stylesheet'"
-        />
 
-        <style type="text/css">
-          {criticalCSS}
-        </style>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+        />
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="google-site-verification" content="BDkUkjAnu2zFvh1QaPaTC0URrBkgPyTEHfjN2f9cWIg" />
@@ -46,19 +21,14 @@ export default async function App(_req: Request, ctx: FreshContext) {
         <title>Game Dev News</title>
 
         <link
-          rel="preload"
+          rel="stylesheet"
           href={asset("/styles.css")}
           as="style"
-          // @ts-expect-error: OK to ignore
-          onLoad="this.onload=null;this.rel='stylesheet'"
         />
-        <noscript>
-          <link rel="stylesheet" href={asset("/styles.css")} />
-        </noscript>
       </head>
 
       <body className="mx-auto max-w-4xl">
-        <ctx.Component />
+        <Component />
       </body>
     </html>
   );

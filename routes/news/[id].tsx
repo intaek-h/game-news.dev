@@ -6,6 +6,7 @@ import { NewsQueries } from "~/jobs/news/queries.ts";
 import { CommentQueries, RankedComment } from "~/jobs/comment/queries.ts";
 import { Time } from "~/jobs/time/index.ts";
 import { Head } from "$fresh/runtime.ts";
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 type Props = {
   news: {
@@ -118,6 +119,8 @@ export const handler: Handlers<Props> = {
 };
 
 export default function Home(props: PageProps<Props>) {
+  defaultCSP();
+
   return (
     <>
       <Head>
@@ -185,3 +188,8 @@ export default function Home(props: PageProps<Props>) {
     </>
   );
 }
+
+// FIXME: true 로 만들면 nonce 가 사라짐
+// export const config: RouteConfig = {
+//   csp: true,
+// };

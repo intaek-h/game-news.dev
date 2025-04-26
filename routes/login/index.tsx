@@ -1,7 +1,8 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
 import { APIError } from "better-auth/api";
 import { Head } from "$fresh/runtime.ts";
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 interface Props {
   error: string;
@@ -72,6 +73,8 @@ export const handler: Handlers<Props> = {
 };
 
 export default function Home(props: PageProps<Props>) {
+  defaultCSP();
+
   return (
     <>
       <Head>
@@ -140,3 +143,7 @@ export default function Home(props: PageProps<Props>) {
     </>
   );
 }
+
+export const config: RouteConfig = {
+  csp: true,
+};

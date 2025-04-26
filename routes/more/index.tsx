@@ -1,7 +1,8 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { auth } from "~/auth.ts";
 import { QueryParamsAtom } from "../../jobs/query-params/index.ts";
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 interface Props {
   user?: typeof auth.$Infer.Session.user;
@@ -29,6 +30,8 @@ export const handler: Handlers<Props> = {
 };
 
 export default function Home(props: PageProps<Props>) {
+  defaultCSP();
+
   const how_we_rank = "how we rank";
 
   const menus = props.data?.user
@@ -76,3 +79,7 @@ export default function Home(props: PageProps<Props>) {
     </>
   );
 }
+
+export const config: RouteConfig = {
+  csp: true,
+};

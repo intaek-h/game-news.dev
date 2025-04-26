@@ -1,6 +1,6 @@
-import { Handlers } from "$fresh/server.ts";
+import { Handlers, RouteConfig } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
-
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 export const handler: Handlers = {
   async GET(req) {
     const response = await auth.api.signOut({
@@ -23,9 +23,15 @@ export const handler: Handlers = {
 };
 
 export default function Page() {
+  defaultCSP();
+
   return (
     <div>
       don't go
     </div>
   );
 }
+
+export const config: RouteConfig = {
+  csp: true,
+};

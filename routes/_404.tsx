@@ -1,6 +1,10 @@
 import { Head } from "$fresh/runtime.ts";
+import { RouteConfig } from "$fresh/server.ts";
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 export default function Error404() {
+  defaultCSP();
+
   return (
     <>
       <Head>
@@ -12,3 +16,7 @@ export default function Error404() {
     </>
   );
 }
+
+export const config: RouteConfig = {
+  csp: true,
+};

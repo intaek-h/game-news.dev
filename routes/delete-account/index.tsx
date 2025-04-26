@@ -1,8 +1,9 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
 import { auth } from "~/auth.ts";
 import { user } from "~/db/migrations/schema.ts";
 import { eq } from "drizzle-orm";
 import { db } from "~/db/client.ts";
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 interface Props {
   error?: string;
@@ -71,6 +72,8 @@ export const handler: Handlers<Props> = {
 };
 
 export default function DeleteAccount(props: PageProps<Props>) {
+  defaultCSP();
+
   return (
     <div className="max-w-[400px] mx-auto">
       <form method="post" className="text-center">
@@ -88,3 +91,7 @@ export default function DeleteAccount(props: PageProps<Props>) {
     </div>
   );
 }
+
+export const config: RouteConfig = {
+  csp: true,
+};

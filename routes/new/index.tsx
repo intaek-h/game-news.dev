@@ -1,7 +1,8 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { NewsContainer } from "~/components/news-container.tsx";
 import { NewsQueries } from "~/jobs/news/queries.ts";
+import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 type Props = {
   page: number;
@@ -44,6 +45,8 @@ export const handler: Handlers<Props> = {
 };
 
 export default function Home({ data }: PageProps<Props>) {
+  defaultCSP();
+
   return (
     <>
       <Head>
@@ -53,3 +56,7 @@ export default function Home({ data }: PageProps<Props>) {
     </>
   );
 }
+
+export const config: RouteConfig = {
+  csp: true,
+};
