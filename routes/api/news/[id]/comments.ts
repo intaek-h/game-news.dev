@@ -3,6 +3,7 @@ import { CommentQueries } from "~/jobs/comment/queries.ts";
 import { auth } from "~/auth.ts";
 
 export const handler: Handlers = {
+  // reply comment
   async POST(req, ctx) {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -35,32 +36,27 @@ export const handler: Handlers = {
       });
     }
 
-    try {
-      const result = await CommentQueries.CreateComment({
-        content: text.trim(),
-        postId: Number(newsId),
-        userId: session.user.id,
-        parentId: parentId ? Number(parentId) : null,
-      });
+    const dailyCommentCountResult = await CommentQueries.DailyCommentCount({ userId: session.user.id });
 
-      if (result.isErr()) {
-        console.error("Error creating comment:", result.error);
-        return new Response(null, {
-          status: 303,
-          headers: {
-            "Location": `/news/${newsId}`,
-          },
-        });
-      }
-
+    if (dailyCommentCountResult.isErr()) {
+      console.error(dailyCommentCountResult.error);
       return new Response(null, {
-        status: 303,
+        status: 429,
         headers: {
           "Location": `/news/${newsId}`,
         },
       });
-    } catch (error) {
-      console.error("Error creating comment:", error);
+    }
+
+    const result = await CommentQueries.CreateComment({
+      content: text.trim(),
+      postId: Number(newsId),
+      userId: session.user.id,
+      parentId: parentId ? Number(parentId) : null,
+    });
+
+    if (result.isErr()) {
+      console.error("Error creating comment:", result.error);
       return new Response(null, {
         status: 303,
         headers: {
@@ -68,5 +64,12 @@ export const handler: Handlers = {
         },
       });
     }
+
+    return new Response(null, {
+      status: 303,
+      headers: {
+        "Location": `/news/${newsId}`,
+      },
+    });
   },
 };

@@ -151,4 +151,11 @@ export class CommentQueries {
       (err) => ({ err, message: "Failed to create comment" }),
     );
   }
+
+  static DailyCommentCount({ userId }: { userId: string }) {
+    return ResultAsync.fromPromise(
+      db.$count(comments, and(eq(comments.userId, userId), gte(comments.createdAt, addDays(new Date(), -1)))),
+      (err) => ({ err, message: "Failed to get daily comment count" }),
+    );
+  }
 }

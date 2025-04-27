@@ -35,6 +35,20 @@ export const handler: Handlers<Props> = {
       });
     }
 
+    const dailyUploadCountResult = await NewsQueries.DailyUploadCount({ userId: session.user.id });
+
+    if (dailyUploadCountResult.isErr()) {
+      return ctx.render({
+        error: "Something went wrong",
+      });
+    }
+
+    if (dailyUploadCountResult.value >= 10) {
+      return ctx.render({
+        error: "You have reached the daily upload limit",
+      });
+    }
+
     const safetyCheckResult = await checkUrlsSafety(url);
 
     if (safetyCheckResult.isErr()) {
@@ -49,44 +63,37 @@ export const handler: Handlers<Props> = {
       });
     }
 
-    try {
-      const result = await NewsQueries.CreatePost({
-        userId: session.user.id,
-        postType: "news",
-        title: title,
-        content: content || null,
-        url: url,
-        urlHost: new URL(url).hostname,
+    const result = await NewsQueries.CreatePost({
+      userId: session.user.id,
+      postType: "news",
+      title: title,
+      content: content || null,
+      url: url,
+      urlHost: new URL(url).hostname,
+    });
+
+    if (result.isErr()) {
+      console.error("Error creating post:", result.error);
+      return ctx.render({
+        error: "Something went wrong",
       });
+    }
 
-      if (result.isErr()) {
-        console.error("Error creating post:", result.error);
-        return ctx.render({
-          error: "Something went wrong",
-        });
-      }
-
-      if (result.value.isDuplicate) {
-        return new Response(null, {
-          status: 303,
-          headers: {
-            "Location": `/news/${result.value.id}`,
-          },
-        });
-      }
-
+    if (result.value.isDuplicate) {
       return new Response(null, {
         status: 303,
         headers: {
           "Location": `/news/${result.value.id}`,
         },
       });
-    } catch (error) {
-      console.error("Error creating post:", error);
-      return ctx.render({
-        error: "Something went wrong",
-      });
     }
+
+    return new Response(null, {
+      status: 303,
+      headers: {
+        "Location": `/news/${result.value.id}`,
+      },
+    });
   },
 };
 

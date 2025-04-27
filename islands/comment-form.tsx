@@ -31,6 +31,11 @@ export default function CommentForm({ newsId }: { newsId: number }) {
           body: formData,
         });
 
+        if (response.status === 429) {
+          alert("You have reached the daily comment limit");
+          return;
+        }
+
         globalThis.location.href = response.url;
       } catch (error) {
         console.error("Error submitting comment:", error);

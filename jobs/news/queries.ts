@@ -1,8 +1,10 @@
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import { db } from "~/db/client.ts";
 import { comments, pointTransactions, posts, postVotes, user } from "~/db/migrations/schema.ts";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { CommentQueries } from "~/jobs/comment/queries.ts";
+import { UTCDate } from "@date-fns/utc";
+import { addDays } from "date-fns";
 
 export class NewsQueries {
   static RankedNewsPageQuery(page: number) {
@@ -206,5 +208,19 @@ export class NewsQueries {
           (err) => ({ err, message: "Failed to create post" }),
         );
       });
+  }
+
+  static DailyUploadCount({ userId }: { userId: string }) {
+    return ResultAsync.fromPromise(
+      db.$count(
+        posts,
+        and(
+          eq(posts.userId, userId),
+          eq(posts.postType, "news"),
+          gte(posts.createdAt, addDays(new UTCDate(), -1).toISOString()),
+        ),
+      ),
+      (err) => ({ err, message: "Failed to check daily upload limit" }),
+    );
   }
 }

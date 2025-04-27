@@ -52,6 +52,7 @@ export const handler: Handlers<Props> = {
     });
   },
 
+  // root comment
   async POST(req, ctx) {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -83,32 +84,10 @@ export const handler: Handlers<Props> = {
       });
     }
 
-    try {
-      const result = await CommentQueries.CreateComment({
-        content: text.trim(),
-        postId: Number(newsId),
-        userId: session.user.id,
-        parentId: null,
-      });
+    const dailyCommentCountResult = await CommentQueries.DailyCommentCount({ userId: session.user.id });
 
-      if (result.isErr()) {
-        console.error("Error creating comment:", result.error);
-        return new Response(null, {
-          status: 303,
-          headers: {
-            "Location": `/news/${newsId}`,
-          },
-        });
-      }
-
-      return new Response(null, {
-        status: 303,
-        headers: {
-          "Location": `/news/${newsId}`,
-        },
-      });
-    } catch (error) {
-      console.error("Error creating comment:", error);
+    if (dailyCommentCountResult.isErr()) {
+      console.error(dailyCommentCountResult.error);
       return new Response(null, {
         status: 303,
         headers: {
@@ -116,6 +95,39 @@ export const handler: Handlers<Props> = {
         },
       });
     }
+
+    if (dailyCommentCountResult.value >= 20) {
+      return new Response(null, {
+        status: 429,
+        headers: {
+          "Location": `/news/${newsId}`,
+        },
+      });
+    }
+
+    const result = await CommentQueries.CreateComment({
+      content: text.trim(),
+      postId: Number(newsId),
+      userId: session.user.id,
+      parentId: null,
+    });
+
+    if (result.isErr()) {
+      console.error("Error creating comment:", result.error);
+      return new Response(null, {
+        status: 303,
+        headers: {
+          "Location": `/news/${newsId}`,
+        },
+      });
+    }
+
+    return new Response(null, {
+      status: 303,
+      headers: {
+        "Location": `/news/${newsId}`,
+      },
+    });
   },
 };
 
