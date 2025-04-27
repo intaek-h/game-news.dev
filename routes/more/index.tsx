@@ -1,7 +1,7 @@
 import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { auth } from "~/auth.ts";
-import { QueryParamsAtom } from "../../jobs/query-params/index.ts";
+import { QueryParamsAtom } from "../../jobs/utils/query-params.ts";
 import { defaultCSP } from "~/jobs/utils/csp.ts";
 
 interface Props {

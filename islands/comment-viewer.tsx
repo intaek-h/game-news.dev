@@ -1,4 +1,4 @@
-import { Time } from "~/jobs/time/index.ts";
+import { Time } from "../jobs/utils/time.ts";
 import { useSignal } from "@preact/signals";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import { RankedComment } from "~/jobs/comment/queries.ts";

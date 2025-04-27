@@ -4,7 +4,7 @@ import UpvoteButton from "../../islands/upvote-button.tsx";
 import CommentsContainer from "../../components/comments-container.tsx";
 import { NewsQueries } from "~/jobs/news/queries.ts";
 import { CommentQueries, RankedComment } from "~/jobs/comment/queries.ts";
-import { Time } from "~/jobs/time/index.ts";
+import { Time } from "../../jobs/utils/time.ts";
 import { Head } from "$fresh/runtime.ts";
 import { defaultCSP } from "~/jobs/utils/csp.ts";
 import CommentForm from "~/islands/comment-form.tsx";

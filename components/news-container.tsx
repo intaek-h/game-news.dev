@@ -1,5 +1,5 @@
-import { QueryParamsAtom } from "../jobs/query-params/index.ts";
-import { Time } from "~/jobs/time/index.ts";
+import { QueryParamsAtom } from "../jobs/utils/query-params.ts";
+import { Time } from "../jobs/utils/time.ts";
 
 interface Props {
   type: "ranked" | "new";
