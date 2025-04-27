@@ -3,6 +3,7 @@ import { auth } from "~/auth.ts";
 import { APIError } from "better-auth/api";
 import { Head } from "$fresh/runtime.ts";
 import { defaultCSP } from "~/jobs/utils/csp.ts";
+
 interface Props {
   error: string;
 }

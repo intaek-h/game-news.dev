@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db/client.ts";
 import schema from "./db/migrations/schema.ts";
+import { sendEmail } from "~/jobs/utils/email.ts";
 
 const selfUrl = Deno.env.get("SELF_URL");
 
@@ -17,7 +18,18 @@ export const auth = betterAuth({
     schema: schema,
   }),
   emailAndPassword: {
-    enabled: true, // TODO: email verification
+    enabled: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    expiresIn: 1000 * 60 * 30, // 30min
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "[Welcome] Verify your email address",
+        text: `Click the link to verify your email: ${url}`,
+      });
+    },
   },
   user: {
     additionalFields: {
