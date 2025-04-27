@@ -3,6 +3,8 @@ import { Head } from "$fresh/runtime.ts";
 import { auth } from "~/auth.ts";
 import { NewsQueries } from "~/jobs/news/queries.ts";
 import { defaultCSP } from "~/jobs/utils/csp.ts";
+import { checkUrlsSafety } from "~/jobs/utils/safe-url.ts";
+
 interface Props {
   error: string;
 }
@@ -33,6 +35,20 @@ export const handler: Handlers<Props> = {
       });
     }
 
+    const safetyCheckResult = await checkUrlsSafety(url);
+
+    if (safetyCheckResult.isErr()) {
+      return ctx.render({
+        error: "Something went wrong",
+      });
+    }
+
+    if (safetyCheckResult.value.isSafe === false) {
+      return ctx.render({
+        error: "Potential security risk in the URL",
+      });
+    }
+
     try {
       const result = await NewsQueries.CreatePost({
         userId: session.user.id,
@@ -46,7 +62,7 @@ export const handler: Handlers<Props> = {
       if (result.isErr()) {
         console.error("Error creating post:", result.error);
         return ctx.render({
-          error: result.error.message,
+          error: "Something went wrong",
         });
       }
 
