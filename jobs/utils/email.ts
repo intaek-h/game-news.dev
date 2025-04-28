@@ -10,9 +10,8 @@ export function sendEmail({ to, subject, text }: { to: string; subject: string; 
       key: Deno.env.get("MAILGUN_API_KEY") ?? "",
     });
 
-    // TODO: change to production domain. this is a sandbox domain for development.
-    const data = await mg.messages.create("sandbox36192e46c3244c93ad95b457904f255a.mailgun.org", {
-      from: "Mailgun Sandbox <postmaster@sandbox36192e46c3244c93ad95b457904f255a.mailgun.org>",
+    const data = await mg.messages.create("verify.game-news.dev", {
+      from: "Game-News.dev <registration@verify.game-news.dev>",
       to: [to],
       subject,
       text,

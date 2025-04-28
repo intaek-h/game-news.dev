@@ -21,13 +21,14 @@ export const auth = betterAuth({
     enabled: true,
   },
   emailVerification: {
+    autoSignInAfterVerification: true,
     sendOnSignUp: true,
-    expiresIn: 1000 * 60 * 30, // 30min
+    expiresIn: 1000 * 60 * 60, // 1h
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "[Welcome] Verify your email address",
-        text: `Click the link to verify your email: ${url}`,
+        subject: "Verify your email",
+        text: `Welcome to Game-News.dev! Please verify your email by clicking the link below: ${url}`,
       });
     },
   },
