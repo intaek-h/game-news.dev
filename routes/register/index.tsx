@@ -42,21 +42,20 @@ export const handler: Handlers<Props> = {
     }
 
     try {
-      const { headers } = await auth.api.signUpEmail({
+      await auth.api.signUpEmail({
         body: {
           email: email,
           password: password,
           name: name,
         },
         headers: req.headers,
-        returnHeaders: true,
       });
-
-      headers.set("location", "/");
 
       return new Response(null, {
         status: 302,
-        headers,
+        headers: {
+          location: "/welcome",
+        },
       });
     } catch (error) {
       if (error instanceof APIError) {

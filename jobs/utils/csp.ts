@@ -22,5 +22,10 @@ export function defaultCSP() {
       csp.directives.scriptSrc = [];
     }
     csp.directives.scriptSrc.push("'strict-dynamic'");
+
+    if (!csp.directives.imgSrc) {
+      csp.directives.imgSrc = [];
+    }
+    csp.directives.imgSrc.push("'self'");
   });
 }
