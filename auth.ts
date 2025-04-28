@@ -29,7 +29,7 @@ export const auth = betterAuth({
       await sendEmail({
         to: user.email,
         subject: "Verify your email",
-        text: `Welcome to Game-News.dev! Please verify your email by clicking the link below: ${url}`,
+        text: `Welcome to Game-News.dev!\r\n\r\nPlease verify your email by clicking the link below:\r\n${url}`,
       });
     },
   },
