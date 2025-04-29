@@ -18,7 +18,7 @@ export default function App({ Component }: PageProps) {
         <meta property="og:image" content="/og-image.png" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-        <title>Game Dev News</title>
+        <title>Game News</title>
 
         <link
           rel="stylesheet"

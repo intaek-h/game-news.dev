@@ -51,7 +51,7 @@ export default function Home({ data }: PageProps<Props>) {
   return (
     <>
       <Head>
-        <title>{data.page === 1 ? "Game Dev News" : `Game Dev News | page ${data.page}`}</title>
+        <title>{data.page === 1 ? "Game News" : `Game News | page ${data.page}`}</title>
       </Head>
       <NewsContainer news={data.news} page={data.page} type="ranked" />
     </>
