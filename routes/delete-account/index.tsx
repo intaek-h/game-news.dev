@@ -4,6 +4,7 @@ import { user } from "~/db/migrations/schema.ts";
 import { eq } from "drizzle-orm";
 import { db } from "~/db/client.ts";
 import { defaultCSP } from "~/jobs/utils/csp.ts";
+import DeleteForm from "~/islands/delete-form.tsx";
 
 interface Props {
   error?: string;
@@ -76,18 +77,7 @@ export default function DeleteAccount(props: PageProps<Props>) {
 
   return (
     <div className="max-w-[400px] mx-auto">
-      <form method="post" className="text-center">
-        <button
-          type="submit"
-          // @ts-expect-error: OK to ignore
-          onclick="return confirm('Are you sure?');"
-          className="text-red-500 underline-offset-4 underline italic"
-        >
-          Delete Account
-        </button>
-
-        {props.data?.error && <div className="mt-4 text-sm text-red-500">{props.data.error}</div>}
-      </form>
+      <DeleteForm error={props.data?.error} />
     </div>
   );
 }

@@ -23,6 +23,7 @@ import * as $submit_index from "./routes/submit/index.tsx";
 import * as $welcome_index from "./routes/welcome/index.tsx";
 import * as $comment_form from "./islands/comment-form.tsx";
 import * as $comment_viewer from "./islands/comment-viewer.tsx";
+import * as $delete_form from "./islands/delete-form.tsx";
 import * as $upvote_button from "./islands/upvote-button.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -51,6 +52,7 @@ const manifest = {
   islands: {
     "./islands/comment-form.tsx": $comment_form,
     "./islands/comment-viewer.tsx": $comment_viewer,
+    "./islands/delete-form.tsx": $delete_form,
     "./islands/upvote-button.tsx": $upvote_button,
   },
   baseUrl: import.meta.url,
