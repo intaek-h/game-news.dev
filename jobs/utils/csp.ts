@@ -15,7 +15,7 @@ export function defaultCSP() {
     if (!csp.directives.styleSrc) {
       csp.directives.styleSrc = [];
     }
-    csp.directives.styleSrc.push(`${Deno.env.get("SELF_URL")}/styles.css`);
+    csp.directives.styleSrc.push("'self'");
     csp.directives.styleSrc.push("https://fonts.googleapis.com");
 
     if (!csp.directives.scriptSrc) {
