@@ -20,7 +20,9 @@ export class NewsQueries {
           url: posts.url,
           urlHost: posts.urlHost,
           createdAt: posts.createdAt,
-          commentCount: sql<number>`COUNT(DISTINCT ${comments.id})`.as("commentCount"),
+          commentCount: sql<number>`COUNT(DISTINCT CASE WHEN ${comments.deletedAt} IS NULL THEN ${comments.id} END)`.as(
+            "commentCount",
+          ),
           score: sql<number>`(
             COALESCE(SUM(${postVotes.value}), 0) / 
             POWER(
@@ -53,7 +55,9 @@ export class NewsQueries {
           url: posts.url,
           urlHost: posts.urlHost,
           createdAt: posts.createdAt,
-          commentCount: sql<number>`COUNT(DISTINCT ${comments.id})`.as("commentCount"),
+          commentCount: sql<number>`COUNT(DISTINCT CASE WHEN ${comments.deletedAt} IS NULL THEN ${comments.id} END)`.as(
+            "commentCount",
+          ),
           score: sql<number>`COALESCE(SUM(${postVotes.value}), 0)`.as("score"),
         })
         .from(posts)
