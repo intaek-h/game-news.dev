@@ -37,14 +37,14 @@ export default function Home(props: PageProps<Props>) {
   const menus = props.data?.user
     ? [
       { name: "submit", href: "/submit" },
-      { name: how_we_rank, href: "https://github.com/intaek-h/extinguish-backend/blob/main/README.md" },
+      { name: how_we_rank, href: "https://github.com/intaek-h/game-news.dev?tab=readme-ov-file#game-news" },
       { name: "sign out", href: "/sign-out" },
       { name: "delete account", href: "/delete-account" },
     ]
     : [
       { name: "login", href: "/login" },
       { name: "register", href: "/register" },
-      { name: how_we_rank, href: "https://github.com/intaek-h/extinguish-backend/blob/main/README.md" },
+      { name: how_we_rank, href: "https://github.com/intaek-h/game-news.dev?tab=readme-ov-file#game-news" },
     ];
 
   const focus = props.url.searchParams.get(QueryParamsAtom.Focus.key);
