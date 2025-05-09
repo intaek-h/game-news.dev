@@ -10,6 +10,25 @@ interface Props {
 }
 
 export const handler: Handlers<Props> = {
+  async GET(req, ctx) {
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (!session) {
+      return new Response(null, {
+        status: 303,
+        headers: {
+          "Location": "/login",
+        },
+      });
+    }
+
+    return ctx.render({
+      error: "",
+    });
+  },
+
   async POST(req, ctx) {
     const session = await auth.api.getSession({
       headers: req.headers,

@@ -42,6 +42,7 @@ export default function Home(props: PageProps<Props>) {
       { name: "delete account", href: "/delete-account" },
     ]
     : [
+      { name: "submit", href: "/submit" },
       { name: "login", href: "/login" },
       { name: "register", href: "/register" },
       { name: how_we_rank, href: "https://github.com/intaek-h/game-news.dev?tab=readme-ov-file#game-news" },
@@ -63,6 +64,11 @@ export default function Home(props: PageProps<Props>) {
       </Head>
       <div>
         <div className="px-4 mb-4 break-keep max-w-screen-sm text-center mx-auto">
+          {props.data?.user && (
+            <div className="mb-8 text-xl">
+              <span className="text-sm text-gray-500">{props.data.user.name}</span>
+            </div>
+          )}
           {menus.map((menu) => (
             <div key={menu.name} className="mb-8 text-xl">
               <a
