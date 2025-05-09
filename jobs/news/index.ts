@@ -172,14 +172,14 @@ export const GameDeveloperNewsRSS: RSSSource[] = [
       "createdAt": "isoDate",
     },
   },
-  {
-    "url": "https://www.developer-tech.com/categories/developer-gaming/feed/",
-    "keys": {
-      "title": "title",
-      "link": "link",
-      "createdAt": "isoDate",
-    },
-  },
+  // {
+  //   "url": "https://www.developer-tech.com/categories/developer-gaming/feed/",
+  //   "keys": {
+  //     "title": "title",
+  //     "link": "link",
+  //     "createdAt": "isoDate",
+  //   },
+  // },
   {
     "url": "https://venturebeat.com/category/game-development/feed/",
     "keys": {
