@@ -1,9 +1,9 @@
 # Game News
 
-This website is a community for the game developers. Anyone can share anything that is _helpful for the game
+This website is a community for the game developers. Anyone can share anything that _benefits the game
 development_.
 
-## Guidelines for the users.
+## Submission Guidelines
 
 _Please DO submit if,_
 
@@ -14,20 +14,24 @@ _Please DON'T submit if,_
 - The subject does not relate to the mission of the site.
 - The subject is gossipy. (We already aggregate gossip for you in the /gossips page.)
 
-_Important rules for submission:_
+_Important rules_
 
 - It's okay to promote your product, but only if it satisfies our mission. (read above)
 - Remove anything that makes the title unnecessarily attention-grabbing. It's already implicit that the content is
   important.
 - Preserve the original title from the source whenever possible.
 
-_Important rules for comments:_
+## Comments Guidelines
+
+_Important rules_
 
 - Be kind. Don't be snarky. Converse curiously; don't cross-examine. (borrowed from HN)
 - Don't post shallow dismissals.
 - Praise comments that are both gentle and critical.
 
 # Contribution
+
+Contribution is currently not available. 
 
 ## Local Development
 
