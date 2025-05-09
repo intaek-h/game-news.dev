@@ -7,25 +7,23 @@ development_.
 
 _Please DO submit if,_
 
-- The subject gratifies game developers' intellectual curiosity. (borrowed from HN)
+- The subject gratifies game developers' intellectual curiosity.
 
 _Please DON'T submit if,_
 
 - The subject does not relate to the mission of the site.
-- The subject is gossipy. (We already aggregate gossip for you in the /gossips page.)
+- The subject is gossipy.
 
-_Important rules_
+_Notes_
 
-- It's okay to promote your product, but only if it satisfies our mission. (read above)
+- It's okay to promote your product, but only if it satisfies our mission.
 - Remove anything that makes the title unnecessarily attention-grabbing. It's already implicit that the content is
   important.
 - Preserve the original title from the source whenever possible.
 
 ## Comments Guidelines
 
-_Important rules_
-
-- Be kind. Don't be snarky. Converse curiously; don't cross-examine. (borrowed from HN)
+- Be kind. Don't be snarky.
 - Don't post shallow dismissals.
 - Praise comments that are both gentle and critical.
 
