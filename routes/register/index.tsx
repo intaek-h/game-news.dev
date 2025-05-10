@@ -138,6 +138,10 @@ export default function Home(props: PageProps<Props>) {
             )
             : null}
 
+          <p className="mt-2 text-sm text-gray-500 italic">
+            email is only used for verification, only your displayed name will be shown
+          </p>
+
           <button
             type="submit"
             className="mt-4 text-medium text-blue-900 underline"
